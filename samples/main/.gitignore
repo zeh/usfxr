@@ -1,6 +1,6 @@
 Temp/*
 Library/*
-
+Build/*
 
 !Library/*.asset
 !Library/AssetImportState
@@ -13,3 +13,10 @@ Library/*
 !Library/unity default resources
 !Library/unity editor resources
 !Library/metadata/
+
+*.csproj
+*.unityproj
+*.sln
+
+*.pidb
+*.userprefs
