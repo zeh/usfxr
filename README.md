@@ -38,9 +38,18 @@ TODO:
 * Replace Random.value with a different function? The original used Math.random(), which returns 0 <= n < 1, while Random.value returns 0 <= n <= 1
 * if float.parse(str) already returns 0 on empty strings, so SfxrParams.setSettingsString() can be simpler and faster
 * replace getTimer() on SfxrSynth with a Time specific call?
+* Decide on a better name for "paramss"
+* Too many potential conversions between uint/int - move everything to int?
 
 * Line 496 of SfxrSynth: awkward conversion (was implying from float to int): _changeLimit = (int)((1f - p.changeSpeed) * (1f - p.changeSpeed) * 20000f + 32f);
 * Line 682 of SfxrSynth: awkward conversion (was implying from float to int): _phase = _phase - (int)_periodTemp;
+* Line 552 of SfxrSynth: awkward conversion: _envelopeFullLength was originally a float, but used as an uint everywhere else, so I'm doing the conversion earlier. what kind of unit is this? it may be cutting the audio short
+* Line 262 of SfxrSynth: test filling of data samples to see what's faster
+
+* Re-enable other functions on SfxrSynth that have been temporarily disabled - search for [[disabled]]
+* Search for (uint) casts -- too many...
+
+* Re-enable wav file generation? turn on getWavFile(), and allow waveData false on synthWave() on SfxrSynth
 
 Missing aspects:
 * onEnterFrame ticker

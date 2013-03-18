@@ -1,11 +1,14 @@
 using UnityEngine;
 using System.Collections;
 
-// A game object responsible for streaming audio to the engine
+// A behavior script responsible for streaming audio to the engine
 
-public class SfxrGameObject : MonoBehaviour {
+public class SfxrAudioPlayer : MonoBehaviour {
 	
-	private double samplingFrequency = AudioSettings.outputSampleRate;
+	private double		samplingFrequency = AudioSettings.outputSampleRate;
+	private bool		isDestroyed = false;
+	private SfxrSynth	sfxrSynth;
+	private bool		needsToDestroy = false;
 
 	// Public methods
 
@@ -19,13 +22,21 @@ public class SfxrGameObject : MonoBehaviour {
 	}
 	
 	void Update () {
-	
+		if (needsToDestroy) {
+			needsToDestroy = false;
+			destroy();
+		}
 	}
 	
 	void OnAudioFilterRead(float[] data, int channels) {
 		// Generates audio
 		// Data is an array of floats ranging from -1.0f to 1.0f
-		
+
+		if (!isDestroyed && sfxrSynth != null) {
+			bool hasMoreSamples = sfxrSynth.getSampleData(data, channels);
+			if (!hasMoreSamples) needsToDestroy = true;
+		}
+
 		/*
 		log("Audio filter read"); // 2048, 2
 		// update increment in case frequency has changed
@@ -43,11 +54,19 @@ public class SfxrGameObject : MonoBehaviour {
 		*/
   	}
 
-	// Internal methods
+	// Public methods
+	public void setSfxrSynth(SfxrSynth __sfxrSynth) {
+		// Sets the synth that needs to be pooled when new audio data is needed
+		sfxrSynth = __sfxrSynth;
+	}
 	
-	private void Destroy() {
-		// Destroys self - not necessary anymore
-		UnityEngine.Object.Destroy(gameObject);
+	public void destroy() {
+		// Stops the audio and destroys self
+		if (!isDestroyed) {
+			isDestroyed = true;
+			sfxrSynth = null;
+			UnityEngine.Object.Destroy(gameObject);
+		}
 	}
 		
 

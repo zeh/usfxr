@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Main.cs" />
-     <Compile Include="Assets\Scripts\usfxr\SfxrGameObject.cs" />
+     <Compile Include="Assets\Scripts\usfxr\SfxrAudioPlayer.cs" />
      <Compile Include="Assets\Scripts\usfxr\SfxrParams.cs" />
      <Compile Include="Assets\Scripts\usfxr\SfxrSynth.cs" />
   </ItemGroup>

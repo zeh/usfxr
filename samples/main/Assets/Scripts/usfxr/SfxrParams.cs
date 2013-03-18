@@ -518,8 +518,8 @@ public class SfxrParams {
 		_hpFilterCutoffSweep = 	pow(Random.value*2f-1f, 5);
 	
 		if (_attackTime + _sustainTime + _decayTime < 0.2f) {
-			_sustainTime = 0.2 + Random.value * 0.3;
-			_decayTime = 0.2 + Random.value * 0.3;
+			_sustainTime = 0.2f + Random.value * 0.3f;
+			_decayTime = 0.2f + Random.value * 0.3f;
 		}
 	
 		if ((_startFrequency > 0.7f && _slide > 0.2) || (_startFrequency < 0.2 && _slide < -0.05)) {
