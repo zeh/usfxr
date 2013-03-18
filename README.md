@@ -5,6 +5,8 @@ usfxr is a C# library to generate and play audio effects in real time inside a U
 
 It is a Unity-compatible C# port of Thomas Vian's [as3sfxr](https://code.google.com/p/as3sfxr/), which itself is an ActionScript 3 port of Tomas Pettersson's [sfxr](http://www.drpetter.se/project_sfxr.html).
 
+[This video](https://vimeo.com/15769163) explains the ideas behind as3sfxr much better than I can describe it here.
+
 Despite my name not being Thomas or a variant of it, I found myself wishing for a (free) library to procedurally generate audio inside Unity in real time, and usfxr is the result.
 
 
@@ -23,20 +25,49 @@ I make no claims in regards to the source code or interface, since it was simply
 * Fast audio synthesis
 * Ability to cache sounds the first time they're needed
 * Completely asynchronous caching and playback; sound is generated on a separate, non-blocking thread with minimal impact on gameplay
-* Minimal setup necessary; full code-based solution
+* Minimal setup necessary; full code-based solution, no drag-and-drop or additional game objects necessary
 
 
 Installation
 ------------
 
+1. Download the latest "usfxr" zip file from the "/build" folder of the GitHub repository
+2. Unzip this zip into the "Scripts" (or equivalent) folder of your Unity project
+
+Your project is now ready to use usfxr.
+
 
 Usage
 -----
 
+Typically, the workflow for using usfxr inside a project is as such:
+
+1. Visit the [online version of as3sfxr](http://www.superflashbros.net/as3sfxr/), play around, and generate a sound effect that you want to use
+2. Press CTRL+C to copy the effect script to the clipboard
+3. Back in Unity, write some code to store your sound effect:
+
+	SfxrSynth synth = new SfxrSynth();
+	synth.parameters.setSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5"); // Replace the string here with the code from as3sfxr
+
+4. Finally, to play your audio effect, you simply do:
+
+	synth.play();
+
+With usfxr, all audio data is generated the first time an effect is played. That way, any potential heavy load in generating audio doesn't have to be repeated. Because of that, while it's possible to generate new SfxrSynth instances every time they need to be played, it's usually a better idea to keep them around and reuse them as needed.
+
+In case of long or numerous audio effects, it makes sense to cache them first, before they are allowed to be played. This is done by calling the cacheSound() method first, as in:
+
+	SfxrSynth synth = new SfxrSynth();
+	synth.parameters.setSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5"); // Replace the string here with the code from as3sfxr
+	synth.cacheSound();
+	...
+	synth.play();
+
+As a baseline, it typically takes around 5-9ms for an audio effect to be cached on a desktop computer. Therefore, it's better to let game cache sound as they're played, if possible (only a small portion of the audio is generated at a time) or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts.
 
 
-Interface
----------
+Documentation
+-------------
 
 
 
@@ -55,6 +86,7 @@ TODO:
 * replace getTimer() on SfxrSynth with a Time specific call?
 * Decide on a better name for "paramss"
 * Too many potential conversions between uint/int - move everything to int?
+* Allow user to set the game object parent/position for proper control
 
 * Line 496 of SfxrSynth: awkward conversion (was implying from float to int): _changeLimit = (int)((1f - p.changeSpeed) * (1f - p.changeSpeed) * 20000f + 32f);
 * Line 682 of SfxrSynth: awkward conversion (was implying from float to int): _phase = _phase - (int)_periodTemp;
