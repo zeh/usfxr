@@ -43,6 +43,7 @@ public class SfxrSynth {
 
 	private int			_cachingMutation;				// Current caching ID
 	private float[]		_cachedMutation;				// Current caching wave data for mutation
+	private uint		_cachedMutationPos;				// Equivalent to _cachedMutation.position in the old code
 	private float[][]	_cachedMutations;				// Cached mutated wave data
 	private uint		_cachedMutationsNum;				// Number of cached mutations
 	private float		_cachedMutationAmount;			// Amount to mutate during cache
@@ -53,7 +54,6 @@ public class SfxrSynth {
 
 	private float[]		_waveData;						// Full wave, read out in chuncks by the onSampleData method
 	private uint		_waveDataPos;					// Current position in the waveData
-	private uint		_waveDataLength;				// Number of floats in the waveData
 
 	private SfxrParams	_original;						// Copied properties for mutation base
 
@@ -174,11 +174,10 @@ public class SfxrSynth {
 		} else {
 			// Play from cached data
 			_waveData = _cachedWave;
-			_waveDataLength = (uint)_waveData.Length;
 			_waveDataPos = 0;
 		}
 
-		// Create a game object
+		// Create a game object to handle playback
 		GameObject _gameObject = new GameObject("SfxrGameObject-" + Time.realtimeSinceStartup);
     	_audioPlayer = (SfxrAudioPlayer) _gameObject.AddComponent ("SfxrAudioPlayer");
 		_audioPlayer.setSfxrSynth(this);
@@ -192,11 +191,6 @@ public class SfxrSynth {
 	 * @param	mutationsNum	The number of mutations to cache before picking from them
 	 */
 	public void playMutated(float mutationAmount = 0.05f, uint mutationsNum = 15) {
-		Debug.Log("Disabled: play mutated");
-
-		/*
-		// [[disabled]]
-	
 		stop();
 
 		if (_cachingAsync) return;
@@ -205,34 +199,35 @@ public class SfxrSynth {
 	
 		_cachedMutationsNum = mutationsNum;
 	
-		if (_params.paramsDirty || !_cachedMutations) {
+		if (_params.paramsDirty || _cachedMutations == null) {
 			// New set of mutations
 			_cachedMutations = new float[_cachedMutationsNum][];
 			_cachingMutation = 0;
 		}
-	
+
 		if (_cachingMutation != -1) {
 			// Continuing caching new mutations
-			_cachedMutation = new float[24576];
+			reset(true); // To get _envelopeFullLength
+
+			_cachedMutation = new float[_envelopeFullLength];
+			_cachedMutationPos = 0;
 			_cachedMutations[_cachingMutation] = _cachedMutation;
 			_waveData = null;
 		
 			_original = _params.clone();
 			_params.mutate(mutationAmount);
+
 			reset(true);
 		} else {
 			// Play from random cached mutation
 			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * Random.value)];
-			_waveData.position = 0;
-			_waveDataLength = _waveData.Length;
-			_waveDataBytes = 24576;
 			_waveDataPos = 0;
 		}
-	
-		if (!_sound) (_sound = new Sound()).addEventListener(SampleDataEvent.SAMPLE_DATA, onSampleData);
-	
-		_channel = _sound.play();
-		*/
+
+		// Create a game object to handle playback
+		GameObject _gameObject = new GameObject("SfxrGameObject-" + Time.realtimeSinceStartup);
+		_audioPlayer = (SfxrAudioPlayer)_gameObject.AddComponent("SfxrAudioPlayer");
+		_audioPlayer.setSfxrSynth(this);
 	}
 
 	/**
@@ -284,38 +279,27 @@ public class SfxrSynth {
 			_waveDataPos += (uint)samplesWritten;
 			if (samplesWritten == 0) endOfSamples = true;
 		} else {
-			uint length;
-			uint i, l;
-		
 			if (_mutation) {
-				Debug.Log("Disabled: getting sample data without wave data defined for mutations");
-				/*
-				[[disabled]]
 				if (_original != null) {
-					_waveDataPos = _cachedMutation.position;
-				
-					if (synthWave(_cachedMutation, 3072, true)) {
+					_waveDataPos = _cachedMutationPos;
+
+					int samplesNeeded = (int)Mathf.Min((data.Length / channels), _cachedMutation.Length - _cachedMutationPos);
+
+					if (synthWave(_cachedMutation, (int)_cachedMutationPos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
 						_params.copyFrom(_original);
 						_original = null;
-					
+
 						_cachingMutation++;
-					
-						if ((length = _cachedMutation.Length) < 24576) {
-							// If the sound is smaller than the buffer length, add silence to allow it to play
-							_cachedMutation.position = length;
-							for (i = 0, l = 24576 - length; i < l; i++) _cachedMutation.writeFloat(0.0);
-						}
-					
-						if (_cachingMutation >= _cachedMutationsNum) {
-							_cachingMutation = -1;
-						}
+
+						endOfSamples = true;
+
+						if (_cachingMutation >= _cachedMutationsNum) _cachingMutation = -1;
+					} else {
+						_cachedMutationPos += (uint)samplesNeeded;
 					}
-				
-					_waveDataBytes = _cachedMutation.Length - _waveDataPos;
-				
-					e.data.writeBytes(_cachedMutation, _waveDataPos, _waveDataBytes);
+
+					int samplesWritten = writeSamples(_cachedMutation, (int)_waveDataPos, data, channels);
 				}
-				*/
 			} else {
 				if (_cachingNormal) {
 					// synthWave(_cachedWave, _envelopeFullLength, true); [[now]]
@@ -406,7 +390,7 @@ public class SfxrSynth {
 	 * Caches a series of mutations on the source sound.
 	 * If a callback is passed in, the caching will be done asynchronously, taking maxTimePerFrame milliseconds
 	 * per frame to cache, them calling the callback when it's done.
-	 * If not, the whole sound is cached imidiately - can freeze the player for a few seconds, especially in debug mode.
+	 * If not, the whole sound is cached immediately - can freeze the player for a few seconds, especially in debug mode.
 	 * @param	mutationsNum		Number of mutations to cache
 	 * @param	mutationAmount		Amount of mutation
 	 * @param	callback			Function to call when the caching is complete

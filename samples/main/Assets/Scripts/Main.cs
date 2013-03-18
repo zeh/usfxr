@@ -60,7 +60,7 @@ public class Main : MonoBehaviour {
 				synthC.paramss.setSettingsString("2,,0.1702,,0.1689,0.7793,0.0224,-0.4882,,,,,,0.271,0.1608,,,,1,,,,,0.5");
 			}
 
-			synthC.play();
+			synthC.playMutated(0.2f);
 		}
 
 		isADown = newIsADown;
