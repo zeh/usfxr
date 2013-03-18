@@ -33,7 +33,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 		// Data is an array of floats ranging from -1.0f to 1.0f
 
 		if (!isDestroyed && sfxrSynth != null) {
-			bool hasMoreSamples = sfxrSynth.getSampleData(data, channels);
+			bool hasMoreSamples = sfxrSynth.generateAudioFilterData(data, channels);
 			if (!hasMoreSamples) needsToDestroy = true;
 		}
 

@@ -38,6 +38,7 @@ public class SfxrSynth {
 	private bool		_mutation;							// If the current sound playing or caching is a mutation
 
 	private float[]		_cachedWave;					// Cached wave data from a cacheSound() call
+	private uint		_cachedWavePos;					// Equivalent to _cachedWave.position in the old code
 	private bool		_cachingNormal;					// If the synth is caching a normal sound
 
 	private int			_cachingMutation;				// Current caching ID
@@ -53,7 +54,6 @@ public class SfxrSynth {
 	private float[]		_waveData;						// Full wave, read out in chuncks by the onSampleData method
 	private uint		_waveDataPos;					// Current position in the waveData
 	private uint		_waveDataLength;				// Number of floats in the waveData
-	private uint		_waveDataBytes;					// Number of bytes to write to the soundcard
 
 	private SfxrParams	_original;						// Copied properties for mutation base
 
@@ -166,15 +166,11 @@ public class SfxrSynth {
 	
 		if (_params.paramsDirty || _cachingNormal || _cachedWave == null) {
 			// Needs to cache new data
-			// [[disabled]]
-			Debug.Log("Disabled: play before caching");
-			/*
-			_cachedWave = new float[24576];
+			_cachedWavePos = 0;
 			_cachingNormal = true;
 			_waveData = null;
-		
 			reset(true);
-			*/
+			_cachedWave = new float[_envelopeFullLength];
 		} else {
 			// Play from cached data
 			_waveData = _cachedWave;
@@ -254,6 +250,25 @@ public class SfxrSynth {
 		}
 	}
 
+	private int writeSamples(float[] originSamples, int originPos, float[] targetSamples, int targetChannels) {
+		// Writes raw samples to Unity's format and return number of samples actually written
+		int samplesToWrite = targetSamples.Length / targetChannels;
+
+		if (originPos + samplesToWrite > originSamples.Length) samplesToWrite = originSamples.Length - originPos;
+
+		if (samplesToWrite > 0) {
+			// Interlaced filling of sample datas (faster?)
+			int i, j;
+			for (i = 0; i < targetChannels; i++) {
+				for (j = 0; j < samplesToWrite; j++) {
+					targetSamples[(j * targetChannels) + i] = originSamples[j + originPos];
+				}
+			}
+		}
+
+		return samplesToWrite;
+	}
+
 	/**
 	 * If there is a cached sound to play, reads out of the data.
 	 * If there isn't, synthesises new chunch of data, caching it as it goes.
@@ -261,36 +276,21 @@ public class SfxrSynth {
 	 * @param	channels	Number of channels used
 	 * @return	Whether it needs to continue (there are samples left) or not
 	 */
-	public bool getSampleData(float[] data, int channels) {
+	public bool generateAudioFilterData(float[] data, int channels) {
 		bool endOfSamples = false;
 
 		if (_waveData != null) {
-			uint samplesToWrite = (uint)(data.Length / channels);
-
-			Debug.Log("getting sample data: " + data.Length + " x " + channels);
-
-			if (_waveDataPos + samplesToWrite >= _waveDataLength) {
-				samplesToWrite = _waveDataLength - _waveDataPos;
-				endOfSamples = true;
-			}
-		
-			if (samplesToWrite > 0) {
-				// Interlaced filling of sample datas (faster?)
-				int i, j;
-				for (i = 0; i < channels; i++) {
-					for (j = 0; j < samplesToWrite; j++) {
-						data[(j * channels) + i] = _waveData[j];
-					}
-				}
-			}
-			_waveDataPos += samplesToWrite;
+			int samplesWritten = writeSamples(_waveData, (int)_waveDataPos, data, channels);
+			_waveDataPos += (uint)samplesWritten;
+			if (samplesWritten == 0) endOfSamples = true;
 		} else {
-			Debug.Log("Disabled: getting sample data without wave data defined");
-			/*
 			uint length;
 			uint i, l;
 		
 			if (_mutation) {
+				Debug.Log("Disabled: getting sample data without wave data defined for mutations");
+				/*
+				[[disabled]]
 				if (_original != null) {
 					_waveDataPos = _cachedMutation.position;
 				
@@ -315,26 +315,25 @@ public class SfxrSynth {
 				
 					e.data.writeBytes(_cachedMutation, _waveDataPos, _waveDataBytes);
 				}
+				*/
 			} else {
 				if (_cachingNormal) {
-					_waveDataPos = _cachedWave.position;
-				
-					if (synthWave(_cachedWave, 3072, true)) {
-						if ((length = _cachedWave.Length) < 24576) {
-							// If the sound is smaller than the buffer length, add silence to allow it to play
-							_cachedWave.position = length;
-							for (i = 0, l = 24576 - length; i < l; i++) _cachedWave.writeFloat(0.0f);
-						}
-					
+					// synthWave(_cachedWave, _envelopeFullLength, true); [[now]]
+					_waveDataPos = _cachedWavePos;
+
+					int samplesNeeded = (int)Mathf.Min((data.Length / channels), _cachedWave.Length - _cachedWavePos);
+
+					if (synthWave(_cachedWave, (int)_cachedWavePos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
+						// Finished the wave
 						_cachingNormal = false;
+						endOfSamples = true;
+					} else {
+						_cachedWavePos += (uint)samplesNeeded;
 					}
-				
-					_waveDataBytes = _cachedWave.Length - _waveDataPos;
-				
-					e.data.writeBytes(_cachedWave, _waveDataPos, _waveDataBytes);
+
+					int samplesWritten = writeSamples(_cachedWave, (int)_waveDataPos, data, channels);
 				}
 			}
-			*/
 		}
 
 		return !endOfSamples;
@@ -357,13 +356,13 @@ public class SfxrSynth {
 	public void cacheSound() {
 	//public void cacheSound(Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
 		stop();
-	
+
+		float ti = Time.realtimeSinceStartup;
+
 		if (_cachingAsync) return;
 	
 		reset(true);
 
-		float ti = Time.realtimeSinceStartup;
-	
 		/*
 		[[disabled]]
 		_cachedWave = new float[24576];
@@ -386,7 +385,7 @@ public class SfxrSynth {
 
 			_cachedWave = new float[_envelopeFullLength];
 		
-			synthWave(_cachedWave, _envelopeFullLength, true);
+			synthWave(_cachedWave, 0, _envelopeFullLength, true);
 		
 			/*
 			// Disabled as unnecessary --zeh
@@ -400,7 +399,7 @@ public class SfxrSynth {
 			*/
 		//} [[disablzed]]
 
-		Debug.Log("Took " + ((Time.realtimeSinceStartup - ti) * 1000) + "ms to cache the audio");
+		Debug.Log("Took " + ((Time.realtimeSinceStartup - ti) * 1000) + "ms to cache the complete audio sample");
 	}
 
 	/**
@@ -640,7 +639,7 @@ public class SfxrSynth {
 	 * @param	waveData	If the wave should be written for the waveData
 	 * @return				If the wave is finished
 	 */
-	private bool synthWave(float[] buffer, uint length, bool waveData = false, uint sampleRate = 44100, uint bitDepth = 16) {
+	private bool synthWave(float[] buffer, int bufferPos, uint length, bool waveData = false, uint sampleRate = 44100, uint bitDepth = 16) {
 		_finished = false;
 
 		_sampleCount = 0;
@@ -810,7 +809,7 @@ public class SfxrSynth {
 		
 			if (waveData) {
 				// Writes value to list, ignoring left/right sound channels (this is applied when filtering the audio later)
-				buffer[i] = _superSample;
+				buffer[i + bufferPos] = _superSample;
 			} else {
 
 				Debug.Log("Disabled: Writing WAV data");
