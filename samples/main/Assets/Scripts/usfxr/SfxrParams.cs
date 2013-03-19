@@ -5,7 +5,8 @@ public class SfxrParams {
 	/**
 	 * SfxrSynth
 	 *
-	 * Copyright 2013 Thomas Vian, Zeh Fernando
+	 * Copyright 2010 Thomas Vian
+	 * Copyright 2013 Zeh Fernando
 	 *
 	 * Licensed under the Apache License, Version 2.0 (the "License");
 	 * you may not use this file except in compliance with the License.
@@ -22,17 +23,14 @@ public class SfxrParams {
 	 */
 
 	/**
+	 * SfxrParams
+	 * Holds parameters used by SfxrSynth
+	 * 
 	 * @author Zeh Fernando
 	 */
 
-	//--------------------------------------------------------------------------
-	//
-	//  Properties
-	//
-	//--------------------------------------------------------------------------
-
-	/** If the parameters have been changed since last time (shouldn't used cached sound) */
-	public bool		paramsDirty;
+	// Properties
+	public bool		paramsDirty;						// Whether If the parameters have been changed since last time (shouldn't used cached sound)
 
 	private uint	_waveType				= 	0;		// Shape of the wave (0:square, 1:saw, 2:sin or 3:noise)
 
@@ -69,12 +67,10 @@ public class SfxrParams {
 
 	private float	_hpFilterCutoff			=	0.0f;	// Frequency at which the high-pass filter starts attenuating lower frequencies (0 to 1)
 	private float	_hpFilterCutoffSweep	=	0.0f;	// Sweeps the high-pass cutoff up or down (-1 to 1)
+	
 
-	//--------------------------------------------------------------------------
-	//
-	//  Getters / Setters
-	//
-	//--------------------------------------------------------------------------
+	// ================================================================================================================
+	// ACCESSOR INTERFACE ---------------------------------------------------------------------------------------------
 
 	/** Shape of the wave (0:square, 1:saw, 2:sin or 3:noise) */
 	public uint waveType {
@@ -85,159 +81,159 @@ public class SfxrParams {
 	/** Overall volume of the sound (0 to 1) */
 	public float masterVolume {
 		get { return _masterVolume; }
-		set { _masterVolume = clamp1(value); paramsDirty = true; }
+		set { _masterVolume = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Length of the volume envelope attack (0 to 1) */
 	public float attackTime {
 		get { return _attackTime; }
-		set { _attackTime = clamp1(value); paramsDirty = true; }
+		set { _attackTime = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Length of the volume envelope sustain (0 to 1) */
 	public float sustainTime {
 		get { return _sustainTime; }
-		set { _sustainTime = clamp1(value); paramsDirty = true; }
+		set { _sustainTime = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Tilts the sustain envelope for more 'pop' (0 to 1) */
 	public float sustainPunch {
 		get { return _sustainPunch; }
-		set { _sustainPunch = clamp1(value); paramsDirty = true; }
+		set { _sustainPunch = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Length of the volume envelope decay (yes, I know it's called release) (0 to 1) */
 	public float decayTime {
 		get { return _decayTime; }
-		set { _decayTime = clamp1(value); paramsDirty = true; }
+		set { _decayTime = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Base note of the sound (0 to 1) */
 	public float startFrequency {
 		get { return _startFrequency; }
-		set { _startFrequency = clamp1(value); paramsDirty = true; }
+		set { _startFrequency = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** If sliding, the sound will stop at this frequency, to prevent really low notes (0 to 1) */
 	public float minFrequency {
 		get { return _minFrequency; }
-		set { _minFrequency = clamp1(value); paramsDirty = true; }
+		set { _minFrequency = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Slides the note up or down (-1 to 1) */
 	public float slide {
 		get { return _slide; }
-		set { _slide = clamp2(value); paramsDirty = true; }
+		set { _slide = Clamp2(value); paramsDirty = true; }
 	}
 
 	/** Accelerates the slide (-1 to 1) */
 	public float deltaSlide {
 		get { return _deltaSlide; }
-		set { _deltaSlide = clamp2(value); paramsDirty = true; }
+		set { _deltaSlide = Clamp2(value); paramsDirty = true; }
 	}
 
 	/** Strength of the vibrato effect (0 to 1) */
 	public float vibratoDepth {
 		get { return _vibratoDepth; }
-		set { _vibratoDepth = clamp1(value); paramsDirty = true; }
+		set { _vibratoDepth = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Speed of the vibrato effect (i.e. frequency) (0 to 1) */
 	public float vibratoSpeed {
 		get { return _vibratoSpeed; }
-		set { _vibratoSpeed = clamp1(value); paramsDirty = true; }
+		set { _vibratoSpeed = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Shift in note, either up or down (-1 to 1) */
 	public float changeAmount {
 		get { return _changeAmount; }
-		set { _changeAmount = clamp2(value); paramsDirty = true; }
+		set { _changeAmount = Clamp2(value); paramsDirty = true; }
 	}
 
 	/** How fast the note shift happens (only happens once) (0 to 1) */
 	public float changeSpeed {
 		get { return _changeSpeed; }
-		set { _changeSpeed = clamp1(value); paramsDirty = true; }
+		set { _changeSpeed = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Controls the ratio between the up and down states of the square wave, changing the tibre (0 to 1) */
 	public float squareDuty {
 		get { return _squareDuty; }
-		set { _squareDuty = clamp1(value); paramsDirty = true; }
+		set { _squareDuty = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Sweeps the duty up or down (-1 to 1) */
 	public float dutySweep {
 		get { return _dutySweep; }
-		set { _dutySweep = clamp2(value); paramsDirty = true; }
+		set { _dutySweep = Clamp2(value); paramsDirty = true; }
 	}
 
 	/** Speed of the note repeating - certain variables are reset each time (0 to 1) */
 	public float repeatSpeed {
 		get { return _repeatSpeed; }
-		set { _repeatSpeed = clamp1(value); paramsDirty = true; }
+		set { _repeatSpeed = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Offsets a second copy of the wave by a small phase, changing the tibre (-1 to 1) */
 	public float phaserOffset {
 		get { return _phaserOffset; }
-		set { _phaserOffset = clamp2(value); paramsDirty = true; }
+		set { _phaserOffset = Clamp2(value); paramsDirty = true; }
 	}
 
 	/** Sweeps the phase up or down (-1 to 1) */
 	public float phaserSweep {
 		get { return _phaserSweep; }
-		set { _phaserSweep = clamp2(value); paramsDirty = true; }
+		set { _phaserSweep = Clamp2(value); paramsDirty = true; }
 	}
 
 	/** Frequency at which the low-pass filter starts attenuating higher frequencies (0 to 1) */
 	public float lpFilterCutoff {
 		get { return _lpFilterCutoff; }
-		set { _lpFilterCutoff = clamp1(value); paramsDirty = true; }
+		set { _lpFilterCutoff = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Sweeps the low-pass cutoff up or down (-1 to 1) */
 	public float lpFilterCutoffSweep {
 		get { return _lpFilterCutoffSweep; }
-		set { _lpFilterCutoffSweep = clamp2(value); paramsDirty = true; }
+		set { _lpFilterCutoffSweep = Clamp2(value); paramsDirty = true; }
 	}
 
 	/** Changes the attenuation rate for the low-pass filter, changing the timbre (0 to 1) */
 	public float lpFilterResonance {
 		get { return _lpFilterResonance; }
-		set { _lpFilterResonance = clamp1(value); paramsDirty = true; }
+		set { _lpFilterResonance = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Frequency at which the high-pass filter starts attenuating lower frequencies (0 to 1) */
 	public float hpFilterCutoff {
 		get { return _hpFilterCutoff; }
-		set { _hpFilterCutoff = clamp1(value); paramsDirty = true; }
+		set { _hpFilterCutoff = Clamp1(value); paramsDirty = true; }
 	}
 
 	/** Sweeps the high-pass cutoff up or down (-1 to 1) */
 	public float hpFilterCutoffSweep {
 		get { return _hpFilterCutoffSweep; }
-		set { _hpFilterCutoffSweep = clamp2(value); paramsDirty = true; }
+		set { _hpFilterCutoffSweep = Clamp2(value); paramsDirty = true; }
 	}
 
-	//--------------------------------------------------------------------------
-	//
-	//  Generator Methods
-	//
-	//--------------------------------------------------------------------------
+
+	// ================================================================================================================
+	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
+	
+	// Generator methods
 
 	/**
 	 * Sets the parameters to generate a pickup/coin sound
 	 */
-	public void generatePickupCoin() {
+	public void GeneratePickupCoin() {
 		resetParams();
-	
+
 		_startFrequency = 0.4f + Random.value * 0.5f;
-	
+
 		_sustainTime = Random.value * 0.1f;
 		_decayTime = 0.1f + Random.value * 0.4f;
 		_sustainPunch = 0.3f + Random.value * 0.3f;
-	
+
 		if (Random.value < 0.5f) {
 			_changeSpeed = 0.5f + Random.value * 0.2f;
 			_changeAmount = 0.2f + Random.value * 0.4f;
@@ -247,24 +243,24 @@ public class SfxrParams {
 	/**
 	 * Sets the parameters to generate a laser/shoot sound
 	 */
-	public void generateLaserShoot() {
+	public void GenerateLaserShoot() {
 		resetParams();
-	
+
 		_waveType = (uint)(Random.value * 3);
 		if (_waveType == 2 && Random.value < 0.5f) _waveType = (uint)(Random.value * 2f);
-	
+
 		_startFrequency = 0.5f + Random.value * 0.5f;
 		_minFrequency = _startFrequency - 0.2f - Random.value * 0.6f;
 		if (_minFrequency < 0.2f) _minFrequency = 0.2f;
-	
+
 		_slide = -0.15f - Random.value * 0.2f;
-	
+
 		if (Random.value < 0.33f) {
 			_startFrequency = 0.3f + Random.value * 0.6f;
 			_minFrequency = Random.value * 0.1f;
 			_slide = -0.35f - Random.value * 0.3f;
 		}
-	
+
 		if (Random.value < 0.5f) {
 			_squareDuty = Random.value * 0.5f;
 			_dutySweep = Random.value * 0.2f;
@@ -272,26 +268,26 @@ public class SfxrParams {
 			_squareDuty = 0.4f + Random.value * 0.5f;
 			_dutySweep =- Random.value * 0.7f;
 		}
-	
+
 		_sustainTime = 0.1f + Random.value * 0.2f;
 		_decayTime = Random.value * 0.4f;
 		if (Random.value < 0.5f) _sustainPunch = Random.value * 0.3f;
-	
+
 		if (Random.value < 0.33f) {
 			_phaserOffset = Random.value * 0.2f;
 			_phaserSweep = -Random.value * 0.2f;
 		}
-	
+
 		if (Random.value < 0.5f) _hpFilterCutoff = Random.value * 0.3f;
 	}
 
 	/**
 	 * Sets the parameters to generate an explosion sound
 	 */
-	public void generateExplosion() {
+	public void GenerateExplosion() {
 		resetParams();
 		_waveType = 3;
-	
+
 		if (Random.value < 0.5f) {
 			_startFrequency = 0.1f + Random.value * 0.4f;
 			_slide = -0.1f + Random.value * 0.4f;
@@ -299,21 +295,21 @@ public class SfxrParams {
 			_startFrequency = 0.2f + Random.value * 0.7f;
 			_slide = -0.2f - Random.value * 0.2f;
 		}
-	
+
 		_startFrequency *= _startFrequency;
-	
+
 		if (Random.value < 0.2f) _slide = 0.0f;
 		if (Random.value < 0.33f) _repeatSpeed = 0.3f + Random.value * 0.5f;
-	
+
 		_sustainTime = 0.1f + Random.value * 0.3f;
 		_decayTime = Random.value * 0.5f;
 		_sustainPunch = 0.2f + Random.value * 0.6f;
-	
+
 		if (Random.value < 0.5f) {
 			_phaserOffset = -0.3f + Random.value * 0.9f;
 			_phaserSweep = -Random.value * 0.3f;
 		}
-	
+
 		if (Random.value < 0.33f) {
 			_changeSpeed = 0.6f + Random.value * 0.3f;
 			_changeAmount = 0.8f - Random.value * 1.6f;
@@ -323,15 +319,15 @@ public class SfxrParams {
 	/**
 	 * Sets the parameters to generate a powerup sound
 	 */
-	public void generatePowerup() {
+	public void GeneratePowerup() {
 		resetParams();
-	
+
 		if (Random.value < 0.5f) {
 			_waveType = 1;
 		} else {
 			_squareDuty = Random.value * 0.6f;
 		}
-	
+
 		if (Random.value < 0.5f) {
 			_startFrequency = 0.2f + Random.value * 0.3f;
 			_slide = 0.1f + Random.value * 0.4f;
@@ -339,13 +335,13 @@ public class SfxrParams {
 		} else {
 			_startFrequency = 0.2f + Random.value * 0.3f;
 			_slide = 0.05f + Random.value * 0.2f;
-		
+
 			if (Random.value < 0.5f) {
 				_vibratoDepth = Random.value * 0.7f;
 				_vibratoSpeed = Random.value * 0.6f;
 			}
 		}
-	
+
 		_sustainTime = Random.value * 0.4f;
 		_decayTime = 0.1f + Random.value * 0.4f;
 	}
@@ -353,39 +349,39 @@ public class SfxrParams {
 	/**
 	 * Sets the parameters to generate a hit/hurt sound
 	 */
-	public void generateHitHurt() {
+	public void GenerateHitHurt() {
 		resetParams();
-	
+
 		_waveType = (uint)(Random.value * 3f);
 		if (_waveType == 2) {
 			_waveType = 3;
 		} else if (_waveType == 0) {
 			_squareDuty = Random.value * 0.6f;
 		}
-	
+
 		_startFrequency = 0.2f + Random.value * 0.6f;
 		_slide = -0.3f - Random.value * 0.4f;
-	
+
 		_sustainTime = Random.value * 0.1f;
 		_decayTime = 0.1f + Random.value * 0.2f;
-	
+
 		if (Random.value < 0.5f) _hpFilterCutoff = Random.value * 0.3f;
 	}
 
 	/**
 	 * Sets the parameters to generate a jump sound
 	 */
-	public void generateJump() {
+	public void GenerateJump() {
 		resetParams();
-	
+
 		_waveType = 0;
 		_squareDuty = Random.value * 0.6f;
 		_startFrequency = 0.3f + Random.value * 0.3f;
 		_slide = 0.1f + Random.value * 0.2f;
-	
+
 		_sustainTime = 0.1f + Random.value * 0.3f;
 		_decayTime = 0.1f + Random.value * 0.2f;
-	
+
 		if (Random.value < 0.5f) _hpFilterCutoff = Random.value * 0.3f;
 		if (Random.value < 0.5f) _lpFilterCutoff = 1.0f - Random.value * 0.6f;
 	}
@@ -393,14 +389,14 @@ public class SfxrParams {
 	/**
 	 * Sets the parameters to generate a blip/select sound
 	 */
-	public void generateBlipSelect() {
+	public void GenerateBlipSelect() {
 		resetParams();
-	
+
 		_waveType = (uint)(Random.value * 2f);
 		if (_waveType == 0) _squareDuty = Random.value * 0.6f;
-	
+
 		_startFrequency = 0.2f + Random.value * 0.4f;
-	
+
 		_sustainTime = 0.1f + Random.value * 0.1f;
 		_decayTime = Random.value * 0.2f;
 		_hpFilterCutoff = 0.1f;
@@ -411,7 +407,7 @@ public class SfxrParams {
 	 */
 	protected void resetParams() {
 		paramsDirty = true;
-	
+
 		_waveType = 0;
 		_startFrequency = 0.3f;
 		_minFrequency = 0.0f;
@@ -419,143 +415,137 @@ public class SfxrParams {
 		_deltaSlide = 0.0f;
 		_squareDuty = 0.0f;
 		_dutySweep = 0.0f;
-	
+
 		_vibratoDepth = 0.0f;
 		_vibratoSpeed = 0.0f;
-	
+
 		_attackTime = 0.0f;
 		_sustainTime = 0.3f;
 		_decayTime = 0.4f;
 		_sustainPunch = 0.0f;
-	
+
 		_lpFilterResonance = 0.0f;
 		_lpFilterCutoff = 1.0f;
 		_lpFilterCutoffSweep = 0.0f;
 		_hpFilterCutoff = 0.0f;
 		_hpFilterCutoffSweep = 0.0f;
-	
+
 		_phaserOffset = 0.0f;
 		_phaserSweep = 0.0f;
-	
+
 		_repeatSpeed = 0.0f;
-	
+
 		_changeSpeed = 0.0f;
 		_changeAmount = 0.0f;
 	}
 
-	//--------------------------------------------------------------------------
-	//
-	//  Randomize Methods
-	//
-	//--------------------------------------------------------------------------
+	
+	// Randomization methods
 
 	/**
 	 * Randomly adjusts the parameters ever so slightly
 	 */
-	public void mutate(float mutation = 0.05f) {
-		if (Random.value < 0.5f) startFrequency += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) minFrequency += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) slide += 				Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) deltaSlide += 			Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) squareDuty += 			Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) dutySweep += 			Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) vibratoDepth += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) vibratoSpeed += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) attackTime += 			Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) sustainTime += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) decayTime += 			Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) sustainPunch += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) lpFilterCutoff += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) lpFilterCutoffSweep += Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) lpFilterResonance += 	Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) hpFilterCutoff += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) hpFilterCutoffSweep += Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) phaserOffset += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) phaserSweep += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) repeatSpeed += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) changeSpeed += 		Random.value * mutation * 2f - mutation;
-		if (Random.value < 0.5f) changeAmount += 		Random.value * mutation * 2f - mutation;
+	public void Mutate(float __mutation = 0.05f) {
+		if (Random.value < 0.5f) startFrequency += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) minFrequency += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) slide += 				Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) deltaSlide += 			Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) squareDuty += 			Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) dutySweep += 			Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) vibratoDepth += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) vibratoSpeed += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) attackTime += 			Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) sustainTime += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) decayTime += 			Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) sustainPunch += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) lpFilterCutoff += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) lpFilterCutoffSweep += Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) lpFilterResonance += 	Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) hpFilterCutoff += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) hpFilterCutoffSweep += Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) phaserOffset += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) phaserSweep += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) repeatSpeed += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) changeSpeed += 		Random.value * __mutation * 2f - __mutation;
+		if (Random.value < 0.5f) changeAmount += 		Random.value * __mutation * 2f - __mutation;
 	}
 
 	/**
 	 * Sets all parameters to random values
 	 */
-	public void randomize() {
+	public void Randomize() {
 		paramsDirty = true;
-	
+
 		_waveType = (uint)(Random.value * 4f);
-	
-		_attackTime =  		pow(Random.value*2f-1f, 4);
-		_sustainTime =  	pow(Random.value*2f-1f, 2);
-		_sustainPunch =  	pow(Random.value*0.8f, 2);
+
+		_attackTime =  		Pow(Random.value*2f-1f, 4);
+		_sustainTime =  	Pow(Random.value*2f-1f, 2);
+		_sustainPunch =  	Pow(Random.value*0.8f, 2);
 		_decayTime =  		Random.value;
 
-		_startFrequency =  	(Random.value < 0.5f) ? pow(Random.value*2f-1f, 2) : (pow(Random.value * 0.5f, 3) + 0.5f);
+		_startFrequency =  	(Random.value < 0.5f) ? Pow(Random.value*2f-1f, 2) : (Pow(Random.value * 0.5f, 3) + 0.5f);
 		_minFrequency =  	0.0f;
-	
-		_slide =  			pow(Random.value*2f-1f, 5);
-		_deltaSlide =  		pow(Random.value*2f-1f, 3);
-	
-		_vibratoDepth =  	pow(Random.value*2f-1f, 3);
+
+		_slide =  			Pow(Random.value*2f-1f, 5);
+		_deltaSlide =  		Pow(Random.value*2f-1f, 3);
+
+		_vibratoDepth =  	Pow(Random.value*2f-1f, 3);
 		_vibratoSpeed =  	Random.value*2f-1f;
-	
+
 		_changeAmount =  	Random.value*2f-1f;
 		_changeSpeed =  	Random.value*2f-1f;
-	
+
 		_squareDuty =  		Random.value*2f-1f;
-		_dutySweep =  		pow(Random.value*2f-1f, 3);
-	
+		_dutySweep =  		Pow(Random.value*2f-1f, 3);
+
 		_repeatSpeed =  	Random.value*2f-1f;
-	
-		_phaserOffset =  	pow(Random.value*2f-1f, 3);
-		_phaserSweep =  	pow(Random.value*2f-1f, 3);
-	
-		_lpFilterCutoff =  		1f - pow(Random.value, 3);
-		_lpFilterCutoffSweep = 	pow(Random.value*2f-1f, 3);
+
+		_phaserOffset =  	Pow(Random.value*2f-1f, 3);
+		_phaserSweep =  	Pow(Random.value*2f-1f, 3);
+
+		_lpFilterCutoff =  		1f - Pow(Random.value, 3);
+		_lpFilterCutoffSweep = 	Pow(Random.value*2f-1f, 3);
 		_lpFilterResonance =  	Random.value*2f-1f;
-	
-		_hpFilterCutoff =  		pow(Random.value, 5);
-		_hpFilterCutoffSweep = 	pow(Random.value*2f-1f, 5);
-	
+
+		_hpFilterCutoff =  		Pow(Random.value, 5);
+		_hpFilterCutoffSweep = 	Pow(Random.value*2f-1f, 5);
+
 		if (_attackTime + _sustainTime + _decayTime < 0.2f) {
 			_sustainTime = 0.2f + Random.value * 0.3f;
 			_decayTime = 0.2f + Random.value * 0.3f;
 		}
-	
+
 		if ((_startFrequency > 0.7f && _slide > 0.2) || (_startFrequency < 0.2 && _slide < -0.05)) {
 			_slide = -_slide;
 		}
-	
+
 		if (_lpFilterCutoff < 0.1f && _lpFilterCutoffSweep < -0.05f) {
 			_lpFilterCutoffSweep = -_lpFilterCutoffSweep;
 		}
 	}
 
-	//--------------------------------------------------------------------------
-	//
-	//  Settings String Methods
-	//
-	//--------------------------------------------------------------------------
 
+	// Setting string methods
+	
 	/**
 	 * Returns a string representation of the parameters for copy/paste sharing
 	 * @return	A comma-delimited list of parameter values
 	 */
-	public string getSettingsString() {
+	public string GetSettingsString() {
 		string str = waveType.ToString();
-		str += "," + to4DP(_attackTime) + 			"," + to4DP(_sustainTime)
-			+ "," + to4DP(_sustainPunch) + 			"," + to4DP(_decayTime)
-			+ "," + to4DP(_startFrequency) + 		"," + to4DP(_minFrequency)
-			+ "," + to4DP(_slide) + 				"," + to4DP(_deltaSlide)
-			+ "," + to4DP(_vibratoDepth) + 			"," + to4DP(_vibratoSpeed)
-			+ "," + to4DP(_changeAmount) + 			"," + to4DP(_changeSpeed)
-			+ "," + to4DP(_squareDuty) + 			"," + to4DP(_dutySweep)
-			+ "," + to4DP(_repeatSpeed) + 			"," + to4DP(_phaserOffset)
-			+ "," + to4DP(_phaserSweep) + 			"," + to4DP(_lpFilterCutoff)
-			+ "," + to4DP(_lpFilterCutoffSweep) + 	"," + to4DP(_lpFilterResonance)
-			+ "," + to4DP(_hpFilterCutoff)+ 		"," + to4DP(_hpFilterCutoffSweep)
-			+ "," + to4DP(_masterVolume);
-	
+		str += "," + To4DP(_attackTime) + 			"," + To4DP(_sustainTime)
+			+ "," + To4DP(_sustainPunch) + 			"," + To4DP(_decayTime)
+			+ "," + To4DP(_startFrequency) + 		"," + To4DP(_minFrequency)
+			+ "," + To4DP(_slide) + 				"," + To4DP(_deltaSlide)
+			+ "," + To4DP(_vibratoDepth) + 			"," + To4DP(_vibratoSpeed)
+			+ "," + To4DP(_changeAmount) + 			"," + To4DP(_changeSpeed)
+			+ "," + To4DP(_squareDuty) + 			"," + To4DP(_dutySweep)
+			+ "," + To4DP(_repeatSpeed) + 			"," + To4DP(_phaserOffset)
+			+ "," + To4DP(_phaserSweep) + 			"," + To4DP(_lpFilterCutoff)
+			+ "," + To4DP(_lpFilterCutoffSweep) + 	"," + To4DP(_lpFilterResonance)
+			+ "," + To4DP(_hpFilterCutoff)+ 		"," + To4DP(_hpFilterCutoffSweep)
+			+ "," + To4DP(_masterVolume);
+
 		return str;
 	}
 
@@ -564,55 +554,51 @@ public class SfxrParams {
 	 * @param	string	Settings string to parse
 	 * @return			If the string successfully parsed
 	 */
-	public bool setSettingsString(string str) {
-		string[] values = str.Split(new char[] { ',' });
-	
+	public bool SetSettingsString(string __string) {
+		string[] values = __string.Split(new char[] { ',' });
+
 		if (values.Length != 24) return false;
-	
+
 		// [zeh] fix this
-		waveType = 				parseUint(values[0]);
-		attackTime =  			parseFloat(values[1]);
-		sustainTime =  			parseFloat(values[2]);
-		sustainPunch =  		parseFloat(values[3]);
-		decayTime =  			parseFloat(values[4]);
-		startFrequency =  		parseFloat(values[5]);
-		minFrequency =  		parseFloat(values[6]);
-		slide =  				parseFloat(values[7]);
-		deltaSlide =  			parseFloat(values[8]);
-		vibratoDepth =  		parseFloat(values[9]);
-		vibratoSpeed =  		parseFloat(values[10]);
-		changeAmount =  		parseFloat(values[11]);
-		changeSpeed =  			parseFloat(values[12]);
-		squareDuty =  			parseFloat(values[13]);
-		dutySweep =  			parseFloat(values[14]);
-		repeatSpeed =  			parseFloat(values[15]);
-		phaserOffset =  		parseFloat(values[16]);
-		phaserSweep =  			parseFloat(values[17]);
-		lpFilterCutoff =  		parseFloat(values[18]);
-		lpFilterCutoffSweep =	parseFloat(values[19]);
-		lpFilterResonance =  	parseFloat(values[20]);
-		hpFilterCutoff =  		parseFloat(values[21]);
-		hpFilterCutoffSweep =	parseFloat(values[22]);
-		masterVolume = 			parseFloat(values[23]);
-	
+		waveType = 				ParseUint(values[0]);
+		attackTime =  			ParseFloat(values[1]);
+		sustainTime =  			ParseFloat(values[2]);
+		sustainPunch =  		ParseFloat(values[3]);
+		decayTime =  			ParseFloat(values[4]);
+		startFrequency =  		ParseFloat(values[5]);
+		minFrequency =  		ParseFloat(values[6]);
+		slide =  				ParseFloat(values[7]);
+		deltaSlide =  			ParseFloat(values[8]);
+		vibratoDepth =  		ParseFloat(values[9]);
+		vibratoSpeed =  		ParseFloat(values[10]);
+		changeAmount =  		ParseFloat(values[11]);
+		changeSpeed =  			ParseFloat(values[12]);
+		squareDuty =  			ParseFloat(values[13]);
+		dutySweep =  			ParseFloat(values[14]);
+		repeatSpeed =  			ParseFloat(values[15]);
+		phaserOffset =  		ParseFloat(values[16]);
+		phaserSweep =  			ParseFloat(values[17]);
+		lpFilterCutoff =  		ParseFloat(values[18]);
+		lpFilterCutoffSweep =	ParseFloat(values[19]);
+		lpFilterResonance =  	ParseFloat(values[20]);
+		hpFilterCutoff =  		ParseFloat(values[21]);
+		hpFilterCutoffSweep =	ParseFloat(values[22]);
+		masterVolume = 			ParseFloat(values[23]);
+
 		return true;
 	}
 
 
-	//--------------------------------------------------------------------------
-	//
-	//  Copying Methods
-	//
-	//--------------------------------------------------------------------------
+	// Copying methods
 
 	/**
 	 * Returns a copy of this SfxrParams with all settings duplicated
 	 * @return	A copy of this SfxrParams
 	 */
-	public SfxrParams clone() {
+	public SfxrParams Clone() {
 		SfxrParams outp = new SfxrParams();
-		outp.copyFrom(this);
-	
+		outp.CopyFrom(this);
+
 		return outp;
 	}
 
@@ -620,48 +606,44 @@ public class SfxrParams {
 	 * Copies parameters from another instance
 	 * @param	params	Instance to copy parameters from
 	 */
-	public void copyFrom(SfxrParams pparams, bool makeDirty = false) {
-		_waveType = 			pparams.waveType;
-		_attackTime =           pparams.attackTime;
-		_sustainTime =          pparams.sustainTime;
-		_sustainPunch =         pparams.sustainPunch;
-		_decayTime =			pparams.decayTime;
-		_startFrequency = 		pparams.startFrequency;
-		_minFrequency = 		pparams.minFrequency;
-		_slide = 				pparams.slide;
-		_deltaSlide = 			pparams.deltaSlide;
-		_vibratoDepth = 		pparams.vibratoDepth;
-		_vibratoSpeed = 		pparams.vibratoSpeed;
-		_changeAmount = 		pparams.changeAmount;
-		_changeSpeed = 			pparams.changeSpeed;
-		_squareDuty = 			pparams.squareDuty;
-		_dutySweep = 			pparams.dutySweep;
-		_repeatSpeed = 			pparams.repeatSpeed;
-		_phaserOffset = 		pparams.phaserOffset;
-		_phaserSweep = 			pparams.phaserSweep;
-		_lpFilterCutoff = 		pparams.lpFilterCutoff;
-		_lpFilterCutoffSweep = 	pparams.lpFilterCutoffSweep;
-		_lpFilterResonance = 	pparams.lpFilterResonance;
-		_hpFilterCutoff = 		pparams.hpFilterCutoff;
-		_hpFilterCutoffSweep = 	pparams.hpFilterCutoffSweep;
-		_masterVolume = 		pparams.masterVolume;
-	
-		if (makeDirty) paramsDirty = true;
+	public void CopyFrom(SfxrParams __params, bool __makeDirty = false) {
+		_waveType = 			__params.waveType;
+		_attackTime =           __params.attackTime;
+		_sustainTime =          __params.sustainTime;
+		_sustainPunch =         __params.sustainPunch;
+		_decayTime =			__params.decayTime;
+		_startFrequency = 		__params.startFrequency;
+		_minFrequency = 		__params.minFrequency;
+		_slide = 				__params.slide;
+		_deltaSlide = 			__params.deltaSlide;
+		_vibratoDepth = 		__params.vibratoDepth;
+		_vibratoSpeed = 		__params.vibratoSpeed;
+		_changeAmount = 		__params.changeAmount;
+		_changeSpeed = 			__params.changeSpeed;
+		_squareDuty = 			__params.squareDuty;
+		_dutySweep = 			__params.dutySweep;
+		_repeatSpeed = 			__params.repeatSpeed;
+		_phaserOffset = 		__params.phaserOffset;
+		_phaserSweep = 			__params.phaserSweep;
+		_lpFilterCutoff = 		__params.lpFilterCutoff;
+		_lpFilterCutoffSweep = 	__params.lpFilterCutoffSweep;
+		_lpFilterResonance = 	__params.lpFilterResonance;
+		_hpFilterCutoff = 		__params.hpFilterCutoff;
+		_hpFilterCutoffSweep = 	__params.hpFilterCutoffSweep;
+		_masterVolume = 		__params.masterVolume;
+
+		if (__makeDirty) paramsDirty = true;
 	}
 
 
-	//--------------------------------------------------------------------------
-	//
-	//  Util Methods
-	//
-	//--------------------------------------------------------------------------
+	// Utility methods
 
 	/**
 	 * Clams a value to betwen 0 and 1
 	 * @param	value	Input value
 	 * @return			The value clamped between 0 and 1
 	 */
-	private float clamp1(float value) {
+	private float Clamp1(float value) {
 		return (value > 1f) ? 1f : ((value < 0f) ? 0f : value);
 	}
 
@@ -670,7 +652,7 @@ public class SfxrParams {
 	 * @param	value	Input value
 	 * @return			The value clamped between -1 and 1
 	 */
-	private float clamp2(float value) {
+	private float Clamp2(float value) {
 		return (value > 1f) ? 1f : ((value < -1f) ? -1f : value);
 	}
 
@@ -680,42 +662,45 @@ public class SfxrParams {
 	 * @param	power		Power to raise base by
 	 * @return				The calculated power
 	 */
-	private float pow(float pbase, int power) {
-		switch(power) {
-			case 2: return pbase*pbase;
-			case 3: return pbase*pbase*pbase;
-			case 4: return pbase*pbase*pbase*pbase;
-			case 5: return pbase*pbase*pbase*pbase*pbase;
+	private float Pow(float __pbase, int __power) {
+		switch(__power) {
+			case 2: return __pbase * __pbase;
+			case 3: return __pbase * __pbase * __pbase;
+			case 4: return __pbase * __pbase * __pbase * __pbase;
+			case 5: return __pbase * __pbase * __pbase * __pbase * __pbase;
 		}
-	
+
 		return 1f;
 	}
+
+
+	// ================================================================================================================
+	// INTERNAL INTERFACE ---------------------------------------------------------------------------------------------
 
 	/**
 	 * Returns the number as a string to 4 decimal places
 	 * @param	value	Number to convert
 	 * @return			Number to 4dp as a string
 	 */
-	private string to4DP(float value) {
-		if (value < 0.0001f && value > -0.0001f) return "";
-		return value.ToString("#.####");
+	private string To4DP(float __value) {
+		if (__value < 0.0001f && __value > -0.0001f) return "";
+		return __value.ToString("#.####");
 	}
 
 	/**
 	 * Added by zeh - 2013 03 11 - temp?
 	 */
-	private uint parseUint(string value) {
-		if (value.Length == 0) return 0;
-		return uint.Parse(value);
+	private uint ParseUint(string __value) {
+		if (__value.Length == 0) return 0;
+		return uint.Parse(__value);
 	}
 
 	/**
 	 * Added by zeh - 2013 03 11 - temp?
 	 */
-	private float parseFloat(string value) {
-		if (value.Length == 0) return 0;
-		return float.Parse(value);
+	private float ParseFloat(string __value) {
+		if (__value.Length == 0) return 0;
+		return float.Parse(__value);
 	}
-
 
 }

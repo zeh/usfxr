@@ -5,7 +5,8 @@ public class SfxrSynth {
 	/**
 	 * SfxrSynth
 	 *
-	 * Copyright 2013 Thomas Vian, Zeh Fernando
+	 * Copyright 2010 Thomas Vian
+	 * Copyright 2013 Zeh Fernando
 	 *
 	 * Licensed under the Apache License, Version 2.0 (the "License");
 	 * you may not use this file except in compliance with the License.
@@ -22,15 +23,14 @@ public class SfxrSynth {
 	 */
 
 	/**
+	 * SfxrSynth
+	 * Generates and plays all necessary audio
+	 * 
 	 * @author Zeh Fernando
 	 */
-
-	//--------------------------------------------------------------------------
-	//
-	//  Sound Parameters
-	//
-	//--------------------------------------------------------------------------
-
+	
+	
+	// Sound properties
 	private SfxrParams	_params = new SfxrParams();		// Params instance
 
 	private SfxrAudioPlayer	_audioPlayer;				// Audio player script that will be attached to a GameObject to play the sound
@@ -57,12 +57,7 @@ public class SfxrSynth {
 
 	private SfxrParams	_original;						// Copied properties for mutation base
 
-	//--------------------------------------------------------------------------
-	//
-	//  Synth Variables
-	//
-	//--------------------------------------------------------------------------
-
+	// Synth properies
 	private bool	_finished;							// If the sound has finished
 
 	private float	_masterVolume;						// masterVolume * masterVolume (for quick calculations)
@@ -134,42 +129,38 @@ public class SfxrSynth {
 	private uint	_sampleCount;						// Number of samples added to the buffer sample
 	private float	_bufferSample;						// Another supersample used to create a 22050Hz wave
 
-	//--------------------------------------------------------------------------
-	//
-	//  Getters / Setters
-	//
-	//--------------------------------------------------------------------------
+
+	// ================================================================================================================
+	// ACCESSOR INTERFACE ---------------------------------------------------------------------------------------------
 
 	/** The sound parameters */
-	public SfxrParams paramss {
+	public SfxrParams parameters {
 		get { return _params; }
 		set { _params = value; _params.paramsDirty = true; }
 	}
 
-	//--------------------------------------------------------------------------
-	//
-	//  Sound Methods
-	//
-	//--------------------------------------------------------------------------
+	
+	// ================================================================================================================
+	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
 
 	/**
 	 * Plays the sound. If the parameters are dirty, synthesises sound as it plays, caching it for later.
 	 * If they're not, plays from the cached sound.
 	 * Won't play if caching asynchronously.
 	 */
-	public void play() {
+	public void Play() {
 		if (_cachingAsync) return;
-	
-		stop();
-	
+
+		Stop();
+
 		_mutation = false;
-	
+
 		if (_params.paramsDirty || _cachingNormal || _cachedWave == null) {
 			// Needs to cache new data
 			_cachedWavePos = 0;
 			_cachingNormal = true;
 			_waveData = null;
-			reset(true);
+			Reset(true);
 			_cachedWave = new float[_envelopeFullLength];
 		} else {
 			// Play from cached data
@@ -180,7 +171,7 @@ public class SfxrSynth {
 		// Create a game object to handle playback
 		GameObject _gameObject = new GameObject("SfxrGameObject-" + Time.realtimeSinceStartup);
     	_audioPlayer = (SfxrAudioPlayer) _gameObject.AddComponent ("SfxrAudioPlayer");
-		_audioPlayer.setSfxrSynth(this);
+		_audioPlayer.SetSfxrSynth(this);
 	}
 
 	/**
@@ -190,15 +181,15 @@ public class SfxrSynth {
 	 * @param	mutationAmount	Amount of mutation
 	 * @param	mutationsNum	The number of mutations to cache before picking from them
 	 */
-	public void playMutated(float mutationAmount = 0.05f, uint mutationsNum = 15) {
-		stop();
+	public void PlayMutated(float __mutationAmount = 0.05f, uint __mutationsNum = 15) {
+		Stop();
 
 		if (_cachingAsync) return;
-	
+
 		_mutation = true;
-	
-		_cachedMutationsNum = mutationsNum;
-	
+
+		_cachedMutationsNum = __mutationsNum;
+
 		if (_params.paramsDirty || _cachedMutations == null) {
 			// New set of mutations
 			_cachedMutations = new float[_cachedMutationsNum][];
@@ -207,17 +198,17 @@ public class SfxrSynth {
 
 		if (_cachingMutation != -1) {
 			// Continuing caching new mutations
-			reset(true); // To get _envelopeFullLength
+			Reset(true); // To get _envelopeFullLength
 
 			_cachedMutation = new float[_envelopeFullLength];
 			_cachedMutationPos = 0;
 			_cachedMutations[_cachingMutation] = _cachedMutation;
 			_waveData = null;
-		
-			_original = _params.clone();
-			_params.mutate(mutationAmount);
 
-			reset(true);
+			_original = _params.Clone();
+			_params.Mutate(__mutationAmount);
+
+			Reset(true);
 		} else {
 			// Play from random cached mutation
 			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * Random.value)];
@@ -227,36 +218,36 @@ public class SfxrSynth {
 		// Create a game object to handle playback
 		GameObject _gameObject = new GameObject("SfxrGameObject-" + Time.realtimeSinceStartup);
 		_audioPlayer = (SfxrAudioPlayer)_gameObject.AddComponent("SfxrAudioPlayer");
-		_audioPlayer.setSfxrSynth(this);
+		_audioPlayer.SetSfxrSynth(this);
 	}
 
 	/**
 	 * Stops the currently playing sound
 	 */
-	public void stop() {
+	public void Stop() {
 		if (_audioPlayer != null) {
-			_audioPlayer.destroy();
+			_audioPlayer.Destroy();
 			_audioPlayer = null;
 		}
-	
+
 		if (_original != null) {
-			_params.copyFrom(_original);
+			_params.CopyFrom(_original);
 			_original = null;
 		}
 	}
 
-	private int writeSamples(float[] originSamples, int originPos, float[] targetSamples, int targetChannels) {
+	private int WriteSamples(float[] __originSamples, int __originPos, float[] __targetSamples, int __targetChannels) {
 		// Writes raw samples to Unity's format and return number of samples actually written
-		int samplesToWrite = targetSamples.Length / targetChannels;
+		int samplesToWrite = __targetSamples.Length / __targetChannels;
 
-		if (originPos + samplesToWrite > originSamples.Length) samplesToWrite = originSamples.Length - originPos;
+		if (__originPos + samplesToWrite > __originSamples.Length) samplesToWrite = __originSamples.Length - __originPos;
 
 		if (samplesToWrite > 0) {
 			// Interlaced filling of sample datas (faster?)
 			int i, j;
-			for (i = 0; i < targetChannels; i++) {
+			for (i = 0; i < __targetChannels; i++) {
 				for (j = 0; j < samplesToWrite; j++) {
-					targetSamples[(j * targetChannels) + i] = originSamples[j + originPos];
+					__targetSamples[(j * __targetChannels) + i] = __originSamples[j + __originPos];
 				}
 			}
 		}
@@ -271,11 +262,11 @@ public class SfxrSynth {
 	 * @param	channels	Number of channels used
 	 * @return	Whether it needs to continue (there are samples left) or not
 	 */
-	public bool generateAudioFilterData(float[] data, int channels) {
+	public bool GenerateAudioFilterData(float[] __data, int __channels) {
 		bool endOfSamples = false;
 
 		if (_waveData != null) {
-			int samplesWritten = writeSamples(_waveData, (int)_waveDataPos, data, channels);
+			int samplesWritten = WriteSamples(_waveData, (int)_waveDataPos, __data, __channels);
 			_waveDataPos += (uint)samplesWritten;
 			if (samplesWritten == 0) endOfSamples = true;
 		} else {
@@ -283,10 +274,11 @@ public class SfxrSynth {
 				if (_original != null) {
 					_waveDataPos = _cachedMutationPos;
 
-					int samplesNeeded = (int)Mathf.Min((data.Length / channels), _cachedMutation.Length - _cachedMutationPos);
+					int samplesNeeded = (int)Mathf.Min((__data.Length / __channels), _cachedMutation.Length - _cachedMutationPos);
 
-					if (synthWave(_cachedMutation, (int)_cachedMutationPos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
-						_params.copyFrom(_original);
+					if (SynthWave(_cachedMutation, (int)_cachedMutationPos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
+						// Finished
+						_params.CopyFrom(_original);
 						_original = null;
 
 						_cachingMutation++;
@@ -298,36 +290,31 @@ public class SfxrSynth {
 						_cachedMutationPos += (uint)samplesNeeded;
 					}
 
-					int samplesWritten = writeSamples(_cachedMutation, (int)_waveDataPos, data, channels);
+					WriteSamples(_cachedMutation, (int)_waveDataPos, __data, __channels);
 				}
 			} else {
 				if (_cachingNormal) {
-					// synthWave(_cachedWave, _envelopeFullLength, true); [[now]]
 					_waveDataPos = _cachedWavePos;
 
-					int samplesNeeded = (int)Mathf.Min((data.Length / channels), _cachedWave.Length - _cachedWavePos);
+					int samplesNeeded = (int)Mathf.Min((__data.Length / __channels), _cachedWave.Length - _cachedWavePos);
 
-					if (synthWave(_cachedWave, (int)_cachedWavePos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
-						// Finished the wave
+					if (SynthWave(_cachedWave, (int)_cachedWavePos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
 						_cachingNormal = false;
 						endOfSamples = true;
 					} else {
 						_cachedWavePos += (uint)samplesNeeded;
 					}
 
-					int samplesWritten = writeSamples(_cachedWave, (int)_waveDataPos, data, channels);
+					WriteSamples(_cachedWave, (int)_waveDataPos, __data, __channels);
 				}
 			}
 		}
 
 		return !endOfSamples;
 	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Cached Sound Methods
-	//
-	//--------------------------------------------------------------------------
+	
+	
+	// Cache sound methods
 
 	/**
 	 * Cache the sound for speedy playback.
@@ -337,30 +324,30 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void cacheSound() {
+	public void CacheSound() {
 	//public void cacheSound(Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
-		stop();
+		Stop();
 
 		float ti = Time.realtimeSinceStartup;
 
 		if (_cachingAsync) return;
-	
-		reset(true);
+
+		Reset(true);
 
 		/*
 		[[disabled]]
 		_cachedWave = new float[24576];
-	
+
 		if (Boolean(callback)) {
 			_mutation = false;
 			_cachingNormal = true;
 			_cachingAsync = true;
 			_cacheTimePerFrame = maxTimePerFrame;
-		
+
 			_cachedCallback = callback;
-		
+
 			if (!_cacheTicker) _cacheTicker = new Shape;
-		
+
 			_cacheTicker.addEventListener(Event.ENTER_FRAME, cacheSection);
 		} else {
 		*/
@@ -368,13 +355,13 @@ public class SfxrSynth {
 			_cachingAsync = false;
 
 			_cachedWave = new float[_envelopeFullLength];
-		
-			synthWave(_cachedWave, 0, _envelopeFullLength, true);
-		
+
+			SynthWave(_cachedWave, 0, _envelopeFullLength, true);
+
 			/*
 			// Disabled as unnecessary --zeh
 			uint length = _cachedWave.Length;
-		
+
 			if (length < 24576) {
 				// If the sound is smaller than the buffer length, add silence to allow it to play
 				_cachedWave.position = length;
@@ -396,48 +383,48 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void cacheMutations(uint mutationsNum, float mutationAmount = 0.05f, uint maxTimePerFrame = 5) {
-	//public void cacheMutations(uint mutationsNum, float mutationAmount = 0.05f, Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
+	public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, uint __maxTimePerFrame = 5) {
+	//public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
 		Debug.Log("Disabled: cache mutations");
 		/*
 		stop();
-	
+
 		if (_cachingAsync) return;
-	
+
 		_cachedMutationsNum = mutationsNum;
 		_cachedMutations = new float[_cachedMutationsNum][];
-	
+
 		if (callback != null) {
 			_mutation = true;
-		
+
 			_cachingMutation = 0;
 			_cachedMutation = new float[24576];
 			_cachedMutations[0] = _cachedMutation;
 			_cachedMutationAmount = mutationAmount;
-		
+
 			_original = _params.clone();
 			_params.mutate(mutationAmount);
-		
+
 			reset(true);
-		
+
 			_cachingAsync = true;
 			_cacheTimePerFrame = maxTimePerFrame;
-		
+
 			_cachedCallback = callback;
-		
+
 			if (!_cacheTicker) _cacheTicker = new Shape;
-		
+
 			_cacheTicker.addEventListener(Event.ENTER_FRAME, cacheSection);
 		} else {
 			SfxrParams original = _params.clone();
-		
+
 			for (uint i = 0; i < _cachedMutationsNum; i++) {
 				_params.mutate(mutationAmount);
 				cacheSound();
 				_cachedMutations[i] = _cachedWave;
 				_params.copyFrom(original);
 			}
-		
+
 			_cachingMutation = -1;
 		}
 		*/
@@ -447,78 +434,76 @@ public class SfxrSynth {
 	 * Performs the asynchronous cache, working for up to _cacheTimePerFrame milliseconds per frame
 	 * @param	e	enterFrame event
 	 */
-	private void cacheSection(Event e) {
+	private void CacheSection(Event e) {
 		Debug.Log("Disabled: cache section");
 
 		/*
 		// [[disabled]]
 		uint cacheStartTime = getTimer();
-	
+
 		while (getTimer() - cacheStartTime < _cacheTimePerFrame) {
 			if (_mutation) {
 				_waveDataPos = _cachedMutation.position;
-			
+
 				if (synthWave(_cachedMutation, 500, true)) {
 					_params.copyFrom(_original);
 					_params.mutate(_cachedMutationAmount);
 					reset(true);
-				
+
 					_cachingMutation++;
 					_cachedMutation = new ByteArray;
 					_cachedMutations[_cachingMutation] = _cachedMutation;
-				
+
 					if (_cachingMutation >= _cachedMutationsNum) {
 						_cachingMutation = -1;
 						_cachingAsync = false;
-					
+
 						_params.paramsDirty = false;
-					
+
 						_cachedCallback();
 						_cachedCallback = null;
-						_cacheTicker.removeEventListener(Event.ENTER_FRAME, cacheSection);
-					
+						_cacheTicker.removeEventListener(Event.ENTER_FRAME, CacheSection);
+
 						return;
 					}
 				}
 			} else {
 				_waveDataPos = _cachedWave.position;
-			
+
 				if (synthWave(_cachedWave, 500, true)) {
 					_cachingNormal = false;
 					_cachingAsync = false;
-				
+
 					_cachedCallback();
 					_cachedCallback = null;
 					_cacheTicker.removeEventListener(Event.ENTER_FRAME, cacheSection);
-				
+
 					return;
 				}
 			}
 		}
 		*/
 	}
-
-	//--------------------------------------------------------------------------
-	//
-	//  Synth Methods
-	//
-	//--------------------------------------------------------------------------
+	
+	
+	// ================================================================================================================
+	// INTERNAL INTERFACE ---------------------------------------------------------------------------------------------
 
 	/**
 	 * Resets the runing variables from the params
 	 * Used once at the start (total reset) and for the repeat effect (partial reset)
 	 * @param	totalReset	If the reset is total
 	 */
-	private void reset(bool totalReset) {
+	private void Reset(bool __totalReset) {
 		// Shorter reference
 		SfxrParams p = _params;
-	
+
 		_period = 100.0f / (p.startFrequency * p.startFrequency + 0.001f);
 		_maxPeriod = 100.0f / (p.minFrequency * p.minFrequency + 0.001f);
-	
+
 		_slide = 1.0f - p.slide * p.slide * p.slide * 0.01f;
 		_deltaSlide = -p.deltaSlide * p.deltaSlide * p.deltaSlide * 0.000001f;
-	
+
 		if (p.waveType == 0) {
 			_squareDuty = 0.5f - p.squareDuty * 0.5f;
 			_dutySweep = -p.dutySweep * 0.00005f;
@@ -529,24 +514,24 @@ public class SfxrSynth {
 		} else {
 			_changeAmount = 1.0f + p.changeAmount * p.changeAmount * 10.0f;
 		}
-	
+
 		_changeTime = 0;
-	
+
 		if (p.changeSpeed == 1.0f) {
 			_changeLimit = 0;
 		} else {
 			_changeLimit = (int)((1f - p.changeSpeed) * (1f - p.changeSpeed) * 20000f + 32f);
 		}
-	
-		if (totalReset) {
+
+		if (__totalReset) {
 			p.paramsDirty = false;
-		
+
 			_masterVolume = p.masterVolume * p.masterVolume;
-		
+
 			_waveType = p.waveType;
-		
+
 			if (p.sustainTime < 0.01) p.sustainTime = 0.01f;
-		
+
 			float totalTime = p.attackTime + p.sustainTime + p.decayTime;
 			if (totalTime < 0.18f) {
 				float multiplier = 0.18f / totalTime;
@@ -554,15 +539,15 @@ public class SfxrSynth {
 				p.sustainTime *= multiplier;
 				p.decayTime *= multiplier;
 			}
-		
+
 			_sustainPunch = p.sustainPunch;
-		
+
 			_phase = 0;
-		
+
 			_minFrequency = p.minFrequency;
-		
+
 			_filters = p.lpFilterCutoff != 1.0 || p.hpFilterCutoff != 0.0;
-		
+
 			_lpFilterPos = 0.0f;
 			_lpFilterDeltaPos = 0.0f;
 			_lpFilterCutoff = p.lpFilterCutoff * p.lpFilterCutoff * p.lpFilterCutoff * 0.1f;
@@ -571,15 +556,15 @@ public class SfxrSynth {
 			if (_lpFilterDamping > 0.8f) _lpFilterDamping = 0.8f;
 			_lpFilterDamping = 1.0f - _lpFilterDamping;
 			_lpFilterOn = p.lpFilterCutoff != 1.0f;
-		
+
 			_hpFilterPos = 0.0f;
 			_hpFilterCutoff = p.hpFilterCutoff * p.hpFilterCutoff * 0.1f;
 			_hpFilterDeltaCutoff = 1.0f + p.hpFilterCutoffSweep * 0.0003f;
-		
+
 			_vibratoPhase = 0.0f;
 			_vibratoSpeed = p.vibratoSpeed * p.vibratoSpeed * 0.01f;
 			_vibratoAmplitude = p.vibratoDepth * 0.5f;
-		
+
 			_envelopeVolume = 0.0f;
 			_envelopeStage = 0;
 			_envelopeTime = 0;
@@ -588,27 +573,27 @@ public class SfxrSynth {
 			_envelopeLength2 = p.decayTime * p.decayTime * 100000.0f + 10f;
 			_envelopeLength = _envelopeLength0;
 			_envelopeFullLength = (uint)(_envelopeLength0 + _envelopeLength1 + _envelopeLength2);
-		
+
 			_envelopeOverLength0 = 1.0f / _envelopeLength0;
 			_envelopeOverLength1 = 1.0f / _envelopeLength1;
 			_envelopeOverLength2 = 1.0f / _envelopeLength2;
-		
+
 			_phaser = p.phaserOffset != 0.0f || p.phaserSweep != 0.0f;
-		
+
 			_phaserOffset = p.phaserOffset * p.phaserOffset * 1020.0f;
 			if (p.phaserOffset < 0.0f) _phaserOffset = -_phaserOffset;
 			_phaserDeltaOffset = p.phaserSweep * p.phaserSweep * p.phaserSweep * 0.2f;
 			_phaserPos = 0;
-		
+
 			if (_phaserBuffer == null) _phaserBuffer = new float[1024];
 			if (_noiseBuffer == null) _noiseBuffer = new float[32];
-		
+
 			uint i;
 			for (i = 0; i < 1024; i++) _phaserBuffer[i] = 0.0f;
 			for (i = 0; i < 32; i++) _noiseBuffer[i] = Random.value * 2.0f - 1.0f;
-		
+
 			_repeatTime = 0;
-		
+
 			if (p.repeatSpeed == 0.0) {
 				_repeatLimit = 0;
 			} else {
@@ -623,23 +608,23 @@ public class SfxrSynth {
 	 * @param	waveData	If the wave should be written for the waveData
 	 * @return				If the wave is finished
 	 */
-	private bool synthWave(float[] buffer, int bufferPos, uint length, bool waveData = false, uint sampleRate = 44100, uint bitDepth = 16) {
+	private bool SynthWave(float[] __buffer, int __bufferPos, uint __length, bool __waveData = false, uint __sampleRate = 44100, uint __bitDepth = 16) {
 		_finished = false;
 
 		_sampleCount = 0;
 		_bufferSample = 0.0f;
-	
-		for (uint i = 0; i < length; i++) {
+
+		for (uint i = 0; i < __length; i++) {
 			if (_finished) return true;
-		
+
 			// Repeats every _repeatLimit times, partially resetting the sound parameters
 			if (_repeatLimit != 0) {
 				if (++_repeatTime >= _repeatLimit) {
 					_repeatTime = 0;
-					reset(false);
+					Reset(false);
 				}
 			}
-		
+
 			// If _changeLimit is reached, shifts the pitch
 			if (_changeLimit != 0) {
 				if (++_changeTime >= _changeLimit) {
@@ -647,28 +632,28 @@ public class SfxrSynth {
 					_period *= _changeAmount;
 				}
 			}
-		
+
 			// Acccelerate and apply slide
 			_slide += _deltaSlide;
 			_period *= _slide;
-		
+
 			// Checks for frequency getting too low, and stops the sound if a minFrequency was set
 			if (_period > _maxPeriod) {
 				_period = _maxPeriod;
 				if (_minFrequency > 0) _finished = true;
 			}
-		
+
 			_periodTemp = _period;
-		
+
 			// Applies the vibrato effect
 			if (_vibratoAmplitude > 0) {
 				_vibratoPhase += _vibratoSpeed;
 				_periodTemp = _period * (1.0f + Mathf.Sin(_vibratoPhase) * _vibratoAmplitude);
 			}
-		
+
 			_periodTemp = (int)_periodTemp;
 			if (_periodTemp < 8) _periodTemp = 8;
-		
+
 			// Sweeps the square duty
 			if (_waveType == 0) {
 				_squareDuty += _dutySweep;
@@ -678,17 +663,17 @@ public class SfxrSynth {
 					_squareDuty = 0.5f;
 				}
 			}
-		
+
 			// Moves through the different stages of the volume envelope
 			if (++_envelopeTime > _envelopeLength) {
 				_envelopeTime = 0;
-			
+
 				switch(++_envelopeStage) {
 					case 1: _envelopeLength = _envelopeLength1; break;
 					case 2: _envelopeLength = _envelopeLength2; break;
 				}
 			}
-		
+
 			// Sets the volume based on the position in the envelope
 			switch(_envelopeStage) {
 				case 0: _envelopeVolume = _envelopeTime * _envelopeOverLength0; 										break;
@@ -696,7 +681,7 @@ public class SfxrSynth {
 				case 2: _envelopeVolume = 1.0f - _envelopeTime * _envelopeOverLength2; 									break;
 				case 3: _envelopeVolume = 0.0f; _finished = true; 														break;
 			}
-		
+
 			// Moves the phaser offset
 			if (_phaser) {
 				_phaserOffset += _phaserDeltaOffset;
@@ -707,7 +692,7 @@ public class SfxrSynth {
 					_phaserInt = 1023;
 				}
 			}
-		
+
 			// Moves the high-pass filter cutoff
 			if (_filters && _hpFilterDeltaCutoff != 0.0) {
 				_hpFilterCutoff *= _hpFilterDeltaCutoff;
@@ -717,20 +702,20 @@ public class SfxrSynth {
 					_hpFilterCutoff = 0.1f;
 				}
 			}
-		
+
 			_superSample = 0;
 			for (int j = 0; j < 8; j++) {
 				// Cycles through the period
 				_phase++;
 				if (_phase >= _periodTemp) {
 					_phase = _phase - (int)_periodTemp;
-				
+
 					// Generates new random noise for this period
 					if (_waveType == 3) {
 						for (uint n = 0; n < 32; n++) _noiseBuffer[n] = Random.value * 2.0f - 1.0f;
 					}
 				}
-			
+
 				// Gets the sample from the oscillator
 				switch(_waveType) {
 					case 0: // Square wave
@@ -749,7 +734,7 @@ public class SfxrSynth {
 						_sample = _noiseBuffer[(uint)(_phase * 32 / (int)_periodTemp)];
 						break;
 				}
-			
+
 				// Applies the low and high pass filters
 				if (_filters) {
 					_lpFilterOldPos = _lpFilterPos;
@@ -759,7 +744,7 @@ public class SfxrSynth {
 					} else if (_lpFilterCutoff > 0.1) {
 						_lpFilterCutoff = 0.1f;
 					}
-				
+
 					if (_lpFilterOn) {
 						_lpFilterDeltaPos += (_sample - _lpFilterPos) * _lpFilterCutoff;
 						_lpFilterDeltaPos *= _lpFilterDamping;
@@ -767,33 +752,33 @@ public class SfxrSynth {
 						_lpFilterPos = _sample;
 						_lpFilterDeltaPos = 0.0f;
 					}
-				
+
 					_lpFilterPos += _lpFilterDeltaPos;
-				
+
 					_hpFilterPos += _lpFilterPos - _lpFilterOldPos;
 					_hpFilterPos *= 1.0f - _hpFilterCutoff;
 					_sample = _hpFilterPos;
 				}
-			
+
 				// Applies the phaser effect
 				if (_phaser) {
 					_phaserBuffer[_phaserPos&1023] = _sample;
 					_sample += _phaserBuffer[(_phaserPos - _phaserInt + 1024) & 1023];
 					_phaserPos = (_phaserPos + 1) & 1023;
 				}
-			
+
 				_superSample += _sample;
 			}
-		
+
 			// Averages out the super samples and applies volumes
 			_superSample = _masterVolume * _envelopeVolume * _superSample * 0.125f;
-		
+
 			// Clipping if too loud
 			_superSample = Mathf.Clamp(_superSample, -1f, 1f);
-		
-			if (waveData) {
+
+			if (__waveData) {
 				// Writes value to list, ignoring left/right sound channels (this is applied when filtering the audio later)
-				buffer[i + bufferPos] = _superSample;
+				__buffer[i + __bufferPos] = _superSample;
 			} else {
 
 				Debug.Log("Disabled: Writing WAV data");
@@ -801,35 +786,31 @@ public class SfxrSynth {
 				/*
 				// disabled --zeh
 				_bufferSample += _superSample;
-			
+
 				_sampleCount++;
-			
+
 				// Writes mono wave data to the .wav format
-				if (sampleRate == 44100 || _sampleCount == 2) {
+				if (__sampleRate == 44100 || _sampleCount == 2) {
 					_bufferSample /= _sampleCount;
 					_sampleCount = 0;
-				
+
 					if (bitDepth == 16) {
 						buffer.writeShort((int)(32000.0 * _bufferSample));
 					} else {
 						buffer.writeByte(_bufferSample * 127 + 128);
 					}
-				
+
 					_bufferSample = 0.0f;
 				}
 				*/
 			}
 		}
-	
+
 		return false;
 	}
 
 
-	//--------------------------------------------------------------------------
-	//
-	//  .wav File Methods
-	//
-	//--------------------------------------------------------------------------
+	// .wav file sound generation methods
 
 	/**
 	 * Returns a ByteArray of the wave in the form of a .wav file, ready to be saved out
@@ -841,22 +822,22 @@ public class SfxrSynth {
 	// disabled --zeh
 	public ByteArray getWavFile(uint sampleRate = 44100, uint bitDepth = 16) {
 		stop();
-	
+
 		reset(true);
-	
+
 		if (sampleRate != 44100) sampleRate = 22050;
 		if (bitDepth != 16) bitDepth = 8;
-	
+
 		var soundLength:uint = _envelopeFullLength;
 		if (bitDepth == 16) soundLength *= 2;
 		if (sampleRate == 22050) soundLength /= 2;
-	
+
 		var filesize:int = 36 + soundLength;
 		var blockAlign:int = bitDepth / 8;
 		var bytesPerSec:int = sampleRate * blockAlign;
-	
+
 		var wav:ByteArray = new ByteArray();
-	
+
 		// Header
 		wav.endian = Endian.BIG_ENDIAN;
 		wav.writeUnsignedInt(0x52494646);		// Chunk ID "RIFF"
@@ -864,7 +845,7 @@ public class SfxrSynth {
 		wav.writeUnsignedInt(filesize);			// Chunck Data Size
 		wav.endian = Endian.BIG_ENDIAN;
 		wav.writeUnsignedInt(0x57415645);		// RIFF Type "WAVE"
-	
+
 		// Format Chunk
 		wav.endian = Endian.BIG_ENDIAN;
 		wav.writeUnsignedInt(0x666D7420);		// Chunk ID "fmt "
@@ -876,17 +857,17 @@ public class SfxrSynth {
 		wav.writeUnsignedInt(bytesPerSec);		// Average bytes per second
 		wav.writeShort(blockAlign);				// Block align
 		wav.writeShort(bitDepth);				// Significant bits per sample
-	
+
 		// Data Chunk
 		wav.endian = Endian.BIG_ENDIAN;
 		wav.writeUnsignedInt(0x64617461);		// Chunk ID "data"
 		wav.endian = Endian.LITTLE_ENDIAN;
 		wav.writeUnsignedInt(soundLength);		// Chunk Data Size
-	
-		synthWave(wav, _envelopeFullLength, false, sampleRate, bitDepth);
-	
+
+		SynthWave(wav, _envelopeFullLength, false, sampleRate, bitDepth);
+
 		wav.position = 0;
-	
+
 		return wav;
 	}
 	*/

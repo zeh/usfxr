@@ -1,73 +1,91 @@
 using UnityEngine;
 using System.Collections;
 
-// A behavior script responsible for streaming audio to the engine
-
 public class SfxrAudioPlayer : MonoBehaviour {
+
+	/**
+	 * usfxr
+	 *
+	 * Copyright 2013 Zeh Fernando
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 * 	http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+
+	/**
+	 * SfxrAudioPlayer
+	 * This is the (internal) behavior script responsible for streaming audio to the engine
+	 * 
+	 * @author Zeh Fernando
+	 */
+
+
+	// Properties
+	private bool		isDestroyed = false;		// If true, this instance has been destroyed and shouldn't do anything yes
+	private bool		needsToDestroy = false;		// If true, it has been scheduled for destruction (from outside the main thread)
+
+	// Instances
+	private SfxrSynth	sfxrSynth;					// SfxrSynth instance that will generate the audio samples used by this
 	
-	private double		samplingFrequency = AudioSettings.outputSampleRate;
-	private bool		isDestroyed = false;
-	private SfxrSynth	sfxrSynth;
-	private bool		needsToDestroy = false;
 
-	// Public methods
-
-	void Start () {
-		// Create an empty audio source so this GameObject can receive audio events
+	// ================================================================================================================
+	// INTERNAL INTERFACE ---------------------------------------------------------------------------------------------
+	
+	void Start() {
+		// Creates an empty audio source so this GameObject can receive audio events
 		AudioSource soundSource = (AudioSource) gameObject.AddComponent("AudioSource");
 		soundSource.clip = new AudioClip();
 		soundSource.volume = 1f;
 		soundSource.pitch = 1f;
 		soundSource.priority = 128;
 	}
-	
+
 	void Update () {
+		// Destroys self in case it has been queued for deletion
 		if (needsToDestroy) {
 			needsToDestroy = false;
-			destroy();
+			Destroy();
 		}
 	}
-	
-	void OnAudioFilterRead(float[] data, int channels) {
-		// Generates audio
-		// Data is an array of floats ranging from -1.0f to 1.0f
 
-		if (!isDestroyed && sfxrSynth != null) {
-			bool hasMoreSamples = sfxrSynth.generateAudioFilterData(data, channels);
+	void OnAudioFilterRead(float[] __data, int __channels) {
+		// Requets that sfxrSynth generates the needed audio data
+
+		if (!isDestroyed && !needsToDestroy && sfxrSynth != null) {
+			bool hasMoreSamples = sfxrSynth.GenerateAudioFilterData(__data, __channels);
+			
+			// If no more samples are needed, there's no more need for this GameObject so schedule a destruction (cannot do this in this thread)
 			if (!hasMoreSamples) needsToDestroy = true;
 		}
-
-		/*
-		log("Audio filter read"); // 2048, 2
-		// update increment in case frequency has changed
-		increment = frequency * 2 * Math.PI / sampling_frequency;
-		for (var i = 0; i < data.Length; i = i + channels) {
-			phase = phase + increment;
-			// this is where we copy audio data to make them “available” to Unity
-			data[i] = (float)(gain*Math.Sin(phase));
-			// if we have stereo, we copy the mono data to each channel
-			if (channels == 2) data[i + 1] = data[i];
-			if (phase > 2 * Math.PI) phase = 0;
-    	}
-		
-		times++;
-		*/
   	}
+	
 
-	// Public methods
-	public void setSfxrSynth(SfxrSynth __sfxrSynth) {
-		// Sets the synth that needs to be pooled when new audio data is needed
+	// ================================================================================================================
+	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
+
+	public void SetSfxrSynth(SfxrSynth __sfxrSynth) {
+		// Sets the SfxrSynth instance that will generate the audio samples used by this
 		sfxrSynth = __sfxrSynth;
 	}
-	
-	public void destroy() {
-		// Stops the audio and destroys self
+
+	public void Destroy() {
+		// Stops audio immediately and destroys self
 		if (!isDestroyed) {
 			isDestroyed = true;
 			sfxrSynth = null;
 			UnityEngine.Object.Destroy(gameObject);
 		}
 	}
-		
+
 
 }
