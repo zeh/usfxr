@@ -63,7 +63,7 @@ In case of long or numerous audio effects, it makes sense to cache them first, b
 	...
 	synth.play();
 
-As a baseline, it typically takes around 5-9ms for an audio effect to be cached on a desktop computer. Therefore, it's better to let game cache sound as they're played, if possible (only a small portion of the audio is generated at a time) or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts.
+As a reference, it typically takes around 7ms for an audio effect to be cached on a desktop computer. Therefore, it's better to let game cache sound as they're played, if possible (only a small portion of the audio is generated at a time), or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts.
 
 
 Documentation
@@ -82,11 +82,14 @@ TODO:
 * Test if SfxrParams.pow() is actually faster than using pow
 * Test if SfxrParams.to4DP() is returning numbers correctly (1.00001 becomes 1.00000, etc) - maybe round it?
 * Replace Random.value with a different function? The original used Math.random(), which returns 0 <= n < 1, while Random.value returns 0 <= n <= 1
-* if float.parse(str) already returns 0 on empty strings, so SfxrParams.setSettingsString() can be simpler and faster
 * replace getTimer() on SfxrSynth with a Time specific call?
-* Decide on a better name for "paramss"
 * Too many potential conversions between uint/int - move everything to int?
 * Allow user to set the game object parent/position for proper control
+* cacheMutations()?
+* cacheSection()?
+* Use AudioSettings.outputSampleRate;?
+* SfxrParam: replace clamp1() and clamp2() with native clamp calls (test speed)
+* Conform to the language's conventions (uppercase letter on methods...)
 
 * Line 496 of SfxrSynth: awkward conversion (was implying from float to int): _changeLimit = (int)((1f - p.changeSpeed) * (1f - p.changeSpeed) * 20000f + 32f);
 * Line 682 of SfxrSynth: awkward conversion (was implying from float to int): _phase = _phase - (int)_periodTemp;
@@ -98,9 +101,19 @@ TODO:
 
 * Re-enable wav file generation? turn on getWavFile(), and allow waveData false on synthWave() on SfxrSynth
 
+* Samples:
+  shooter
+  +life: 1,,0.2702,,0.3426,0.2518,,0.2489,,,,,,,,0.4788,,,1,,,,,0.5
+  shooting: 2,,0.1857,,0.2642,0.7423,0.2715,-0.1968,,,,,,0.1105,0.1948,,,,1,,,0.0922,,0.5
+  enemy hit: 2,,0.0303,,0.2563,0.6111,,-0.4382,,,,,,0.3283,,,,,1,,,,,0.49
+  explosion: 2,,0.2067,0.5678,0.3768,0.4351,,-0.2241,,,,-0.2703,0.7393,,,,,,1,,,,,0.5
+             3,,0.2067,0.5678,0.3768,0.4351,,-0.2241,,,,-0.2703,0.7393,,,,,,1,,,,,0.5
+  pickup: 2,,0.0355,0.3878,0.4833,0.6526,,,,,,0.3927,0.5636,,,,,,1,,,,,0.5
+  explosion/die: 3,,0.3708,0.3227,0.242,0.3149,,-0.3596,,,,0.7839,0.7648,,,,0.1186,-0.1399,1,,,,,0.5
+  die: 2,,0.0782,0.6203,0.9024,0.5044,,-0.1298,0.0094,-0.0008,-0.5123,0.2868,-0.3859,-0.8811,0.9692,0.3616,0.001,0.0001,0.9528,0.0437,-0.4492,0.1089,,0.5
+
 Missing aspects:
 * events/callbacks
 
-
 Features:
-* Use Coroutines/yield to asynchronously create the data?
+* Use Coroutines/yield to asynchronously create the data? And then drop the time-based generation entirely?
