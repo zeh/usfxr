@@ -48,23 +48,31 @@ Typically, the workflow for using usfxr inside a project is as such:
 	SfxrSynth synth = new SfxrSynth();
 	synth.parameters.setSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
 
-4. Finally, to play your audio effect, you simply do:
-
-<!-- hack to allow code formatting -->
+Finally, to play your audio effect, you simply do:
 
 	synth.Play();
 
 With usfxr, all audio data is generated the first time an effect is played. That way, any potential heavy load in generating audio doesn't have to be repeated. Because of that, while it's possible to generate new SfxrSynth instances every time they need to be played, it's usually a better idea to keep them around and reuse them as needed.
 
+#### Advanced usage: caching
+
 In case of long or numerous audio effects, it makes sense to cache them first, before they are allowed to be played. This is done by calling the cacheSound() method first, as in:
 
 	SfxrSynth synth = new SfxrSynth();
-	synth.parameters.SetSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5"); // Replace the string here with the code from as3sfxr
+	synth.parameters.SetSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
 	synth.CacheSound();
 	...
 	synth.Play();
 
-As a reference, it typically takes around 7ms for an audio effect to be cached on a desktop computer. Therefore, it's better to let game cache sound as they're played, if possible (only a small portion of the audio is generated at a time), or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts.
+As a reference, it typically takes around 7ms-70ms for an audio effect to be cached on a desktop computer, depending on its length and complexity. Therefore, sometimes it's better to let game cache sound as they're played, if possible (only a small portion of the audio is generated at a time), or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts. Check the samples for an example of how this is done.
+
+#### Advanced usage: setting the audio position
+
+By default, all audio is attached to the first main `Camera` available (that is, [`Camera.main`](http://docs.unity3d.com/Documentation/ScriptReference/Camera-main.html)). If you want to attach your audio playback to a different game object - and thus produce positional audio - you use `SetParentTransform`, as in:
+
+	synth.SetParentTransform(gameObject.transform);
+
+This attaches the audio to an specific game object. See the documentation for more details.
 
 
 Samples
@@ -106,6 +114,7 @@ Changelog
 #### 2013-04-06
 
 * Users can now set the parent transform of the audio (for proper audio positioning) with `SetParentTransform()`
+* Replaced `Random.value` calls with a more correct `getRandom()` function
 
 
 TODO
@@ -123,7 +132,6 @@ usfxr is still in its infancy. This is the current list of missing things, or th
 
 #### Correctness
 
-* Replace Random.value with a different function? The original used Math.random(), which returns 0 <= n < 1, while Random.value returns 0 <= n <= 1
 * Line 496 of SfxrSynth: awkward conversion (was implying from float to int): _changeLimit = (int)((1f - p.changeSpeed) * (1f - p.changeSpeed) * 20000f + 32f);
 * Line 682 of SfxrSynth: awkward conversion (was implying from float to int): _phase = _phase - (int)_periodTemp;
 * Line 552 of SfxrSynth: awkward conversion: _envelopeFullLength was originally a float, but used as an uint everywhere else, so I'm doing the conversion earlier. what kind of unit is this? it may be cutting the audio short
@@ -131,7 +139,6 @@ usfxr is still in its infancy. This is the current list of missing things, or th
 
 #### Features
 
-* Allow user to set the game object parent/position for proper control of sound (since it's relative to the camera)
 * Use Coroutines/yield to asynchronously create the data, and drop the original time-based generation entirely?
 
 #### Missing things
