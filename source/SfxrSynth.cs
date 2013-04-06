@@ -31,103 +31,106 @@ public class SfxrSynth {
 	
 	
 	// Sound properties
-	private SfxrParams	_params = new SfxrParams();		// Params instance
+	private SfxrParams		_params = new SfxrParams();		// Params instance
+	
+	private GameObject		_gameObject;					// Game object that will contain the audio player script
+	private SfxrAudioPlayer	_audioPlayer;					// Audio player script that will be attached to a GameObject to play the sound
+	
+	private Transform		_parentTransform;				// Parent that will contain the audio (for positional audio)
 
-	private SfxrAudioPlayer	_audioPlayer;				// Audio player script that will be attached to a GameObject to play the sound
+	private bool			_mutation;						// If the current sound playing or caching is a mutation
 
-	private bool		_mutation;							// If the current sound playing or caching is a mutation
+	private float[]			_cachedWave;					// Cached wave data from a cacheSound() call
+	private uint			_cachedWavePos;					// Equivalent to _cachedWave.position in the old code
+	private bool			_cachingNormal;					// If the synth is caching a normal sound
 
-	private float[]		_cachedWave;					// Cached wave data from a cacheSound() call
-	private uint		_cachedWavePos;					// Equivalent to _cachedWave.position in the old code
-	private bool		_cachingNormal;					// If the synth is caching a normal sound
+	private int				_cachingMutation;				// Current caching ID
+	private float[]			_cachedMutation;				// Current caching wave data for mutation
+	private uint			_cachedMutationPos;				// Equivalent to _cachedMutation.position in the old code
+	private float[][]		_cachedMutations;				// Cached mutated wave data
+	private uint			_cachedMutationsNum;				// Number of cached mutations
+	private float			_cachedMutationAmount;			// Amount to mutate during cache
 
-	private int			_cachingMutation;				// Current caching ID
-	private float[]		_cachedMutation;				// Current caching wave data for mutation
-	private uint		_cachedMutationPos;				// Equivalent to _cachedMutation.position in the old code
-	private float[][]	_cachedMutations;				// Cached mutated wave data
-	private uint		_cachedMutationsNum;				// Number of cached mutations
-	private float		_cachedMutationAmount;			// Amount to mutate during cache
-
-	private bool		_cachingAsync;					// If the synth is currently caching asynchronously
-	private uint		_cacheTimePerFrame;				// Maximum time allowed per frame to cache sound asynchronously
+	private bool			_cachingAsync;					// If the synth is currently caching asynchronously
+	private uint			_cacheTimePerFrame;				// Maximum time allowed per frame to cache sound asynchronously
 	//private var			_cachedCallback:Function;				// Function to call when finished caching asynchronously [[disabled]]
 
-	private float[]		_waveData;						// Full wave, read out in chuncks by the onSampleData method
-	private uint		_waveDataPos;					// Current position in the waveData
+	private float[]			_waveData;						// Full wave, read out in chuncks by the onSampleData method
+	private uint			_waveDataPos;					// Current position in the waveData
 
-	private SfxrParams	_original;						// Copied properties for mutation base
+	private SfxrParams		_original;						// Copied properties for mutation base
 
 	// Synth properies
-	private bool	_finished;							// If the sound has finished
+	private bool		_finished;							// If the sound has finished
 
-	private float	_masterVolume;						// masterVolume * masterVolume (for quick calculations)
+	private float		_masterVolume;						// masterVolume * masterVolume (for quick calculations)
 
-	private uint	_waveType;								// The type of wave to generate
+	private uint		_waveType;							// The type of wave to generate
 
-	private float	_envelopeVolume;					// Current volume of the envelope
-	private int		_envelopeStage;						// Current stage of the envelope (attack, sustain, decay, end)
-	private float	_envelopeTime;						// Current time through current enelope stage
-	private float	_envelopeLength;					// Length of the current envelope stage
-	private float	_envelopeLength0;					// Length of the attack stage
-	private float	_envelopeLength1;					// Length of the sustain stage
-	private float	_envelopeLength2;					// Length of the decay stage
-	private float	_envelopeOverLength0;				// 1 / _envelopeLength0 (for quick calculations)
-	private float	_envelopeOverLength1;				// 1 / _envelopeLength1 (for quick calculations)
-	private float	_envelopeOverLength2;				// 1 / _envelopeLength2 (for quick calculations)
-	private uint	_envelopeFullLength;				// Full length of the volume envelop (and therefore sound)
+	private float		_envelopeVolume;					// Current volume of the envelope
+	private int			_envelopeStage;						// Current stage of the envelope (attack, sustain, decay, end)
+	private float		_envelopeTime;						// Current time through current enelope stage
+	private float		_envelopeLength;					// Length of the current envelope stage
+	private float		_envelopeLength0;					// Length of the attack stage
+	private float		_envelopeLength1;					// Length of the sustain stage
+	private float		_envelopeLength2;					// Length of the decay stage
+	private float		_envelopeOverLength0;				// 1 / _envelopeLength0 (for quick calculations)
+	private float		_envelopeOverLength1;				// 1 / _envelopeLength1 (for quick calculations)
+	private float		_envelopeOverLength2;				// 1 / _envelopeLength2 (for quick calculations)
+	private uint		_envelopeFullLength;				// Full length of the volume envelop (and therefore sound)
 
-	private float	_sustainPunch;						// The punch factor (louder at begining of sustain)
+	private float		_sustainPunch;						// The punch factor (louder at begining of sustain)
 
-	private int		_phase;								// Phase through the wave
-	private float	_pos;								// Phase expresed as a Number from 0-1, used for fast sin approx
-	private float	_period;							// Period of the wave
-	private float	_periodTemp;						// Period modified by vibrato
-	private float	_maxPeriod;							// Maximum period before sound stops (from minFrequency)
+	private int			_phase;								// Phase through the wave
+	private float		_pos;								// Phase expresed as a Number from 0-1, used for fast sin approx
+	private float		_period;							// Period of the wave
+	private float		_periodTemp;						// Period modified by vibrato
+	private float		_maxPeriod;							// Maximum period before sound stops (from minFrequency)
 
-	private float	_slide;								// Note slide
-	private float	_deltaSlide;						// Change in slide
-	private float	_minFrequency;						// Minimum frequency before stopping
+	private float		_slide;								// Note slide
+	private float		_deltaSlide;						// Change in slide
+	private float		_minFrequency;						// Minimum frequency before stopping
 
-	private float	_vibratoPhase;						// Phase through the vibrato sine wave
-	private float	_vibratoSpeed;						// Speed at which the vibrato phase moves
-	private float	_vibratoAmplitude;					// Amount to change the period of the wave by at the peak of the vibrato wave
+	private float		_vibratoPhase;						// Phase through the vibrato sine wave
+	private float		_vibratoSpeed;						// Speed at which the vibrato phase moves
+	private float		_vibratoAmplitude;					// Amount to change the period of the wave by at the peak of the vibrato wave
 
-	private float	_changeAmount;						// Amount to change the note by
-	private int		_changeTime;						// Counter for the note change
-	private int		_changeLimit;						// Once the time reaches this limit, the note changes
+	private float		_changeAmount;						// Amount to change the note by
+	private int			_changeTime;						// Counter for the note change
+	private int			_changeLimit;						// Once the time reaches this limit, the note changes
 
-	private float	_squareDuty;						// Offset of center switching point in the square wave
-	private float	_dutySweep;							// Amount to change the duty by
+	private float		_squareDuty;						// Offset of center switching point in the square wave
+	private float		_dutySweep;							// Amount to change the duty by
 
-	private int		_repeatTime;						// Counter for the repeats
-	private int		_repeatLimit;						// Once the time reaches this limit, some of the variables are reset
+	private int			_repeatTime;						// Counter for the repeats
+	private int			_repeatLimit;						// Once the time reaches this limit, some of the variables are reset
 
-	private bool	_phaser;							// If the phaser is active
-	private float	_phaserOffset;						// Phase offset for phaser effect
-	private float	_phaserDeltaOffset;					// Change in phase offset
-	private int		_phaserInt;							// Integer phaser offset, for bit maths
-	private int		_phaserPos;							// Position through the phaser buffer
-	private float[]	_phaserBuffer;						// Buffer of wave values used to create the out of phase second wave
+	private bool		_phaser;							// If the phaser is active
+	private float		_phaserOffset;						// Phase offset for phaser effect
+	private float		_phaserDeltaOffset;					// Change in phase offset
+	private int			_phaserInt;							// Integer phaser offset, for bit maths
+	private int			_phaserPos;							// Position through the phaser buffer
+	private float[]		_phaserBuffer;						// Buffer of wave values used to create the out of phase second wave
 
-	private bool	_filters;							// If the filters are active
-	private float	_lpFilterPos;						// Adjusted wave position after low-pass filter
-	private float	_lpFilterOldPos;					// Previous low-pass wave position
-	private float	_lpFilterDeltaPos;					// Change in low-pass wave position, as allowed by the cutoff and damping
-	private float	_lpFilterCutoff;					// Cutoff multiplier which adjusts the amount the wave position can move
-	private float	_lpFilterDeltaCutoff;				// Speed of the low-pass cutoff multiplier
-	private float	_lpFilterDamping;					// Damping muliplier which restricts how fast the wave position can move
-	private bool	_lpFilterOn;						// If the low pass filter is active
+	private bool		_filters;							// If the filters are active
+	private float		_lpFilterPos;						// Adjusted wave position after low-pass filter
+	private float		_lpFilterOldPos;					// Previous low-pass wave position
+	private float		_lpFilterDeltaPos;					// Change in low-pass wave position, as allowed by the cutoff and damping
+	private float		_lpFilterCutoff;					// Cutoff multiplier which adjusts the amount the wave position can move
+	private float		_lpFilterDeltaCutoff;				// Speed of the low-pass cutoff multiplier
+	private float		_lpFilterDamping;					// Damping muliplier which restricts how fast the wave position can move
+	private bool		_lpFilterOn;						// If the low pass filter is active
 
-	private float	_hpFilterPos;						// Adjusted wave position after high-pass filter
-	private float	_hpFilterCutoff;					// Cutoff multiplier which adjusts the amount the wave position can move
-	private float	_hpFilterDeltaCutoff;				// Speed of the high-pass cutoff multiplier
+	private float		_hpFilterPos;						// Adjusted wave position after high-pass filter
+	private float		_hpFilterCutoff;					// Cutoff multiplier which adjusts the amount the wave position can move
+	private float		_hpFilterDeltaCutoff;				// Speed of the high-pass cutoff multiplier
 
-	private float[]	_noiseBuffer;						// Buffer of random values used to generate noise
+	private float[]		_noiseBuffer;						// Buffer of random values used to generate noise
 
-	private float	_superSample;						// Actual sample writen to the wave
-	private float	_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
-	private uint	_sampleCount;						// Number of samples added to the buffer sample
-	private float	_bufferSample;						// Another supersample used to create a 22050Hz wave
+	private float		_superSample;						// Actual sample writen to the wave
+	private float		_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
+	private uint		_sampleCount;						// Number of samples added to the buffer sample
+	private float		_bufferSample;						// Another supersample used to create a 22050Hz wave
 
 
 	// ================================================================================================================
@@ -168,12 +171,10 @@ public class SfxrSynth {
 			_waveDataPos = 0;
 		}
 
-		// Create a game object to handle playback
-		GameObject _gameObject = new GameObject("SfxrGameObject-" + Time.realtimeSinceStartup);
-    	_audioPlayer = (SfxrAudioPlayer) _gameObject.AddComponent ("SfxrAudioPlayer");
-		_audioPlayer.SetSfxrSynth(this);
+		createGameObject();
+		
 	}
-
+	
 	/**
 	 * Plays a mutation of the sound.  If the parameters are dirty, synthesises sound as it plays, caching it for later.
 	 * If they're not, plays from the cached sound.
@@ -214,11 +215,8 @@ public class SfxrSynth {
 			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * Random.value)];
 			_waveDataPos = 0;
 		}
-
-		// Create a game object to handle playback
-		GameObject _gameObject = new GameObject("SfxrGameObject-" + Time.realtimeSinceStartup);
-		_audioPlayer = (SfxrAudioPlayer)_gameObject.AddComponent("SfxrAudioPlayer");
-		_audioPlayer.SetSfxrSynth(this);
+		
+		createGameObject();
 	}
 
 	/**
@@ -416,6 +414,14 @@ public class SfxrSynth {
 	}
 
 	/**
+	 * Sets the parent transform of this audio, for positional audio
+	 * @param	__transform		The transform object of the parent
+	 */
+	public void SetParentTransform(Transform __transform) {
+		_parentTransform = __transform;
+	}
+
+	/**
 	 * Performs the asynchronous cache, working for up to _cacheTimePerFrame milliseconds per frame
 	 * @param	e	enterFrame event
 	 */
@@ -598,8 +604,10 @@ public class SfxrSynth {
 
 		_sampleCount = 0;
 		_bufferSample = 0.0f;
-
-		for (uint i = 0; i < __length; i++) {
+		
+		uint i, j, n;
+		
+		for (i = 0; i < __length; i++) {
 			if (_finished) return true;
 
 			// Repeats every _repeatLimit times, partially resetting the sound parameters
@@ -679,17 +687,17 @@ public class SfxrSynth {
 			}
 
 			// Moves the high-pass filter cutoff
-			if (_filters && _hpFilterDeltaCutoff != 0.0) {
+			if (_filters && _hpFilterDeltaCutoff != 0) {
 				_hpFilterCutoff *= _hpFilterDeltaCutoff;
 				if (_hpFilterCutoff < 0.00001f) {
 					_hpFilterCutoff = 0.00001f;
-				} else if (_hpFilterCutoff > 0.1) {
+				} else if (_hpFilterCutoff > 0.1f) {
 					_hpFilterCutoff = 0.1f;
 				}
 			}
 
 			_superSample = 0;
-			for (int j = 0; j < 8; j++) {
+			for (j = 0; j < 8; j++) {
 				// Cycles through the period
 				_phase++;
 				if (_phase >= _periodTemp) {
@@ -697,7 +705,7 @@ public class SfxrSynth {
 
 					// Generates new random noise for this period
 					if (_waveType == 3) {
-						for (uint n = 0; n < 32; n++) _noiseBuffer[n] = Random.value * 2.0f - 1.0f;
+						for (n = 0; n < 32; n++) _noiseBuffer[n] = Random.value * 2.0f - 1.0f;
 					}
 				}
 
@@ -759,7 +767,11 @@ public class SfxrSynth {
 			_superSample = _masterVolume * _envelopeVolume * _superSample * 0.125f;
 
 			// Clipping if too loud
-			_superSample = Mathf.Clamp(_superSample, -1f, 1f);
+			if (_superSample < -1f) {
+				_superSample = -1f;
+			} else if (_superSample > 1f) {
+				_superSample = 1f;
+			}
 
 			if (__waveData) {
 				// Writes value to list, ignoring left/right sound channels (this is applied when filtering the audio later)
@@ -793,7 +805,31 @@ public class SfxrSynth {
 
 		return false;
 	}
+	
+	private void createGameObject() {
+		// Create a game object to handle playback
+		_gameObject = new GameObject("SfxrGameObject-" + (Time.realtimeSinceStartup));
+		fixGameObjectParent();
 
+		// Create actual audio player
+    	_audioPlayer = (SfxrAudioPlayer) _gameObject.AddComponent ("SfxrAudioPlayer");
+		_audioPlayer.SetSfxrSynth(this);
+	}
+
+
+	private void fixGameObjectParent() {
+		// Sets the parent of the game object to be the wanted object
+		Transform transformToUse = _parentTransform;
+		
+		// If no parent assigned, use main camera by default
+		if (transformToUse == null) transformToUse = Camera.main.transform;
+		
+		// If has any parent (assigned, or main camera exist) assigns it
+		if (transformToUse != null) _gameObject.transform.parent = transformToUse;
+		
+		// Center in parent (or scene if no parent)
+		_gameObject.transform.localPosition = new Vector3(0, 0, 0);
+	}
 
 	// .wav file sound generation methods
 

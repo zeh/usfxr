@@ -96,6 +96,14 @@ Contribute
 (...todo...)
 
 
+Changelog
+---------
+
+#### 2013-04-06
+
+* User can now set the parent transform of the audio (for proper audio positioning) with `SetParentTransform()`
+
+
 TODO
 ----
 
