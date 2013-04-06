@@ -228,15 +228,15 @@ public class SfxrParams {
 	public void GeneratePickupCoin() {
 		resetParams();
 
-		_startFrequency = 0.4f + Random.value * 0.5f;
+		_startFrequency = 0.4f + getRandom() * 0.5f;
 
-		_sustainTime = Random.value * 0.1f;
-		_decayTime = 0.1f + Random.value * 0.4f;
-		_sustainPunch = 0.3f + Random.value * 0.3f;
+		_sustainTime = getRandom() * 0.1f;
+		_decayTime = 0.1f + getRandom() * 0.4f;
+		_sustainPunch = 0.3f + getRandom() * 0.3f;
 
-		if (Random.value < 0.5f) {
-			_changeSpeed = 0.5f + Random.value * 0.2f;
-			_changeAmount = 0.2f + Random.value * 0.4f;
+		if (getRandom() < 0.5f) {
+			_changeSpeed = 0.5f + getRandom() * 0.2f;
+			_changeAmount = 0.2f + getRandom() * 0.4f;
 		}
 	}
 
@@ -246,39 +246,39 @@ public class SfxrParams {
 	public void GenerateLaserShoot() {
 		resetParams();
 
-		_waveType = (uint)(Random.value * 3);
-		if (_waveType == 2 && Random.value < 0.5f) _waveType = (uint)(Random.value * 2f);
+		_waveType = (uint)(getRandom() * 3);
+		if (_waveType == 2 && getRandom() < 0.5f) _waveType = (uint)(getRandom() * 2f);
 
-		_startFrequency = 0.5f + Random.value * 0.5f;
-		_minFrequency = _startFrequency - 0.2f - Random.value * 0.6f;
+		_startFrequency = 0.5f + getRandom() * 0.5f;
+		_minFrequency = _startFrequency - 0.2f - getRandom() * 0.6f;
 		if (_minFrequency < 0.2f) _minFrequency = 0.2f;
 
-		_slide = -0.15f - Random.value * 0.2f;
+		_slide = -0.15f - getRandom() * 0.2f;
 
-		if (Random.value < 0.33f) {
-			_startFrequency = 0.3f + Random.value * 0.6f;
-			_minFrequency = Random.value * 0.1f;
-			_slide = -0.35f - Random.value * 0.3f;
+		if (getRandom() < 0.33f) {
+			_startFrequency = 0.3f + getRandom() * 0.6f;
+			_minFrequency = getRandom() * 0.1f;
+			_slide = -0.35f - getRandom() * 0.3f;
 		}
 
-		if (Random.value < 0.5f) {
-			_squareDuty = Random.value * 0.5f;
-			_dutySweep = Random.value * 0.2f;
+		if (getRandom() < 0.5f) {
+			_squareDuty = getRandom() * 0.5f;
+			_dutySweep = getRandom() * 0.2f;
 		} else {
-			_squareDuty = 0.4f + Random.value * 0.5f;
-			_dutySweep =- Random.value * 0.7f;
+			_squareDuty = 0.4f + getRandom() * 0.5f;
+			_dutySweep =- getRandom() * 0.7f;
 		}
 
-		_sustainTime = 0.1f + Random.value * 0.2f;
-		_decayTime = Random.value * 0.4f;
-		if (Random.value < 0.5f) _sustainPunch = Random.value * 0.3f;
+		_sustainTime = 0.1f + getRandom() * 0.2f;
+		_decayTime = getRandom() * 0.4f;
+		if (getRandom() < 0.5f) _sustainPunch = getRandom() * 0.3f;
 
-		if (Random.value < 0.33f) {
-			_phaserOffset = Random.value * 0.2f;
-			_phaserSweep = -Random.value * 0.2f;
+		if (getRandom() < 0.33f) {
+			_phaserOffset = getRandom() * 0.2f;
+			_phaserSweep = -getRandom() * 0.2f;
 		}
 
-		if (Random.value < 0.5f) _hpFilterCutoff = Random.value * 0.3f;
+		if (getRandom() < 0.5f) _hpFilterCutoff = getRandom() * 0.3f;
 	}
 
 	/**
@@ -288,31 +288,31 @@ public class SfxrParams {
 		resetParams();
 		_waveType = 3;
 
-		if (Random.value < 0.5f) {
-			_startFrequency = 0.1f + Random.value * 0.4f;
-			_slide = -0.1f + Random.value * 0.4f;
+		if (getRandom() < 0.5f) {
+			_startFrequency = 0.1f + getRandom() * 0.4f;
+			_slide = -0.1f + getRandom() * 0.4f;
 		} else {
-			_startFrequency = 0.2f + Random.value * 0.7f;
-			_slide = -0.2f - Random.value * 0.2f;
+			_startFrequency = 0.2f + getRandom() * 0.7f;
+			_slide = -0.2f - getRandom() * 0.2f;
 		}
 
 		_startFrequency *= _startFrequency;
 
-		if (Random.value < 0.2f) _slide = 0.0f;
-		if (Random.value < 0.33f) _repeatSpeed = 0.3f + Random.value * 0.5f;
+		if (getRandom() < 0.2f) _slide = 0.0f;
+		if (getRandom() < 0.33f) _repeatSpeed = 0.3f + getRandom() * 0.5f;
 
-		_sustainTime = 0.1f + Random.value * 0.3f;
-		_decayTime = Random.value * 0.5f;
-		_sustainPunch = 0.2f + Random.value * 0.6f;
+		_sustainTime = 0.1f + getRandom() * 0.3f;
+		_decayTime = getRandom() * 0.5f;
+		_sustainPunch = 0.2f + getRandom() * 0.6f;
 
-		if (Random.value < 0.5f) {
-			_phaserOffset = -0.3f + Random.value * 0.9f;
-			_phaserSweep = -Random.value * 0.3f;
+		if (getRandom() < 0.5f) {
+			_phaserOffset = -0.3f + getRandom() * 0.9f;
+			_phaserSweep = -getRandom() * 0.3f;
 		}
 
-		if (Random.value < 0.33f) {
-			_changeSpeed = 0.6f + Random.value * 0.3f;
-			_changeAmount = 0.8f - Random.value * 1.6f;
+		if (getRandom() < 0.33f) {
+			_changeSpeed = 0.6f + getRandom() * 0.3f;
+			_changeAmount = 0.8f - getRandom() * 1.6f;
 		}
 	}
 
@@ -322,28 +322,28 @@ public class SfxrParams {
 	public void GeneratePowerup() {
 		resetParams();
 
-		if (Random.value < 0.5f) {
+		if (getRandom() < 0.5f) {
 			_waveType = 1;
 		} else {
-			_squareDuty = Random.value * 0.6f;
+			_squareDuty = getRandom() * 0.6f;
 		}
 
-		if (Random.value < 0.5f) {
-			_startFrequency = 0.2f + Random.value * 0.3f;
-			_slide = 0.1f + Random.value * 0.4f;
-			_repeatSpeed = 0.4f + Random.value * 0.4f;
+		if (getRandom() < 0.5f) {
+			_startFrequency = 0.2f + getRandom() * 0.3f;
+			_slide = 0.1f + getRandom() * 0.4f;
+			_repeatSpeed = 0.4f + getRandom() * 0.4f;
 		} else {
-			_startFrequency = 0.2f + Random.value * 0.3f;
-			_slide = 0.05f + Random.value * 0.2f;
+			_startFrequency = 0.2f + getRandom() * 0.3f;
+			_slide = 0.05f + getRandom() * 0.2f;
 
-			if (Random.value < 0.5f) {
-				_vibratoDepth = Random.value * 0.7f;
-				_vibratoSpeed = Random.value * 0.6f;
+			if (getRandom() < 0.5f) {
+				_vibratoDepth = getRandom() * 0.7f;
+				_vibratoSpeed = getRandom() * 0.6f;
 			}
 		}
 
-		_sustainTime = Random.value * 0.4f;
-		_decayTime = 0.1f + Random.value * 0.4f;
+		_sustainTime = getRandom() * 0.4f;
+		_decayTime = 0.1f + getRandom() * 0.4f;
 	}
 
 	/**
@@ -352,20 +352,20 @@ public class SfxrParams {
 	public void GenerateHitHurt() {
 		resetParams();
 
-		_waveType = (uint)(Random.value * 3f);
+		_waveType = (uint)(getRandom() * 3f);
 		if (_waveType == 2) {
 			_waveType = 3;
 		} else if (_waveType == 0) {
-			_squareDuty = Random.value * 0.6f;
+			_squareDuty = getRandom() * 0.6f;
 		}
 
-		_startFrequency = 0.2f + Random.value * 0.6f;
-		_slide = -0.3f - Random.value * 0.4f;
+		_startFrequency = 0.2f + getRandom() * 0.6f;
+		_slide = -0.3f - getRandom() * 0.4f;
 
-		_sustainTime = Random.value * 0.1f;
-		_decayTime = 0.1f + Random.value * 0.2f;
+		_sustainTime = getRandom() * 0.1f;
+		_decayTime = 0.1f + getRandom() * 0.2f;
 
-		if (Random.value < 0.5f) _hpFilterCutoff = Random.value * 0.3f;
+		if (getRandom() < 0.5f) _hpFilterCutoff = getRandom() * 0.3f;
 	}
 
 	/**
@@ -375,15 +375,15 @@ public class SfxrParams {
 		resetParams();
 
 		_waveType = 0;
-		_squareDuty = Random.value * 0.6f;
-		_startFrequency = 0.3f + Random.value * 0.3f;
-		_slide = 0.1f + Random.value * 0.2f;
+		_squareDuty = getRandom() * 0.6f;
+		_startFrequency = 0.3f + getRandom() * 0.3f;
+		_slide = 0.1f + getRandom() * 0.2f;
 
-		_sustainTime = 0.1f + Random.value * 0.3f;
-		_decayTime = 0.1f + Random.value * 0.2f;
+		_sustainTime = 0.1f + getRandom() * 0.3f;
+		_decayTime = 0.1f + getRandom() * 0.2f;
 
-		if (Random.value < 0.5f) _hpFilterCutoff = Random.value * 0.3f;
-		if (Random.value < 0.5f) _lpFilterCutoff = 1.0f - Random.value * 0.6f;
+		if (getRandom() < 0.5f) _hpFilterCutoff = getRandom() * 0.3f;
+		if (getRandom() < 0.5f) _lpFilterCutoff = 1.0f - getRandom() * 0.6f;
 	}
 
 	/**
@@ -392,13 +392,13 @@ public class SfxrParams {
 	public void GenerateBlipSelect() {
 		resetParams();
 
-		_waveType = (uint)(Random.value * 2f);
-		if (_waveType == 0) _squareDuty = Random.value * 0.6f;
+		_waveType = (uint)(getRandom() * 2f);
+		if (_waveType == 0) _squareDuty = getRandom() * 0.6f;
 
-		_startFrequency = 0.2f + Random.value * 0.4f;
+		_startFrequency = 0.2f + getRandom() * 0.4f;
 
-		_sustainTime = 0.1f + Random.value * 0.1f;
-		_decayTime = Random.value * 0.2f;
+		_sustainTime = 0.1f + getRandom() * 0.1f;
+		_decayTime = getRandom() * 0.2f;
 		_hpFilterCutoff = 0.1f;
 	}
 
@@ -446,28 +446,28 @@ public class SfxrParams {
 	 * Randomly adjusts the parameters ever so slightly
 	 */
 	public void Mutate(float __mutation = 0.05f) {
-		if (Random.value < 0.5f) startFrequency += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) minFrequency += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) slide += 				Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) deltaSlide += 			Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) squareDuty += 			Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) dutySweep += 			Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) vibratoDepth += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) vibratoSpeed += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) attackTime += 			Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) sustainTime += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) decayTime += 			Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) sustainPunch += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) lpFilterCutoff += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) lpFilterCutoffSweep += Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) lpFilterResonance += 	Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) hpFilterCutoff += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) hpFilterCutoffSweep += Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) phaserOffset += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) phaserSweep += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) repeatSpeed += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) changeSpeed += 		Random.value * __mutation * 2f - __mutation;
-		if (Random.value < 0.5f) changeAmount += 		Random.value * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) startFrequency += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) minFrequency += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) slide += 				getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) deltaSlide += 			getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) squareDuty += 			getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) dutySweep += 			getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) vibratoDepth += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) vibratoSpeed += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) attackTime += 			getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) sustainTime += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) decayTime += 			getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) sustainPunch += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) lpFilterCutoff += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) lpFilterCutoffSweep += getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) lpFilterResonance += 	getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) hpFilterCutoff += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) hpFilterCutoffSweep += getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) phaserOffset += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) phaserSweep += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) repeatSpeed += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) changeSpeed += 		getRandom() * __mutation * 2f - __mutation;
+		if (getRandom() < 0.5f) changeAmount += 		getRandom() * __mutation * 2f - __mutation;
 	}
 
 	/**
@@ -476,43 +476,43 @@ public class SfxrParams {
 	public void Randomize() {
 		paramsDirty = true;
 
-		_waveType = (uint)(Random.value * 4f);
+		_waveType = (uint)(getRandom() * 4f);
 
-		_attackTime =  		Pow(Random.value*2f-1f, 4);
-		_sustainTime =  	Pow(Random.value*2f-1f, 2);
-		_sustainPunch =  	Pow(Random.value*0.8f, 2);
-		_decayTime =  		Random.value;
+		_attackTime =  		Pow(getRandom()*2f-1f, 4);
+		_sustainTime =  	Pow(getRandom()*2f-1f, 2);
+		_sustainPunch =  	Pow(getRandom()*0.8f, 2);
+		_decayTime =  		getRandom();
 
-		_startFrequency =  	(Random.value < 0.5f) ? Pow(Random.value*2f-1f, 2) : (Pow(Random.value * 0.5f, 3) + 0.5f);
+		_startFrequency =  	(getRandom() < 0.5f) ? Pow(getRandom()*2f-1f, 2) : (Pow(getRandom() * 0.5f, 3) + 0.5f);
 		_minFrequency =  	0.0f;
 
-		_slide =  			Pow(Random.value*2f-1f, 5);
-		_deltaSlide =  		Pow(Random.value*2f-1f, 3);
+		_slide =  			Pow(getRandom()*2f-1f, 5);
+		_deltaSlide =  		Pow(getRandom()*2f-1f, 3);
 
-		_vibratoDepth =  	Pow(Random.value*2f-1f, 3);
-		_vibratoSpeed =  	Random.value*2f-1f;
+		_vibratoDepth =  	Pow(getRandom()*2f-1f, 3);
+		_vibratoSpeed =  	getRandom()*2f-1f;
 
-		_changeAmount =  	Random.value*2f-1f;
-		_changeSpeed =  	Random.value*2f-1f;
+		_changeAmount =  	getRandom()*2f-1f;
+		_changeSpeed =  	getRandom()*2f-1f;
 
-		_squareDuty =  		Random.value*2f-1f;
-		_dutySweep =  		Pow(Random.value*2f-1f, 3);
+		_squareDuty =  		getRandom()*2f-1f;
+		_dutySweep =  		Pow(getRandom()*2f-1f, 3);
 
-		_repeatSpeed =  	Random.value*2f-1f;
+		_repeatSpeed =  	getRandom()*2f-1f;
 
-		_phaserOffset =  	Pow(Random.value*2f-1f, 3);
-		_phaserSweep =  	Pow(Random.value*2f-1f, 3);
+		_phaserOffset =  	Pow(getRandom()*2f-1f, 3);
+		_phaserSweep =  	Pow(getRandom()*2f-1f, 3);
 
-		_lpFilterCutoff =  		1f - Pow(Random.value, 3);
-		_lpFilterCutoffSweep = 	Pow(Random.value*2f-1f, 3);
-		_lpFilterResonance =  	Random.value*2f-1f;
+		_lpFilterCutoff =  		1f - Pow(getRandom(), 3);
+		_lpFilterCutoffSweep = 	Pow(getRandom()*2f-1f, 3);
+		_lpFilterResonance =  	getRandom()*2f-1f;
 
-		_hpFilterCutoff =  		Pow(Random.value, 5);
-		_hpFilterCutoffSweep = 	Pow(Random.value*2f-1f, 5);
+		_hpFilterCutoff =  		Pow(getRandom(), 5);
+		_hpFilterCutoffSweep = 	Pow(getRandom()*2f-1f, 5);
 
 		if (_attackTime + _sustainTime + _decayTime < 0.2f) {
-			_sustainTime = 0.2f + Random.value * 0.3f;
-			_decayTime = 0.2f + Random.value * 0.3f;
+			_sustainTime = 0.2f + getRandom() * 0.3f;
+			_decayTime = 0.2f + getRandom() * 0.3f;
 		}
 
 		if ((_startFrequency > 0.7f && _slide > 0.2) || (_startFrequency < 0.2 && _slide < -0.05)) {
@@ -702,5 +702,14 @@ public class SfxrParams {
 		if (__value.Length == 0) return 0;
 		return float.Parse(__value);
 	}
+	
+	/**
+	 * Returns a random value: 0 <= n < 1
+	 * This needed to be created to follow the original code more strictly; Unity's Random.value returns 0 <= n <= 1
+	 */
+	private float getRandom() {
+		return Random.value % 1;
+	}
+		
 
 }

@@ -212,7 +212,7 @@ public class SfxrSynth {
 			Reset(true);
 		} else {
 			// Play from random cached mutation
-			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * Random.value)];
+			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * getRandom())];
 			_waveDataPos = 0;
 		}
 		
@@ -366,7 +366,7 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, uint __maxTimePerFrame = 5) {
+	public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f) {
 	//public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
 		Debug.Log("Disabled: cache mutations");
 		/*
@@ -581,7 +581,7 @@ public class SfxrSynth {
 
 			uint i;
 			for (i = 0; i < 1024; i++) _phaserBuffer[i] = 0.0f;
-			for (i = 0; i < 32; i++) _noiseBuffer[i] = Random.value * 2.0f - 1.0f;
+			for (i = 0; i < 32; i++) _noiseBuffer[i] = getRandom() * 2.0f - 1.0f;
 
 			_repeatTime = 0;
 
@@ -705,7 +705,7 @@ public class SfxrSynth {
 
 					// Generates new random noise for this period
 					if (_waveType == 3) {
-						for (n = 0; n < 32; n++) _noiseBuffer[n] = Random.value * 2.0f - 1.0f;
+						for (n = 0; n < 32; n++) _noiseBuffer[n] = getRandom() * 2.0f - 1.0f;
 					}
 				}
 
@@ -892,4 +892,12 @@ public class SfxrSynth {
 		return wav;
 	}
 	*/
+	
+	/**
+	 * Returns a random value: 0 <= n < 1
+	 * This needed to be created to follow the original code more strictly; Unity's getRandom() returns 0 <= n <= 1
+	 */
+	private float getRandom() {
+		return Random.value % 1;
+	}
 }
