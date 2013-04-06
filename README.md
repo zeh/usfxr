@@ -40,25 +40,29 @@ Usage
 Typically, the workflow for using usfxr inside a project is as such:
 
 1. Visit the [online version of as3sfxr](http://www.superflashbros.net/as3sfxr/), play around, and generate a sound effect that you want to use
-2. Press CTRL+C to copy the effect script to the clipboard
-3. Back in Unity, write some code to store your sound effect:
+2. Press CTRL+C to copy the effect script to the clipboard (as a string)
+3. Back in Unity, write some code to store your sound effect, pasting the correct string
+
+<!-- hack to allow code formatting -->
 
 	SfxrSynth synth = new SfxrSynth();
-	synth.parameters.setSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5"); // Replace the string here with the code from as3sfxr
+	synth.parameters.setSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
 
 4. Finally, to play your audio effect, you simply do:
 
-	synth.play();
+<!-- hack to allow code formatting -->
+
+	synth.Play();
 
 With usfxr, all audio data is generated the first time an effect is played. That way, any potential heavy load in generating audio doesn't have to be repeated. Because of that, while it's possible to generate new SfxrSynth instances every time they need to be played, it's usually a better idea to keep them around and reuse them as needed.
 
 In case of long or numerous audio effects, it makes sense to cache them first, before they are allowed to be played. This is done by calling the cacheSound() method first, as in:
 
 	SfxrSynth synth = new SfxrSynth();
-	synth.parameters.setSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5"); // Replace the string here with the code from as3sfxr
-	synth.cacheSound();
+	synth.parameters.SetSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5"); // Replace the string here with the code from as3sfxr
+	synth.CacheSound();
 	...
-	synth.play();
+	synth.Play();
 
 As a reference, it typically takes around 7ms for an audio effect to be cached on a desktop computer. Therefore, it's better to let game cache sound as they're played, if possible (only a small portion of the audio is generated at a time), or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts.
 
@@ -101,7 +105,7 @@ Changelog
 
 #### 2013-04-06
 
-* User can now set the parent transform of the audio (for proper audio positioning) with `SetParentTransform()`
+* Users can now set the parent transform of the audio (for proper audio positioning) with `SetParentTransform()`
 
 
 TODO
