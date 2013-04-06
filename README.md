@@ -79,7 +79,7 @@ This is a C# project that serves as a benchmark of the audio generation code. Ru
 (...todo...)
 
 
-#### HeavyLoader
+#### SpaceGamePreloaded
 
 (...todo...)
 

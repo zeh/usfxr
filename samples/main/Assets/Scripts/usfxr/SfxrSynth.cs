@@ -598,8 +598,10 @@ public class SfxrSynth {
 
 		_sampleCount = 0;
 		_bufferSample = 0.0f;
-
-		for (uint i = 0; i < __length; i++) {
+		
+		uint i, j, n;
+		
+		for (i = 0; i < __length; i++) {
 			if (_finished) return true;
 
 			// Repeats every _repeatLimit times, partially resetting the sound parameters
@@ -679,17 +681,17 @@ public class SfxrSynth {
 			}
 
 			// Moves the high-pass filter cutoff
-			if (_filters && _hpFilterDeltaCutoff != 0.0) {
+			if (_filters && _hpFilterDeltaCutoff != 0) {
 				_hpFilterCutoff *= _hpFilterDeltaCutoff;
 				if (_hpFilterCutoff < 0.00001f) {
 					_hpFilterCutoff = 0.00001f;
-				} else if (_hpFilterCutoff > 0.1) {
+				} else if (_hpFilterCutoff > 0.1f) {
 					_hpFilterCutoff = 0.1f;
 				}
 			}
 
 			_superSample = 0;
-			for (int j = 0; j < 8; j++) {
+			for (j = 0; j < 8; j++) {
 				// Cycles through the period
 				_phase++;
 				if (_phase >= _periodTemp) {
@@ -697,7 +699,7 @@ public class SfxrSynth {
 
 					// Generates new random noise for this period
 					if (_waveType == 3) {
-						for (uint n = 0; n < 32; n++) _noiseBuffer[n] = Random.value * 2.0f - 1.0f;
+						for (n = 0; n < 32; n++) _noiseBuffer[n] = Random.value * 2.0f - 1.0f;
 					}
 				}
 
@@ -759,7 +761,11 @@ public class SfxrSynth {
 			_superSample = _masterVolume * _envelopeVolume * _superSample * 0.125f;
 
 			// Clipping if too loud
-			_superSample = Mathf.Clamp(_superSample, -1f, 1f);
+			if (_superSample < -1f) {
+				_superSample = -1f;
+			} else if (_superSample > 1f) {
+				_superSample = 1f;
+			}
 
 			if (__waveData) {
 				// Writes value to list, ignoring left/right sound channels (this is applied when filtering the audio later)
