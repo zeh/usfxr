@@ -860,6 +860,8 @@ public class SfxrSynth {
 	 * This needed to be created to follow the original code more strictly; Unity's getRandom() returns 0 <= n <= 1
 	 */
 	private float getRandom() {
-		return Random.value % 1;
+		return UnityEngine.Random.value % 1;
 	}
+
 }
+
