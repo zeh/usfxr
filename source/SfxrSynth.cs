@@ -321,8 +321,6 @@ public class SfxrSynth {
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
 	public void CacheSound(Action __callback = null, bool __isFromCoroutine = false) {
-	//public void CacheSound() {
-	//public void cacheSound(Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
 		Stop();
 
 		if (_cachingAsync && !__isFromCoroutine) return;
@@ -337,12 +335,13 @@ public class SfxrSynth {
 			_surrogate.CacheSound(this, __callback);
 		} else {
 			Reset(true);
-			_cachingNormal = false;
-			_cachingAsync = false;
 
 			_cachedWave = new float[_envelopeFullLength];
 
 			SynthWave(_cachedWave, 0, _envelopeFullLength);
+
+			_cachingNormal = false;
+			_cachingAsync = false;
 		}
 	}
 
@@ -356,41 +355,24 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void CacheMutations(uint __mutationsNum = 15, float __mutationAmount = 0.05f) {
-	//public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
+	public void CacheMutations(uint __mutationsNum = 15, float __mutationAmount = 0.05f, Action __callback = null, bool __isFromCoroutine = false) {
 		Stop();
 
-		if (_cachingAsync) return;
+		if (_cachingAsync && !__isFromCoroutine) return;
 
 		_cachedMutationsNum = __mutationsNum;
 		_cachedMutations = new float[_cachedMutationsNum][];
 
-		/*
-		[[disabled]]
-
-		if (callback != null) {
+		if (__callback != null) {
 			_mutation = true;
-
-			_cachingMutation = 0;
-			_cachedMutation = new float[24576];
-			_cachedMutations[0] = _cachedMutation;
-			_cachedMutationAmount = mutationAmount;
-
-			_original = _params.clone();
-			_params.mutate(mutationAmount);
-
-			reset(true);
-
 			_cachingAsync = true;
-			_cacheTimePerFrame = maxTimePerFrame;
 
-			_cachedCallback = callback;
-
-			if (!_cacheTicker) _cacheTicker = new Shape;
-
-			_cacheTicker.addEventListener(Event.ENTER_FRAME, cacheSection);
+			GameObject _surrogateObj = new GameObject("SfxrGameObjectSurrogate-" + (Time.realtimeSinceStartup));
+			SfxrCacheSurrogate _surrogate = (SfxrCacheSurrogate) _surrogateObj.AddComponent("SfxrCacheSurrogate");
+			_surrogate.CacheMutations(this, __mutationsNum, __mutationAmount, __callback);
 		} else {
-		*/
+			Reset(true);
+
 			SfxrParams original = _params.Clone();
 
 			for (uint i = 0; i < _cachedMutationsNum; i++) {
@@ -400,8 +382,9 @@ public class SfxrSynth {
 				_params.CopyFrom(original);
 			}
 
+			_cachingAsync = false;
 			_cachingMutation = -1;
-		//} [[disabled]]
+		}
 	}
 
 	/**
