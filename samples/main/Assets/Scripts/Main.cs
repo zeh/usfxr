@@ -57,17 +57,21 @@ public class Main : MonoBehaviour {
 		if (newIsCDown && !isCDown) {
 			Debug.Log("Key: C (Laser)");
 
-			SfxrSynth synthC = null;
 			if (synthC == null) {
 				// Laser
 				synthC = new SfxrSynth();
 				synthC.parameters.SetSettingsString("0,,0.1783,,0.3898,0.7523,0.2,-0.2617,,,,,,0.261,0.0356,,,,1,,,0.2466,,0.5");
-				
+				synthC.SetParentTransform(Camera.main.transform);
+
+				float ti = Time.realtimeSinceStartup;
+				synthC.CacheMutations(15, 0.05f);
+				Debug.Log("Took " + (Time.realtimeSinceStartup - ti) + "s to cache mutations.");
+
 				// Hit
 				//synthC.paramss.setSettingsString("2,,0.1702,,0.1689,0.7793,0.0224,-0.4882,,,,,,0.271,0.1608,,,,1,,,,,0.5");
 			}
 
-			synthC.PlayMutated(0.05f);
+			synthC.PlayMutated();
 			//synthC.play();
 		}
 

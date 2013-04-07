@@ -129,8 +129,6 @@ public class SfxrSynth {
 
 	private float		_superSample;						// Actual sample writen to the wave
 	private float		_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
-	private uint		_sampleCount;						// Number of samples added to the buffer sample
-	private float		_bufferSample;						// Another supersample used to create a 22050Hz wave
 
 
 	// ================================================================================================================
@@ -212,7 +210,7 @@ public class SfxrSynth {
 			Reset(true);
 		} else {
 			// Play from random cached mutation
-			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * Random.value)];
+			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * getRandom())];
 			_waveDataPos = 0;
 		}
 		
@@ -274,7 +272,7 @@ public class SfxrSynth {
 
 					int samplesNeeded = (int)Mathf.Min((__data.Length / __channels), _cachedMutation.Length - _cachedMutationPos);
 
-					if (SynthWave(_cachedMutation, (int)_cachedMutationPos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
+					if (SynthWave(_cachedMutation, (int)_cachedMutationPos, (uint)samplesNeeded) || samplesNeeded == 0) {
 						// Finished
 						_params.CopyFrom(_original);
 						_original = null;
@@ -296,7 +294,7 @@ public class SfxrSynth {
 
 					int samplesNeeded = (int)Mathf.Min((__data.Length / __channels), _cachedWave.Length - _cachedWavePos);
 
-					if (SynthWave(_cachedWave, (int)_cachedWavePos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
+					if (SynthWave(_cachedWave, (int)_cachedWavePos, (uint)samplesNeeded) || samplesNeeded == 0) {
 						_cachingNormal = false;
 						endOfSamples = true;
 					} else {
@@ -352,8 +350,8 @@ public class SfxrSynth {
 
 			_cachedWave = new float[_envelopeFullLength];
 
-			SynthWave(_cachedWave, 0, _envelopeFullLength, true);
-		//} [[disablzed]]
+			SynthWave(_cachedWave, 0, _envelopeFullLength);
+		//} [[disabled]]
 	}
 
 	/**
@@ -366,16 +364,17 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, uint __maxTimePerFrame = 5) {
+	public void CacheMutations(uint __mutationsNum = 15, float __mutationAmount = 0.05f) {
 	//public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
-		Debug.Log("Disabled: cache mutations");
-		/*
-		stop();
+		Stop();
 
 		if (_cachingAsync) return;
 
-		_cachedMutationsNum = mutationsNum;
+		_cachedMutationsNum = __mutationsNum;
 		_cachedMutations = new float[_cachedMutationsNum][];
+
+		/*
+		[[disabled]]
 
 		if (callback != null) {
 			_mutation = true;
@@ -399,18 +398,18 @@ public class SfxrSynth {
 
 			_cacheTicker.addEventListener(Event.ENTER_FRAME, cacheSection);
 		} else {
-			SfxrParams original = _params.clone();
+		*/
+			SfxrParams original = _params.Clone();
 
 			for (uint i = 0; i < _cachedMutationsNum; i++) {
-				_params.mutate(mutationAmount);
-				cacheSound();
+				_params.Mutate(__mutationAmount);
+				CacheSound();
 				_cachedMutations[i] = _cachedWave;
-				_params.copyFrom(original);
+				_params.CopyFrom(original);
 			}
 
 			_cachingMutation = -1;
-		}
-		*/
+		//} [[disabled]]
 	}
 
 	/**
@@ -581,7 +580,7 @@ public class SfxrSynth {
 
 			uint i;
 			for (i = 0; i < 1024; i++) _phaserBuffer[i] = 0.0f;
-			for (i = 0; i < 32; i++) _noiseBuffer[i] = Random.value * 2.0f - 1.0f;
+			for (i = 0; i < 32; i++) _noiseBuffer[i] = getRandom() * 2.0f - 1.0f;
 
 			_repeatTime = 0;
 
@@ -599,12 +598,9 @@ public class SfxrSynth {
 	 * @param	waveData	If the wave should be written for the waveData
 	 * @return				If the wave is finished
 	 */
-	private bool SynthWave(float[] __buffer, int __bufferPos, uint __length, bool __waveData = false, uint __sampleRate = 44100, uint __bitDepth = 16) {
+	private bool SynthWave(float[] __buffer, int __bufferPos, uint __length) {
 		_finished = false;
 
-		_sampleCount = 0;
-		_bufferSample = 0.0f;
-		
 		uint i, j, n;
 		
 		for (i = 0; i < __length; i++) {
@@ -705,7 +701,7 @@ public class SfxrSynth {
 
 					// Generates new random noise for this period
 					if (_waveType == 3) {
-						for (n = 0; n < 32; n++) _noiseBuffer[n] = Random.value * 2.0f - 1.0f;
+						for (n = 0; n < 32; n++) _noiseBuffer[n] = getRandom() * 2.0f - 1.0f;
 					}
 				}
 
@@ -773,34 +769,8 @@ public class SfxrSynth {
 				_superSample = 1f;
 			}
 
-			if (__waveData) {
-				// Writes value to list, ignoring left/right sound channels (this is applied when filtering the audio later)
-				__buffer[i + __bufferPos] = _superSample;
-			} else {
-
-				Debug.Log("Disabled: Writing WAV data");
-
-				/*
-				// disabled --zeh
-				_bufferSample += _superSample;
-
-				_sampleCount++;
-
-				// Writes mono wave data to the .wav format
-				if (__sampleRate == 44100 || _sampleCount == 2) {
-					_bufferSample /= _sampleCount;
-					_sampleCount = 0;
-
-					if (bitDepth == 16) {
-						buffer.writeShort((int)(32000.0 * _bufferSample));
-					} else {
-						buffer.writeByte(_bufferSample * 127 + 128);
-					}
-
-					_bufferSample = 0.0f;
-				}
-				*/
-			}
+			// Writes value to list, ignoring left/right sound channels (this is applied when filtering the audio later)
+			__buffer[i + __bufferPos] = _superSample;
 		}
 
 		return false;
@@ -892,4 +862,12 @@ public class SfxrSynth {
 		return wav;
 	}
 	*/
+
+	/**
+	 * Returns a random value: 0 <= n < 1
+	 * This needed to be created to follow the original code more strictly; Unity's getRandom() returns 0 <= n <= 1
+	 */
+	private float getRandom() {
+		return Random.value % 1;
+	}
 }

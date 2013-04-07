@@ -116,5 +116,6 @@ Changelog
 * Users can now set the parent transform of the audio (for proper audio positioning) with `SetParentTransform()`
 * Replaced `Random.value` calls with a more correct `getRandom()` function
 * Added `SfxrSynth.CacheMutations()` (fixes #12)
+* Removed legacy code for WAV generation (closes #16 and fixes #17, #18)
 
 For a list of things that need to be done, check the [issues](https://github.com/zeh/usfxr/issues) tab.
