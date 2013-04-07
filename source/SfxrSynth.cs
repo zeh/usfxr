@@ -129,8 +129,6 @@ public class SfxrSynth {
 
 	private float		_superSample;						// Actual sample writen to the wave
 	private float		_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
-	private uint		_sampleCount;						// Number of samples added to the buffer sample
-	private float		_bufferSample;						// Another supersample used to create a 22050Hz wave
 
 
 	// ================================================================================================================
@@ -274,7 +272,7 @@ public class SfxrSynth {
 
 					int samplesNeeded = (int)Mathf.Min((__data.Length / __channels), _cachedMutation.Length - _cachedMutationPos);
 
-					if (SynthWave(_cachedMutation, (int)_cachedMutationPos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
+					if (SynthWave(_cachedMutation, (int)_cachedMutationPos, (uint)samplesNeeded) || samplesNeeded == 0) {
 						// Finished
 						_params.CopyFrom(_original);
 						_original = null;
@@ -296,7 +294,7 @@ public class SfxrSynth {
 
 					int samplesNeeded = (int)Mathf.Min((__data.Length / __channels), _cachedWave.Length - _cachedWavePos);
 
-					if (SynthWave(_cachedWave, (int)_cachedWavePos, (uint)samplesNeeded, true) || samplesNeeded == 0) {
+					if (SynthWave(_cachedWave, (int)_cachedWavePos, (uint)samplesNeeded) || samplesNeeded == 0) {
 						_cachingNormal = false;
 						endOfSamples = true;
 					} else {
@@ -352,7 +350,7 @@ public class SfxrSynth {
 
 			_cachedWave = new float[_envelopeFullLength];
 
-			SynthWave(_cachedWave, 0, _envelopeFullLength, true);
+			SynthWave(_cachedWave, 0, _envelopeFullLength);
 		//} [[disabled]]
 	}
 
@@ -600,12 +598,9 @@ public class SfxrSynth {
 	 * @param	waveData	If the wave should be written for the waveData
 	 * @return				If the wave is finished
 	 */
-	private bool SynthWave(float[] __buffer, int __bufferPos, uint __length, bool __waveData = false, uint __sampleRate = 44100, uint __bitDepth = 16) {
+	private bool SynthWave(float[] __buffer, int __bufferPos, uint __length) {
 		_finished = false;
 
-		_sampleCount = 0;
-		_bufferSample = 0.0f;
-		
 		uint i, j, n;
 		
 		for (i = 0; i < __length; i++) {
@@ -774,34 +769,8 @@ public class SfxrSynth {
 				_superSample = 1f;
 			}
 
-			if (__waveData) {
-				// Writes value to list, ignoring left/right sound channels (this is applied when filtering the audio later)
-				__buffer[i + __bufferPos] = _superSample;
-			} else {
-
-				Debug.Log("Disabled: Writing WAV data");
-
-				/*
-				// disabled --zeh
-				_bufferSample += _superSample;
-
-				_sampleCount++;
-
-				// Writes mono wave data to the .wav format
-				if (__sampleRate == 44100 || _sampleCount == 2) {
-					_bufferSample /= _sampleCount;
-					_sampleCount = 0;
-
-					if (bitDepth == 16) {
-						buffer.writeShort((int)(32000.0 * _bufferSample));
-					} else {
-						buffer.writeByte(_bufferSample * 127 + 128);
-					}
-
-					_bufferSample = 0.0f;
-				}
-				*/
-			}
+			// Writes value to list, ignoring left/right sound channels (this is applied when filtering the audio later)
+			__buffer[i + __bufferPos] = _superSample;
 		}
 
 		return false;
