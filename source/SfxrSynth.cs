@@ -395,62 +395,7 @@ public class SfxrSynth {
 		_parentTransform = __transform;
 	}
 
-	/**
-	 * Performs the asynchronous cache, working for up to _cacheTimePerFrame milliseconds per frame
-	 * @param	e	enterFrame event
-	 */
-	private void CacheSection(Event e) {
-		Debug.Log("Disabled: cache section");
 
-		/*
-		// [[disabled]]
-		uint cacheStartTime = getTimer();
-
-		while (getTimer() - cacheStartTime < _cacheTimePerFrame) {
-			if (_mutation) {
-				_waveDataPos = _cachedMutation.position;
-
-				if (synthWave(_cachedMutation, 500, true)) {
-					_params.copyFrom(_original);
-					_params.mutate(_cachedMutationAmount);
-					reset(true);
-
-					_cachingMutation++;
-					_cachedMutation = new ByteArray;
-					_cachedMutations[_cachingMutation] = _cachedMutation;
-
-					if (_cachingMutation >= _cachedMutationsNum) {
-						_cachingMutation = -1;
-						_cachingAsync = false;
-
-						_params.paramsDirty = false;
-
-						_cachedCallback();
-						_cachedCallback = null;
-						_cacheTicker.removeEventListener(Event.ENTER_FRAME, CacheSection);
-
-						return;
-					}
-				}
-			} else {
-				_waveDataPos = _cachedWave.position;
-
-				if (synthWave(_cachedWave, 500, true)) {
-					_cachingNormal = false;
-					_cachingAsync = false;
-
-					_cachedCallback();
-					_cachedCallback = null;
-					_cacheTicker.removeEventListener(Event.ENTER_FRAME, cacheSection);
-
-					return;
-				}
-			}
-		}
-		*/
-	}
-	
-	
 	// ================================================================================================================
 	// INTERNAL INTERFACE ---------------------------------------------------------------------------------------------
 
