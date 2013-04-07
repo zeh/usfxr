@@ -7,6 +7,7 @@ public class Main : MonoBehaviour {
 	private SfxrSynth synthB;
 	private SfxrSynth synthC;
 	private SfxrSynth synthD;
+	private SfxrSynth synthE;
 
 	void Start () {
 	    Debug.Log("Initialized");
@@ -57,16 +58,30 @@ public class Main : MonoBehaviour {
 			//synthC.play();
 		}
 		if (Input.GetKeyDown("d")) {
-			Debug.Log("Key: D (Coin with parallel caching)");
+			Debug.Log("Key: D (Long death with parallel caching)");
 
 			if (synthD == null) {
 				// Coin
 				synthD = new SfxrSynth();
-				synthD.parameters.SetSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
-				synthD.CacheSound();
+				synthD.parameters.SetSettingsString("2,,0.0782,0.6203,0.9024,0.5044,,-0.1298,0.0094,-0.0008,-0.5123,0.2868,-0.3859,-0.8811,0.9692,0.3616,0.001,0.0001,0.9528,0.0437,-0.4492,0.1089,,0.5");
+				// http://stackoverflow.com/questions/667742/callbacks-in-c-sharp
+				synthD.CacheSound(() => synthD.Play ());
+			} else {
+				synthD.Play();
 			}
+		}
+		if (Input.GetKeyDown("e")) {
+			Debug.Log("Key: E (Long death with parallel caching of mutations)");
 
-			synthD.Play();
+			if (synthE == null) {
+				// Coin
+				synthE = new SfxrSynth();
+				synthE.parameters.SetSettingsString("2,,0.0782,0.6203,0.9024,0.5044,,-0.1298,0.0094,-0.0008,-0.5123,0.2868,-0.3859,-0.8811,0.9692,0.3616,0.001,0.0001,0.9528,0.0437,-0.4492,0.1089,,0.5");
+				// http://stackoverflow.com/questions/667742/callbacks-in-c-sharp
+				synthE.CacheMutations(15, 0.05f, () => synthE.PlayMutated());
+			} else {
+				synthE.PlayMutated();
+			}
 		}
 	}
 }
