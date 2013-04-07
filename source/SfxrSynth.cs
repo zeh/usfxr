@@ -353,7 +353,7 @@ public class SfxrSynth {
 			_cachedWave = new float[_envelopeFullLength];
 
 			SynthWave(_cachedWave, 0, _envelopeFullLength, true);
-		//} [[disablzed]]
+		//} [[disabled]]
 	}
 
 	/**
@@ -366,16 +366,17 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f) {
+	public void CacheMutations(uint __mutationsNum = 15, float __mutationAmount = 0.05f) {
 	//public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
-		Debug.Log("Disabled: cache mutations");
-		/*
-		stop();
+		Stop();
 
 		if (_cachingAsync) return;
 
-		_cachedMutationsNum = mutationsNum;
+		_cachedMutationsNum = __mutationsNum;
 		_cachedMutations = new float[_cachedMutationsNum][];
+
+		/*
+		[[disabled]]
 
 		if (callback != null) {
 			_mutation = true;
@@ -399,18 +400,18 @@ public class SfxrSynth {
 
 			_cacheTicker.addEventListener(Event.ENTER_FRAME, cacheSection);
 		} else {
-			SfxrParams original = _params.clone();
+		*/
+			SfxrParams original = _params.Clone();
 
 			for (uint i = 0; i < _cachedMutationsNum; i++) {
-				_params.mutate(mutationAmount);
-				cacheSound();
+				_params.Mutate(__mutationAmount);
+				CacheSound();
 				_cachedMutations[i] = _cachedWave;
-				_params.copyFrom(original);
+				_params.CopyFrom(original);
 			}
 
 			_cachingMutation = -1;
-		}
-		*/
+		//} [[disabled]]
 	}
 
 	/**

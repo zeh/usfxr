@@ -710,6 +710,4 @@ public class SfxrParams {
 	private float getRandom() {
 		return Random.value % 1;
 	}
-		
-
 }

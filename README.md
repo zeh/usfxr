@@ -115,40 +115,6 @@ Changelog
 
 * Users can now set the parent transform of the audio (for proper audio positioning) with `SetParentTransform()`
 * Replaced `Random.value` calls with a more correct `getRandom()` function
+* Added `SfxrSynth.CacheMutations()` (fixes #12)
 
-
-TODO
-----
-
-usfxr is still in its infancy. This is the current list of missing things, or things that are in the current short term roadmap.
-
-#### Optimization
-
-* Test if SfxrParams.pow() is actually faster than using pow
-* Test if SfxrParams.to4DP() is returning numbers correctly (1.00001 becomes 1.00000, etc) - maybe round it?
-* replace getTimer() on SfxrSynth with a Time specific call?
-* Too many potential conversions between uint/int - move everything to int? Get rid of all those casts
-* SfxrParam: replace clamp1() and clamp2() with native clamp calls (test speed)
-
-#### Correctness
-
-* Line 496 of SfxrSynth: awkward conversion (was implying from float to int): _changeLimit = (int)((1f - p.changeSpeed) * (1f - p.changeSpeed) * 20000f + 32f);
-* Line 682 of SfxrSynth: awkward conversion (was implying from float to int): _phase = _phase - (int)_periodTemp;
-* Line 552 of SfxrSynth: awkward conversion: _envelopeFullLength was originally a float, but used as an uint everywhere else, so I'm doing the conversion earlier. what kind of unit is this? it may be cutting the audio short
-* Line 262 of SfxrSynth: test filling of data samples to see what's faster
-
-#### Features
-
-* Use Coroutines/yield to asynchronously create the data, and drop the original time-based generation entirely?
-
-#### Missing things
-
-* Events/callbacks, especially for cacheSound()
-* implement cacheMutations()?
-* implement cacheSection()?
-* Do we need to be aware of AudioSettings.outputSampleRate? Test speed in platforms with different output sample rates (iOS)
-* Re-enable other functions on SfxrSynth that have been temporarily disabled - search for [[disabled]]
-
-#### Other stuff
-
-* Re-enable wav file generation? turn on getWavFile(), and allow waveData false on synthWave() on SfxrSynth
+For a list of things that need to be done, check the [issues](https://github.com/zeh/usfxr/issues) tab.
