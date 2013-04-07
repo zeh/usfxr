@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using System.Collections;
 
 public class SfxrSynth {
 
@@ -48,12 +50,10 @@ public class SfxrSynth {
 	private float[]			_cachedMutation;				// Current caching wave data for mutation
 	private uint			_cachedMutationPos;				// Equivalent to _cachedMutation.position in the old code
 	private float[][]		_cachedMutations;				// Cached mutated wave data
-	private uint			_cachedMutationsNum;				// Number of cached mutations
+	private uint			_cachedMutationsNum;			// Number of cached mutations
 	private float			_cachedMutationAmount;			// Amount to mutate during cache
 
 	private bool			_cachingAsync;					// If the synth is currently caching asynchronously
-	private uint			_cacheTimePerFrame;				// Maximum time allowed per frame to cache sound asynchronously
-	//private var			_cachedCallback:Function;				// Function to call when finished caching asynchronously [[disabled]]
 
 	private float[]			_waveData;						// Full wave, read out in chuncks by the onSampleData method
 	private uint			_waveDataPos;					// Current position in the waveData
@@ -320,38 +320,29 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void CacheSound() {
-	//public void cacheSound(Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
+	public void CacheSound(Action __callback = null, bool __isFromCoroutine = false) {
 		Stop();
 
-		if (_cachingAsync) return;
+		if (_cachingAsync && !__isFromCoroutine) return;
 
-		Reset(true);
-
-		/*
-		[[disabled]]
-		_cachedWave = new float[24576];
-
-		if (Boolean(callback)) {
+		if (__callback != null) {
 			_mutation = false;
 			_cachingNormal = true;
 			_cachingAsync = true;
-			_cacheTimePerFrame = maxTimePerFrame;
 
-			_cachedCallback = callback;
-
-			if (!_cacheTicker) _cacheTicker = new Shape;
-
-			_cacheTicker.addEventListener(Event.ENTER_FRAME, cacheSection);
+			GameObject _surrogateObj = new GameObject("SfxrGameObjectSurrogate-" + (Time.realtimeSinceStartup));
+			SfxrCacheSurrogate _surrogate = (SfxrCacheSurrogate) _surrogateObj.AddComponent("SfxrCacheSurrogate");
+			_surrogate.CacheSound(this, __callback);
 		} else {
-		*/
-			_cachingNormal = false;
-			_cachingAsync = false;
+			Reset(true);
 
 			_cachedWave = new float[_envelopeFullLength];
 
 			SynthWave(_cachedWave, 0, _envelopeFullLength);
-		//} [[disabled]]
+
+			_cachingNormal = false;
+			_cachingAsync = false;
+		}
 	}
 
 	/**
@@ -364,41 +355,24 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void CacheMutations(uint __mutationsNum = 15, float __mutationAmount = 0.05f) {
-	//public void CacheMutations(uint __mutationsNum, float __mutationAmount = 0.05f, Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
+	public void CacheMutations(uint __mutationsNum = 15, float __mutationAmount = 0.05f, Action __callback = null, bool __isFromCoroutine = false) {
 		Stop();
 
-		if (_cachingAsync) return;
+		if (_cachingAsync && !__isFromCoroutine) return;
 
 		_cachedMutationsNum = __mutationsNum;
 		_cachedMutations = new float[_cachedMutationsNum][];
 
-		/*
-		[[disabled]]
-
-		if (callback != null) {
+		if (__callback != null) {
 			_mutation = true;
-
-			_cachingMutation = 0;
-			_cachedMutation = new float[24576];
-			_cachedMutations[0] = _cachedMutation;
-			_cachedMutationAmount = mutationAmount;
-
-			_original = _params.clone();
-			_params.mutate(mutationAmount);
-
-			reset(true);
-
 			_cachingAsync = true;
-			_cacheTimePerFrame = maxTimePerFrame;
 
-			_cachedCallback = callback;
-
-			if (!_cacheTicker) _cacheTicker = new Shape;
-
-			_cacheTicker.addEventListener(Event.ENTER_FRAME, cacheSection);
+			GameObject _surrogateObj = new GameObject("SfxrGameObjectSurrogate-" + (Time.realtimeSinceStartup));
+			SfxrCacheSurrogate _surrogate = (SfxrCacheSurrogate) _surrogateObj.AddComponent("SfxrCacheSurrogate");
+			_surrogate.CacheMutations(this, __mutationsNum, __mutationAmount, __callback);
 		} else {
-		*/
+			Reset(true);
+
 			SfxrParams original = _params.Clone();
 
 			for (uint i = 0; i < _cachedMutationsNum; i++) {
@@ -408,8 +382,9 @@ public class SfxrSynth {
 				_params.CopyFrom(original);
 			}
 
+			_cachingAsync = false;
 			_cachingMutation = -1;
-		//} [[disabled]]
+		}
 	}
 
 	/**
@@ -420,62 +395,7 @@ public class SfxrSynth {
 		_parentTransform = __transform;
 	}
 
-	/**
-	 * Performs the asynchronous cache, working for up to _cacheTimePerFrame milliseconds per frame
-	 * @param	e	enterFrame event
-	 */
-	private void CacheSection(Event e) {
-		Debug.Log("Disabled: cache section");
 
-		/*
-		// [[disabled]]
-		uint cacheStartTime = getTimer();
-
-		while (getTimer() - cacheStartTime < _cacheTimePerFrame) {
-			if (_mutation) {
-				_waveDataPos = _cachedMutation.position;
-
-				if (synthWave(_cachedMutation, 500, true)) {
-					_params.copyFrom(_original);
-					_params.mutate(_cachedMutationAmount);
-					reset(true);
-
-					_cachingMutation++;
-					_cachedMutation = new ByteArray;
-					_cachedMutations[_cachingMutation] = _cachedMutation;
-
-					if (_cachingMutation >= _cachedMutationsNum) {
-						_cachingMutation = -1;
-						_cachingAsync = false;
-
-						_params.paramsDirty = false;
-
-						_cachedCallback();
-						_cachedCallback = null;
-						_cacheTicker.removeEventListener(Event.ENTER_FRAME, CacheSection);
-
-						return;
-					}
-				}
-			} else {
-				_waveDataPos = _cachedWave.position;
-
-				if (synthWave(_cachedWave, 500, true)) {
-					_cachingNormal = false;
-					_cachingAsync = false;
-
-					_cachedCallback();
-					_cachedCallback = null;
-					_cacheTicker.removeEventListener(Event.ENTER_FRAME, cacheSection);
-
-					return;
-				}
-			}
-		}
-		*/
-	}
-	
-	
 	// ================================================================================================================
 	// INTERNAL INTERFACE ---------------------------------------------------------------------------------------------
 
@@ -801,73 +721,13 @@ public class SfxrSynth {
 		_gameObject.transform.localPosition = new Vector3(0, 0, 0);
 	}
 
-	// .wav file sound generation methods
-
-	/**
-	 * Returns a ByteArray of the wave in the form of a .wav file, ready to be saved out
-	 * @param	sampleRate		Sample rate to generate the .wav at
-	 * @param	bitDepth		Bit depth to generate the .wav at
-	 * @return					Wave in a .wav file
-	 */
-	/*
-	// disabled --zeh
-	public ByteArray getWavFile(uint sampleRate = 44100, uint bitDepth = 16) {
-		stop();
-
-		reset(true);
-
-		if (sampleRate != 44100) sampleRate = 22050;
-		if (bitDepth != 16) bitDepth = 8;
-
-		var soundLength:uint = _envelopeFullLength;
-		if (bitDepth == 16) soundLength *= 2;
-		if (sampleRate == 22050) soundLength /= 2;
-
-		var filesize:int = 36 + soundLength;
-		var blockAlign:int = bitDepth / 8;
-		var bytesPerSec:int = sampleRate * blockAlign;
-
-		var wav:ByteArray = new ByteArray();
-
-		// Header
-		wav.endian = Endian.BIG_ENDIAN;
-		wav.writeUnsignedInt(0x52494646);		// Chunk ID "RIFF"
-		wav.endian = Endian.LITTLE_ENDIAN;
-		wav.writeUnsignedInt(filesize);			// Chunck Data Size
-		wav.endian = Endian.BIG_ENDIAN;
-		wav.writeUnsignedInt(0x57415645);		// RIFF Type "WAVE"
-
-		// Format Chunk
-		wav.endian = Endian.BIG_ENDIAN;
-		wav.writeUnsignedInt(0x666D7420);		// Chunk ID "fmt "
-		wav.endian = Endian.LITTLE_ENDIAN;
-		wav.writeUnsignedInt(16);				// Chunk Data Size
-		wav.writeShort(1);						// Compression Code PCM
-		wav.writeShort(1);						// Number of channels
-		wav.writeUnsignedInt(sampleRate);		// Sample rate
-		wav.writeUnsignedInt(bytesPerSec);		// Average bytes per second
-		wav.writeShort(blockAlign);				// Block align
-		wav.writeShort(bitDepth);				// Significant bits per sample
-
-		// Data Chunk
-		wav.endian = Endian.BIG_ENDIAN;
-		wav.writeUnsignedInt(0x64617461);		// Chunk ID "data"
-		wav.endian = Endian.LITTLE_ENDIAN;
-		wav.writeUnsignedInt(soundLength);		// Chunk Data Size
-
-		SynthWave(wav, _envelopeFullLength, false, sampleRate, bitDepth);
-
-		wav.position = 0;
-
-		return wav;
-	}
-	*/
-
 	/**
 	 * Returns a random value: 0 <= n < 1
 	 * This needed to be created to follow the original code more strictly; Unity's getRandom() returns 0 <= n <= 1
 	 */
 	private float getRandom() {
-		return Random.value % 1;
+		return UnityEngine.Random.value % 1;
 	}
+
 }
+

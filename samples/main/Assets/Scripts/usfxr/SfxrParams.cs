@@ -708,6 +708,6 @@ public class SfxrParams {
 	 * This needed to be created to follow the original code more strictly; Unity's Random.value returns 0 <= n <= 1
 	 */
 	private float getRandom() {
-		return Random.value % 1;
+		return UnityEngine.Random.value % 1;
 	}
 }
