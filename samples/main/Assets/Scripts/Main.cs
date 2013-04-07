@@ -14,16 +14,6 @@ public class Main : MonoBehaviour {
 	void Start () {
 		isADown = false;
 	    Debug.Log("Initialized");
-
-
-        /*
-        var synth:SfxrSynth = new SfxrSynth();
-        synth.params.setSettingsString("0,,0.271,,0.18,0.395,,0.201,,,,,,0.284,,,,,0.511,,,,,0.5");
-
-        ...
-
-        synth.play();
-        */
     }
 	
 	void Update () {

@@ -702,7 +702,7 @@ public class SfxrParams {
 		if (__value.Length == 0) return 0;
 		return float.Parse(__value);
 	}
-	
+
 	/**
 	 * Returns a random value: 0 <= n < 1
 	 * This needed to be created to follow the original code more strictly; Unity's Random.value returns 0 <= n <= 1
