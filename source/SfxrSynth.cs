@@ -893,7 +893,7 @@ public class SfxrSynth {
 		return wav;
 	}
 	*/
-	
+
 	/**
 	 * Returns a random value: 0 <= n < 1
 	 * This needed to be created to follow the original code more strictly; Unity's getRandom() returns 0 <= n <= 1
