@@ -3,25 +3,17 @@ using System.Collections;
 
 public class Main : MonoBehaviour {
 
-	private bool isADown;
-	private bool isBDown;
-	private bool isCDown;
-
 	private SfxrSynth synthA;
 	private SfxrSynth synthB;
 	private SfxrSynth synthC;
+	private SfxrSynth synthD;
 
 	void Start () {
-		isADown = false;
 	    Debug.Log("Initialized");
     }
 	
 	void Update () {
-		bool newIsADown = Input.GetKey("a");
-		bool newIsBDown = Input.GetKey("b");
-		bool newIsCDown = Input.GetKey("c");
-
-		if (newIsADown && !isADown) {
+		if (Input.GetKeyDown("a")) {
 			Debug.Log("Key: A (Coin)");
 
 			if (synthA == null) {
@@ -33,7 +25,7 @@ public class Main : MonoBehaviour {
 
 			synthA.Play();
 		}
-		if (newIsBDown && !isBDown) {
+		if (Input.GetKeyDown("b")) {
 			Debug.Log("Key: B (Coin without caching)");
 
 			if (synthB == null) {
@@ -44,7 +36,7 @@ public class Main : MonoBehaviour {
 
 			synthB.Play();
 		}
-		if (newIsCDown && !isCDown) {
+		if (Input.GetKeyDown("c")) {
 			Debug.Log("Key: C (Laser)");
 
 			if (synthC == null) {
@@ -64,9 +56,17 @@ public class Main : MonoBehaviour {
 			synthC.PlayMutated();
 			//synthC.play();
 		}
+		if (Input.GetKeyDown("d")) {
+			Debug.Log("Key: D (Coin with parallel caching)");
 
-		isADown = newIsADown;
-		isBDown = newIsBDown;
-		isCDown = newIsCDown;
+			if (synthD == null) {
+				// Coin
+				synthD = new SfxrSynth();
+				synthD.parameters.SetSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
+				synthD.CacheSound();
+			}
+
+			synthD.Play();
+		}
 	}
 }
