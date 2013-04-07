@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using System.Collections;
 
 public class SfxrSynth {
 
@@ -48,12 +50,10 @@ public class SfxrSynth {
 	private float[]			_cachedMutation;				// Current caching wave data for mutation
 	private uint			_cachedMutationPos;				// Equivalent to _cachedMutation.position in the old code
 	private float[][]		_cachedMutations;				// Cached mutated wave data
-	private uint			_cachedMutationsNum;				// Number of cached mutations
+	private uint			_cachedMutationsNum;			// Number of cached mutations
 	private float			_cachedMutationAmount;			// Amount to mutate during cache
 
 	private bool			_cachingAsync;					// If the synth is currently caching asynchronously
-	private uint			_cacheTimePerFrame;				// Maximum time allowed per frame to cache sound asynchronously
-	//private var			_cachedCallback:Function;				// Function to call when finished caching asynchronously [[disabled]]
 
 	private float[]			_waveData;						// Full wave, read out in chuncks by the onSampleData method
 	private uint			_waveDataPos;					// Current position in the waveData
@@ -320,38 +320,30 @@ public class SfxrSynth {
 	 * @param	callback			Function to call when the caching is complete
 	 * @param	maxTimePerFrame		Maximum time in milliseconds the caching will use per frame
 	 */
-	public void CacheSound() {
+	public void CacheSound(Action __callback = null, bool __isFromCoroutine = false) {
+	//public void CacheSound() {
 	//public void cacheSound(Function callback = null, uint maxTimePerFrame = 5) { [[disabled]]
 		Stop();
 
-		if (_cachingAsync) return;
+		if (_cachingAsync && !__isFromCoroutine) return;
 
-		Reset(true);
-
-		/*
-		[[disabled]]
-		_cachedWave = new float[24576];
-
-		if (Boolean(callback)) {
+		if (__callback != null) {
 			_mutation = false;
 			_cachingNormal = true;
 			_cachingAsync = true;
-			_cacheTimePerFrame = maxTimePerFrame;
 
-			_cachedCallback = callback;
-
-			if (!_cacheTicker) _cacheTicker = new Shape;
-
-			_cacheTicker.addEventListener(Event.ENTER_FRAME, cacheSection);
+			GameObject _surrogateObj = new GameObject("SfxrGameObjectSurrogate-" + (Time.realtimeSinceStartup));
+			SfxrCacheSurrogate _surrogate = (SfxrCacheSurrogate) _surrogateObj.AddComponent("SfxrCacheSurrogate");
+			_surrogate.CacheSound(this, __callback);
 		} else {
-		*/
+			Reset(true);
 			_cachingNormal = false;
 			_cachingAsync = false;
 
 			_cachedWave = new float[_envelopeFullLength];
 
 			SynthWave(_cachedWave, 0, _envelopeFullLength);
-		//} [[disabled]]
+		}
 	}
 
 	/**
