@@ -15,7 +15,7 @@ public class Main : MonoBehaviour {
 	
 	void Update () {
 		if (Input.GetKeyDown("a")) {
-			Debug.Log("Key: A (Coin)");
+			Debug.Log("Key: A (Coin with synchronous cache)");
 
 			if (synthA == null) {
 				// Coin
@@ -27,7 +27,7 @@ public class Main : MonoBehaviour {
 			synthA.Play();
 		}
 		if (Input.GetKeyDown("b")) {
-			Debug.Log("Key: B (Coin without caching)");
+			Debug.Log("Key: B (Coin without caching, generating asynchronously)");
 
 			if (synthB == null) {
 				// Coin
@@ -38,7 +38,7 @@ public class Main : MonoBehaviour {
 			synthB.Play();
 		}
 		if (Input.GetKeyDown("c")) {
-			Debug.Log("Key: C (Laser)");
+			Debug.Log("Key: C (Laser with mutations cached synchronously)");
 
 			if (synthC == null) {
 				// Laser
@@ -58,20 +58,20 @@ public class Main : MonoBehaviour {
 			//synthC.play();
 		}
 		if (Input.GetKeyDown("d")) {
-			Debug.Log("Key: D (Long death with parallel caching)");
+			Debug.Log("Key: D (Long death with asynchronous caching and callback)");
 
 			if (synthD == null) {
 				// Coin
 				synthD = new SfxrSynth();
 				synthD.parameters.SetSettingsString("2,,0.0782,0.6203,0.9024,0.5044,,-0.1298,0.0094,-0.0008,-0.5123,0.2868,-0.3859,-0.8811,0.9692,0.3616,0.001,0.0001,0.9528,0.0437,-0.4492,0.1089,,0.5");
 				// http://stackoverflow.com/questions/667742/callbacks-in-c-sharp
-				synthD.CacheSound(() => synthD.Play ());
+				synthD.CacheSound(() => synthD.Play());
 			} else {
 				synthD.Play();
 			}
 		}
 		if (Input.GetKeyDown("e")) {
-			Debug.Log("Key: E (Long death with parallel caching of mutations)");
+			Debug.Log("Key: E (Long death with parallel caching of mutations and callback)");
 
 			if (synthE == null) {
 				// Coin

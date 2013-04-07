@@ -52,11 +52,15 @@ Finally, to play your audio effect, you simply do:
 
 	synth.Play();
 
-With usfxr, all audio data is generated the first time an effect is played. That way, any potential heavy load in generating audio doesn't have to be repeated. Because of that, while it's possible to generate new SfxrSynth instances every time they need to be played, it's usually a better idea to keep them around and reuse them as needed.
+With usfxr, all audio data is generated the first time an effect is played. That way, any potential heavy load in generating audio doesn't have to be repeated.
+
+Because of that, while it's possible to generate new SfxrSynth instances every time they need to be played, it's usually a better idea to keep them around and reuse them as needed.
+
+It's also important to notice that audio data generation does not occur all at once. This is a good thing: the audio data is generated as necessary, before playback of each 20ms chunk (more or less), so long audio effects won't take a lot of time to be generated. Audio is also generated on a separate thread, so impact on actual game execution should be minimal. Check [`OnAudioFilterRead`](http://docs.unity3d.com/Documentation/ScriptReference/MonoBehaviour.OnAudioFilterRead.html) for more details.
 
 #### Advanced usage: caching
 
-In case of long or numerous audio effects, it makes sense to cache them first, before they are allowed to be played. This is done by calling the cacheSound() method first, as in:
+In case of long or numerous audio effects, it may make sense to cache them first, before they are allowed to be played. This is done by calling the cacheSound() method first, as in:
 
 	SfxrSynth synth = new SfxrSynth();
 	synth.parameters.SetSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
@@ -64,7 +68,17 @@ In case of long or numerous audio effects, it makes sense to cache them first, b
 	...
 	synth.Play();
 
-As a reference, it typically takes around 7ms-70ms for an audio effect to be cached on a desktop computer, depending on its length and complexity. Therefore, sometimes it's better to let game cache sound as they're played, if possible (only a small portion of the audio is generated at a time), or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts. Check the samples for an example of how this is done.
+This caches the audio synchronously, that is, code execution is interrupted until `synth.CacheSound()` is completed. However, it's also possible to execute caching asynchronously, if you provide a callback function. Like so:
+
+	SfxrSynth synth = new SfxrSynth();
+	synth.parameters.SetSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
+	synth.CacheSound(() => synth.Play());
+
+In the above case, the `CacheSound()` method will immediately return, and audio start to be generated in parallel with other code (as a coroutine). When the audio is cached, the callback function (`Play()`, in this case) will be called.
+
+As a reference, it typically takes around 7ms-70ms for an audio effect to be cached on a desktop computer, depending on its length and complexity. Therefore, sometimes it's better to let the game cache audio as it's played, or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts. Check the samples for an example of how this is done.
+
+An important notice when comparing to as3sfxr: the ActionScript 3 virtual machine doesn't normally support multi-threading, or parallel execution of code. Because of this, the asynchronous caching methods of as3sfxr are somewhat different from what is adopted with usfxr, since Unity does execute code in parallel (through [Coroutines](http://docs.unity3d.com/Documentation//ScriptReference/index.Coroutines_26_Yield.html) or in a separate thread entirely (through [`OnAudioFilterRead`](http://docs.unity3d.com/Documentation/ScriptReference/MonoBehaviour.OnAudioFilterRead.html)). As such, the caching strategy on Unity normally won't have to be as robust as an ActionScript 3 project; in the vast majority of the cases, it's better to ignore caching altogether and let the library handle it itself.
 
 #### Advanced usage: setting the audio position
 
@@ -84,6 +98,11 @@ Other than the source code to usfxr, the Git repository contains a few example p
 #### Benchmark
 
 This is a C# project that serves as a benchmark of the audio generation code. Run this example in different platforms to get an idea of how long it takes for that system to generate each audio sample. Because the audio is generated in real time the first time it has to be played, heavy audio generation can have a negative impact on game performance, so one must keep the results of this test in mind when deciding on a procedural audio solution for a game. A performance hit in audio generation may mean that you have to generate audio caches before a level is started, or in a worst case even abandoning the idea of using procedural audio.
+
+
+#### Main
+
+A simple example of audio generation and playback. Press keys A-E to generate audio in different ways, and check Unity's console log for more information on what was generated.
 
 
 #### SpaceGame
