@@ -130,6 +130,17 @@ Contribute
 Changelog
 ---------
 
+#### 2013-04-14
+
+* Added movable enemies (spheres) to SpaceGame
+
+#### 2013-04-07
+
+* Added asynchronous generation (with callbacks) for CacheSound() and CacheMutations()
+* Code cleanup and removal of useless files
+* Samples: "Main" is a bit more user-friendly
+* Samples: Added initial SpaceGame
+
 #### 2013-04-06
 
 * Users can now set the parent transform of the audio (for proper audio positioning) with `SetParentTransform()`
