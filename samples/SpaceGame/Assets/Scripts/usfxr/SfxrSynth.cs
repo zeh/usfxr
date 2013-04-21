@@ -130,6 +130,8 @@ public class SfxrSynth {
 	private float		_superSample;						// Actual sample writen to the wave
 	private float		_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
 
+	private System.Random randomGenerator = new System.Random();
+
 
 	// ================================================================================================================
 	// ACCESSOR INTERFACE ---------------------------------------------------------------------------------------------
@@ -726,7 +728,9 @@ public class SfxrSynth {
 	 * This needed to be created to follow the original code more strictly; Unity's getRandom() returns 0 <= n <= 1
 	 */
 	private float getRandom() {
-		return UnityEngine.Random.value % 1;
+		// Doesn't use Unity's Random.value because it cannot be called from a separate thread
+		// (It gets the error "get_value can only be called from the main thread" when trying to be called to generate a noise on audio request)
+		return (float)(randomGenerator.NextDouble() % 1);
 	}
 
 }
