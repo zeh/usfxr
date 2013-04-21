@@ -8,21 +8,25 @@ public class Bullet : MonoBehaviour {
 
 	private float spawnTime;
 
-	void Start () {
+	void Start() {
 		// Rotates the bullet a little bit
 		transform.Rotate(0, 0, (Random.value - 0.5f) * 10 + 90);
 
 		spawnTime = Time.realtimeSinceStartup;
 	}
 	
-	void Update () {
+	void Update() {
 		float speedPassed = Time.deltaTime;
 
 		transform.Translate(0, SPEED * -speedPassed, 0);
 
 		if (Time.realtimeSinceStartup > spawnTime + TIME_TO_LIVE) {
-			// Die
-			UnityEngine.Object.Destroy(gameObject);
+			Die ();
 		}
 	}
+
+	public void Die() {
+		UnityEngine.Object.Destroy(gameObject);
+	}
+
 }
