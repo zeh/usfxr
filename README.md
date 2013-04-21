@@ -130,6 +130,12 @@ Contribute
 Changelog
 ---------
 
+#### 2013-04-21
+
+* Modified SfxrSynth to use the (safer) system-based random number generator (fixes errors thrown when attempting to generate noise from separate threads)
+* Samples: "SpaceGame" has enemies that collide with bullets (taking damage and making bullets disappear) and explode when health reaches 0
+* Samples: "SpaceGame" has a toggle for mutated audio mode
+
 #### 2013-04-14
 
 * Added movable enemies (spheres) to SpaceGame
