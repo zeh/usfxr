@@ -23,7 +23,7 @@ public class Enemy : MonoBehaviour {
 		scale *= scale;
 		scale *= transform.localScale.x;
 
-		health = (int)Mathf.Round(BASE_HEALTH * scale);
+		health = (int)Mathf.Round(BASE_HEALTH * scale * 0.5f);
 		isAlive = true;
 
 		spawnTime = Time.realtimeSinceStartup;

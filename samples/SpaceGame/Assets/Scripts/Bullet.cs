@@ -21,7 +21,7 @@ public class Bullet : MonoBehaviour {
 		transform.Translate(0, SPEED * -speedPassed, 0);
 
 		if (Time.realtimeSinceStartup > spawnTime + TIME_TO_LIVE) {
-			Die ();
+			Die();
 		}
 	}
 
