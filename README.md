@@ -107,7 +107,11 @@ A simple example of audio generation and playback. Press keys A-E to generate au
 
 #### SpaceGame
 
-(...todo...)
+A very simple game with basic objects: use the W, A, S and D (or arrow) keys to move around a cube in space. Press SPACE to shoot bullets. Enemy circles will spawn on the right of the screen; hit them with bullets to destroy them.
+
+In this game prototype, all audio - bullets, enemy spawns, and enemy explosions - are handled by usfxr. Since all audio effects are played in their "mutated" form, this example shows how the same audio can be played with little variation, adding some flavor to the lo-fi audio emitted by the game.
+
+Press the Z key to toggle mutated audio on and off. When off, the original audio is played. Try playing the game in both modes and notice the difference in regards to audio repetition when mutated mode is off.
 
 
 #### SpaceGamePreloaded
