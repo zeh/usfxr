@@ -8,15 +8,29 @@ public class Main : MonoBehaviour {
 	private float timeEnemySpawned;
 	private float timeEnemySpawnInterval;
 
-	void Start () {
+	public static bool isModeMutated;
+
+	void Start() {
 		timeEnemySpawnInterval = TIME_ENEMY_SPAWN_INTERVAL_START;
+		isModeMutated = true;
+		UpdateGUI();
     }
 	
-	void Update () {
+	void Update() {
 		if (Time.realtimeSinceStartup > timeEnemySpawned + timeEnemySpawnInterval) {
-			timeEnemySpawnInterval *= 0.99f; // Makes it go faster and faster over time
+			timeEnemySpawnInterval *= 0.98f; // Makes it go faster and faster over time
 			SpawnEnemy();
 		}
+
+		if (Input.GetKeyDown(KeyCode.Z)) {
+			Main.isModeMutated = !isModeMutated;
+			UpdateGUI();
+		}
+	}
+
+	private void UpdateGUI() {
+		GUIText guiText = (GUIText) GameObject.Find("GUIText").GetComponent("GUIText");
+		guiText.text = "Z: Mutated mode [" + (isModeMutated ? "ON" : "OFF") + "]";
 	}
 
 	private void SpawnEnemy() {

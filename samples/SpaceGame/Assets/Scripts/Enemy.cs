@@ -10,7 +10,6 @@ public class Enemy : MonoBehaviour {
 	private const float BASE_HEALTH = 1;
 	private const float TIME_TO_EXPLODE = 1;
 
-	private bool modeMutated;
 	private float scale;
 	private int health;
 	private float speed;
@@ -20,8 +19,6 @@ public class Enemy : MonoBehaviour {
 	private float explodeTime;
 
 	void Start() {
-		modeMutated = true;
-
 		scale = 0.5f + (Random.value * 0.5f);
 		scale *= scale;
 		scale *= transform.localScale.x;
@@ -37,7 +34,7 @@ public class Enemy : MonoBehaviour {
 
 		SfxrSynth synthSpawn = new SfxrSynth();
 		synthSpawn.parameters.SetSettingsString("0,0.03,0.23,0.05,0.42,0.15,0.07,-0.04,-0.02,,,0.02,0.05,0.11,0.1799,0.03,-0.4599,0.3999,0.38,,0.11,0.02,-0.02,0.5");
-		if (modeMutated) {
+		if (Main.isModeMutated) {
 			synthSpawn.PlayMutated(0.05f);
 		} else {
 			synthSpawn.Play();
@@ -87,7 +84,7 @@ public class Enemy : MonoBehaviour {
 
 			SfxrSynth synth = new SfxrSynth();
 			synth.parameters.SetSettingsString("3,0.0228,0.2553,0.186,0.4243,0.0935,,0.0139,0.0292,0.0346,0.0599,-0.3396,0.7684,,-0.0209,,-0.0302,,1,-0.0272,0.0043,,0.0493,0.5");
-			if (modeMutated) {
+			if (Main.isModeMutated) {
 				synth.PlayMutated();
 			} else {
 				synth.Play();
