@@ -64,7 +64,7 @@ public class Enemy : MonoBehaviour {
 				float explodePhase = (Time.realtimeSinceStartup - explodeTime) / TIME_TO_EXPLODE;
 
 				float explodePhaseColor = 1-((1-explodePhase) * (1-explodePhase) * (1-explodePhase));
-				transform.renderer.material.color = new Color(1, 0, 0, 0.5f * (1-explodePhaseColor));
+				transform.renderer.material.color = new Color(1, 0, 0, 0.8f * (1-explodePhaseColor));
 				//transform.renderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, 0.5f * (1-explodePhaseColor));
 				//transform.renderer.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, 1-explodePhaseColor);
 
