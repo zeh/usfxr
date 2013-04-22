@@ -113,6 +113,7 @@ In this game prototype, all audio - bullets, enemy spawns, and enemy explosions 
 
 Press the Z key to toggle mutated audio on and off. When off, the original audio is played. Try playing the game in both modes and notice the difference in regards to audio repetition when mutated mode is off.
 
+Play this sample online [here](http://hosted.zehfernando.com/ludumdare/usfxr/).
 
 #### SpaceGamePreloaded
 
