@@ -46,7 +46,7 @@ Typically, the workflow for using usfxr inside a project is as such:
 <!-- hack to allow code formatting -->
 
 	SfxrSynth synth = new SfxrSynth();
-	synth.parameters.setSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
+	synth.parameters.SetSettingsString("0,,0.032,0.4138,0.4365,0.834,,,,,,0.3117,0.6925,,,,,,1,,,,,0.5");
 
 Finally, to play your audio effect, you simply do:
 
