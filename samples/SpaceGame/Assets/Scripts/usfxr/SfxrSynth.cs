@@ -333,7 +333,7 @@ public class SfxrSynth {
 			_cachingAsync = true;
 
 			GameObject _surrogateObj = new GameObject("SfxrGameObjectSurrogate-" + (Time.realtimeSinceStartup));
-			SfxrCacheSurrogate _surrogate = (SfxrCacheSurrogate) _surrogateObj.AddComponent("SfxrCacheSurrogate");
+			SfxrCacheSurrogate _surrogate = _surrogateObj.AddComponent<SfxrCacheSurrogate>();
 			_surrogate.CacheSound(this, __callback);
 		} else {
 			Reset(true);
@@ -370,7 +370,7 @@ public class SfxrSynth {
 			_cachingAsync = true;
 
 			GameObject _surrogateObj = new GameObject("SfxrGameObjectSurrogate-" + (Time.realtimeSinceStartup));
-			SfxrCacheSurrogate _surrogate = (SfxrCacheSurrogate) _surrogateObj.AddComponent("SfxrCacheSurrogate");
+			SfxrCacheSurrogate _surrogate = _surrogateObj.AddComponent<SfxrCacheSurrogate>();
 			_surrogate.CacheMutations(this, __mutationsNum, __mutationAmount, __callback);
 		} else {
 			Reset(true);
@@ -704,7 +704,7 @@ public class SfxrSynth {
 		fixGameObjectParent();
 
 		// Create actual audio player
-    	_audioPlayer = (SfxrAudioPlayer) _gameObject.AddComponent ("SfxrAudioPlayer");
+    	_audioPlayer = _gameObject.AddComponent<SfxrAudioPlayer>();
 		_audioPlayer.SetSfxrSynth(this);
 	}
 

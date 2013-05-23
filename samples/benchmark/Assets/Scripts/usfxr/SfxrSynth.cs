@@ -333,7 +333,7 @@ public class SfxrSynth {
 			_cachingAsync = true;
 
 			GameObject _surrogateObj = new GameObject("SfxrGameObjectSurrogate-" + (Time.realtimeSinceStartup));
-			SfxrCacheSurrogate _surrogate = (SfxrCacheSurrogate) _surrogateObj.AddComponent("SfxrCacheSurrogate");
+			SfxrCacheSurrogate _surrogate = _surrogateObj.AddComponent<SfxrCacheSurrogate>();
 			_surrogate.CacheSound(this, __callback);
 		} else {
 			Reset(true);
@@ -370,7 +370,7 @@ public class SfxrSynth {
 			_cachingAsync = true;
 
 			GameObject _surrogateObj = new GameObject("SfxrGameObjectSurrogate-" + (Time.realtimeSinceStartup));
-			SfxrCacheSurrogate _surrogate = (SfxrCacheSurrogate) _surrogateObj.AddComponent("SfxrCacheSurrogate");
+			SfxrCacheSurrogate _surrogate = _surrogateObj.AddComponent<SfxrCacheSurrogate>();
 			_surrogate.CacheMutations(this, __mutationsNum, __mutationAmount, __callback);
 		} else {
 			Reset(true);
@@ -704,7 +704,7 @@ public class SfxrSynth {
 		fixGameObjectParent();
 
 		// Create actual audio player
-    	_audioPlayer = (SfxrAudioPlayer) _gameObject.AddComponent ("SfxrAudioPlayer");
+    	_audioPlayer = _gameObject.AddComponent<SfxrAudioPlayer>();
 		_audioPlayer.SetSfxrSynth(this);
 	}
 
@@ -728,7 +728,7 @@ public class SfxrSynth {
 	 * This needed to be created to follow the original code more strictly; Unity's getRandom() returns 0 <= n <= 1
 	 */
 	private float getRandom() {
-		// Doesn't use Unityś Random.value because it cannot be called from a separate thread
+		// Doesn't use Unity's Random.value because it cannot be called from a separate thread
 		// (It gets the error "get_value can only be called from the main thread" when trying to be called to generate a noise on audio request)
 		return (float)(randomGenerator.NextDouble() % 1);
 	}

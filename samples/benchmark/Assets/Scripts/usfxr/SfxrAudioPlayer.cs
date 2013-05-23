@@ -43,7 +43,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 	
 	void Start() {
 		// Creates an empty audio source so this GameObject can receive audio events
-		AudioSource soundSource = (AudioSource) gameObject.AddComponent("AudioSource");
+		AudioSource soundSource = gameObject.AddComponent<AudioSource>();
 		soundSource.clip = new AudioClip();
 		soundSource.volume = 1f;
 		soundSource.pitch = 1f;
