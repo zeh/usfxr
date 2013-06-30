@@ -619,7 +619,7 @@ public class SfxrSynth {
 				// Cycles through the period
 				_phase++;
 				if (_phase >= _periodTemp) {
-					_phase = _phase - (int)_periodTemp;
+					_phase = _phase % (int)_periodTemp;
 
 					// Generates new random noise for this period
 					if (_waveType == 3) {
