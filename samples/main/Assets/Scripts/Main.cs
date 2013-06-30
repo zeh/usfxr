@@ -83,5 +83,11 @@ public class Main : MonoBehaviour {
 				synthE.PlayMutated();
 			}
 		}
+		if (Input.GetKeyDown("f")) {
+			Debug.Log("Key: F (Sound that triggers error, no caching)");
+			SfxrSynth synthF = new SfxrSynth();
+			synthF.parameters.SetSettingsString("3,,.1536,.604,.8086,.5019,,.1375,.1967,-.1802,-.8501,.8789,.7139,-.3231,-.0025,.059,.0009,.0181,.8003,-.4656,-.1474,.0041,.0022,.5");
+			synthF.Play();
+		}
 	}
 }
