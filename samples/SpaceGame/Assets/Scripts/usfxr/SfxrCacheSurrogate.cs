@@ -1,6 +1,6 @@
-using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine;
 
 public class SfxrCacheSurrogate : MonoBehaviour {
 

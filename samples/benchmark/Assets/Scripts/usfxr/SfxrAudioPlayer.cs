@@ -1,6 +1,7 @@
+using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
+[ExecuteInEditMode]
 public class SfxrAudioPlayer : MonoBehaviour {
 
 	/**
@@ -33,6 +34,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 	// Properties
 	private bool		isDestroyed = false;		// If true, this instance has been destroyed and shouldn't do anything yes
 	private bool		needsToDestroy = false;		// If true, it has been scheduled for destruction (from outside the main thread)
+	private bool		runningInEditMode = false;	// If true, it is running from the editor and NOT playing
 
 	// Instances
 	private SfxrSynth	sfxrSynth;					// SfxrSynth instance that will generate the audio samples used by this
@@ -50,7 +52,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 		soundSource.priority = 128;
 	}
 
-	void Update () {
+	void Update() {
 		// Destroys self in case it has been queued for deletion
 		if (needsToDestroy) {
 			needsToDestroy = false;
@@ -65,7 +67,15 @@ public class SfxrAudioPlayer : MonoBehaviour {
 			bool hasMoreSamples = sfxrSynth.GenerateAudioFilterData(__data, __channels);
 			
 			// If no more samples are needed, there's no more need for this GameObject so schedule a destruction (cannot do this in this thread)
-			if (!hasMoreSamples) needsToDestroy = true;
+			if (!hasMoreSamples) {
+				needsToDestroy = true;
+				if (runningInEditMode) {
+					// When running in edit mode, Update() is not called on every frame
+					// We can't call Destroy() directly either, since Destroy() must be ran from the main thread
+					// So we just attach out Update() to the editor's update event
+					EditorApplication.update += Update;
+				}
+			}
 		}
   	}
 	
@@ -78,14 +88,23 @@ public class SfxrAudioPlayer : MonoBehaviour {
 		sfxrSynth = __sfxrSynth;
 	}
 
+	public void SetRunningInEditMode(bool __runningInEditMode) {
+		// Sets the SfxrSynth instance that will generate the audio samples used by this
+		runningInEditMode = __runningInEditMode;
+	}
+
 	public void Destroy() {
 		// Stops audio immediately and destroys self
 		if (!isDestroyed) {
 			isDestroyed = true;
 			sfxrSynth = null;
-			UnityEngine.Object.Destroy(gameObject);
+			if (runningInEditMode) {
+				// Since we're running in the editor, we need to remove the update event, AND destroy immediately
+				UnityEngine.Object.DestroyImmediate(gameObject);
+				EditorApplication.update -= Update;
+			} else {
+				UnityEngine.Object.Destroy(gameObject);
+			}
 		}
 	}
-
-
 }
