@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
 [ExecuteInEditMode]
 public class SfxrAudioPlayer : MonoBehaviour {
