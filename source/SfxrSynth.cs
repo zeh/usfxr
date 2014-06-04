@@ -706,6 +706,7 @@ public class SfxrSynth {
 		// Create actual audio player
     	_audioPlayer = _gameObject.AddComponent<SfxrAudioPlayer>();
 		_audioPlayer.SetSfxrSynth(this);
+		_audioPlayer.SetRunningInEditMode(Application.isEditor && !Application.isPlaying);
 	}
 
 
