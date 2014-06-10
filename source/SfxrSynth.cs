@@ -725,11 +725,11 @@ public class SfxrSynth {
 
 	/**
 	 * Returns a random value: 0 <= n < 1
-	 * This needed to be created to follow the original code more strictly; Unity's getRandom() returns 0 <= n <= 1
+	 * This function is needed so we can follow the original code more strictly; Unity's Random.value returns 0 <= n <= 1
 	 */
 	private float getRandom() {
-		// Doesn't use Unity's Random.value because it cannot be called from a separate thread
-		// (It gets the error "get_value can only be called from the main thread" when trying to be called to generate a noise on audio request)
+		// We can't use Unity's Random.value because it cannot be called from a separate thread
+		// (We get the error "get_value can only be called from the main thread" when this is called to generate the soung data)
 		return (float)(randomGenerator.NextDouble() % 1);
 	}
 

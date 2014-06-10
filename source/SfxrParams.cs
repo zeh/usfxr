@@ -70,7 +70,7 @@ public class SfxrParams {
 	// ================================================================================================================
 	// ACCESSOR INTERFACE ---------------------------------------------------------------------------------------------
 
-	/** Shape of the wave (0:square, 1:saw, 2:sin or 3:noise) */
+	/** Shape of the wave (0:square, 1:sawtooth, 2:sin, 3:noise) */
 	public uint waveType {
 		get { return _waveType; }
 		set { _waveType = value > 3 ? 0 : value; paramsDirty = true; }

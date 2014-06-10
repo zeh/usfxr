@@ -61,7 +61,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 	}
 
 	void OnAudioFilterRead(float[] __data, int __channels) {
-		// Requets that sfxrSynth generates the needed audio data
+		// Requests the generation of the needed audio data from SfxrSynth
 
 		if (!isDestroyed && !needsToDestroy && sfxrSynth != null) {
 			bool hasMoreSamples = sfxrSynth.GenerateAudioFilterData(__data, __channels);
