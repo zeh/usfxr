@@ -84,6 +84,7 @@ public class SfxrSynth {
 	private float		_pos;								// Phase expresed as a Number from 0-1, used for fast sin approx
 	private float		_period;							// Period of the wave
 	private float		_periodTemp;						// Period modified by vibrato
+	private int			_periodTempInt;						// Period modified by vibrato (as an Int)
 	private float		_maxPeriod;							// Maximum period before sound stops (from minFrequency)
 
 	private float		_slide;								// Note slide
@@ -522,9 +523,10 @@ public class SfxrSynth {
 	private bool SynthWave(float[] __buffer, int __bufferPos, uint __length) {
 		_finished = false;
 
-		uint i, j, n;
+		int i, j, n;
+		int l = (int)__length;
 		
-		for (i = 0; i < __length; i++) {
+		for (i = 0; i < l; i++) {
 			if (_finished) return true;
 
 			// Repeats every _repeatLimit times, partially resetting the sound parameters
@@ -561,8 +563,8 @@ public class SfxrSynth {
 				_periodTemp = _period * (1.0f + Mathf.Sin(_vibratoPhase) * _vibratoAmplitude);
 			}
 
-			_periodTemp = (int)_periodTemp;
-			if (_periodTemp < 8) _periodTemp = 8;
+			_periodTempInt = (int)_periodTemp;
+			if (_periodTempInt < 8) _periodTemp = _periodTempInt = 8;
 
 			// Sweeps the square duty
 			if (_waveType == 0) {
@@ -617,8 +619,8 @@ public class SfxrSynth {
 			for (j = 0; j < 8; j++) {
 				// Cycles through the period
 				_phase++;
-				if (_phase >= _periodTemp) {
-					_phase = _phase % (int)_periodTemp;
+				if (_phase >= _periodTempInt) {
+					_phase = _phase % _periodTempInt;
 
 					// Generates new random noise for this period
 					if (_waveType == 3) {
@@ -641,7 +643,7 @@ public class SfxrSynth {
 						_sample = _sample < 0 ? 0.225f * (_sample *-_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample;
 						break;
 					case 3: // Noise
-						_sample = _noiseBuffer[(uint)(_phase * 32 / (int)_periodTemp)];
+						_sample = _noiseBuffer[(uint)(_phase * 32 / _periodTempInt)];
 						break;
 				}
 
@@ -672,7 +674,7 @@ public class SfxrSynth {
 
 				// Applies the phaser effect
 				if (_phaser) {
-					_phaserBuffer[_phaserPos&1023] = _sample;
+					_phaserBuffer[_phaserPos & 1023] = _sample;
 					_sample += _phaserBuffer[(_phaserPos - _phaserInt + 1024) & 1023];
 					_phaserPos = (_phaserPos + 1) & 1023;
 				}
