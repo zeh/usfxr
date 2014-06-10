@@ -1,2 +1,5 @@
 _temp
+_assets
 _*.bat
+samples/main/Assets/AssetStoreTools
+samples/main/Assets/AssetStoreTools.*
