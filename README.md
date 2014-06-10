@@ -138,6 +138,10 @@ Acknowledgments
 Changelog
 ---------
 
+#### 2014-06-10
+
+* Small internal optimizations: generates audio samples in about 9% less time
+
 #### 2014-06-04
 
 * Modified SfxrSynth and SfxrAudioPlayer to properly allow sound playing running the editor in edit mode
