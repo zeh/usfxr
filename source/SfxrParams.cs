@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class SfxrParams {
 
 	/**
@@ -79,139 +81,139 @@ public class SfxrParams {
 	/** Overall volume of the sound (0 to 1) */
 	public float masterVolume {
 		get { return _masterVolume; }
-		set { _masterVolume = Clamp1(value); paramsDirty = true; }
+		set { _masterVolume = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Length of the volume envelope attack (0 to 1) */
 	public float attackTime {
 		get { return _attackTime; }
-		set { _attackTime = Clamp1(value); paramsDirty = true; }
+		set { _attackTime = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Length of the volume envelope sustain (0 to 1) */
 	public float sustainTime {
 		get { return _sustainTime; }
-		set { _sustainTime = Clamp1(value); paramsDirty = true; }
+		set { _sustainTime = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Tilts the sustain envelope for more 'pop' (0 to 1) */
 	public float sustainPunch {
 		get { return _sustainPunch; }
-		set { _sustainPunch = Clamp1(value); paramsDirty = true; }
+		set { _sustainPunch = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Length of the volume envelope decay (yes, I know it's called release) (0 to 1) */
 	public float decayTime {
 		get { return _decayTime; }
-		set { _decayTime = Clamp1(value); paramsDirty = true; }
+		set { _decayTime = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Base note of the sound (0 to 1) */
 	public float startFrequency {
 		get { return _startFrequency; }
-		set { _startFrequency = Clamp1(value); paramsDirty = true; }
+		set { _startFrequency = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** If sliding, the sound will stop at this frequency, to prevent really low notes (0 to 1) */
 	public float minFrequency {
 		get { return _minFrequency; }
-		set { _minFrequency = Clamp1(value); paramsDirty = true; }
+		set { _minFrequency = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Slides the note up or down (-1 to 1) */
 	public float slide {
 		get { return _slide; }
-		set { _slide = Clamp2(value); paramsDirty = true; }
+		set { _slide = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 	/** Accelerates the slide (-1 to 1) */
 	public float deltaSlide {
 		get { return _deltaSlide; }
-		set { _deltaSlide = Clamp2(value); paramsDirty = true; }
+		set { _deltaSlide = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 	/** Strength of the vibrato effect (0 to 1) */
 	public float vibratoDepth {
 		get { return _vibratoDepth; }
-		set { _vibratoDepth = Clamp1(value); paramsDirty = true; }
+		set { _vibratoDepth = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Speed of the vibrato effect (i.e. frequency) (0 to 1) */
 	public float vibratoSpeed {
 		get { return _vibratoSpeed; }
-		set { _vibratoSpeed = Clamp1(value); paramsDirty = true; }
+		set { _vibratoSpeed = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Shift in note, either up or down (-1 to 1) */
 	public float changeAmount {
 		get { return _changeAmount; }
-		set { _changeAmount = Clamp2(value); paramsDirty = true; }
+		set { _changeAmount = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 	/** How fast the note shift happens (only happens once) (0 to 1) */
 	public float changeSpeed {
 		get { return _changeSpeed; }
-		set { _changeSpeed = Clamp1(value); paramsDirty = true; }
+		set { _changeSpeed = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Controls the ratio between the up and down states of the square wave, changing the tibre (0 to 1) */
 	public float squareDuty {
 		get { return _squareDuty; }
-		set { _squareDuty = Clamp1(value); paramsDirty = true; }
+		set { _squareDuty = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Sweeps the duty up or down (-1 to 1) */
 	public float dutySweep {
 		get { return _dutySweep; }
-		set { _dutySweep = Clamp2(value); paramsDirty = true; }
+		set { _dutySweep = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 	/** Speed of the note repeating - certain variables are reset each time (0 to 1) */
 	public float repeatSpeed {
 		get { return _repeatSpeed; }
-		set { _repeatSpeed = Clamp1(value); paramsDirty = true; }
+		set { _repeatSpeed = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Offsets a second copy of the wave by a small phase, changing the tibre (-1 to 1) */
 	public float phaserOffset {
 		get { return _phaserOffset; }
-		set { _phaserOffset = Clamp2(value); paramsDirty = true; }
+		set { _phaserOffset = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 	/** Sweeps the phase up or down (-1 to 1) */
 	public float phaserSweep {
 		get { return _phaserSweep; }
-		set { _phaserSweep = Clamp2(value); paramsDirty = true; }
+		set { _phaserSweep = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 	/** Frequency at which the low-pass filter starts attenuating higher frequencies (0 to 1) */
 	public float lpFilterCutoff {
 		get { return _lpFilterCutoff; }
-		set { _lpFilterCutoff = Clamp1(value); paramsDirty = true; }
+		set { _lpFilterCutoff = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Sweeps the low-pass cutoff up or down (-1 to 1) */
 	public float lpFilterCutoffSweep {
 		get { return _lpFilterCutoffSweep; }
-		set { _lpFilterCutoffSweep = Clamp2(value); paramsDirty = true; }
+		set { _lpFilterCutoffSweep = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 	/** Changes the attenuation rate for the low-pass filter, changing the timbre (0 to 1) */
 	public float lpFilterResonance {
 		get { return _lpFilterResonance; }
-		set { _lpFilterResonance = Clamp1(value); paramsDirty = true; }
+		set { _lpFilterResonance = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Frequency at which the high-pass filter starts attenuating lower frequencies (0 to 1) */
 	public float hpFilterCutoff {
 		get { return _hpFilterCutoff; }
-		set { _hpFilterCutoff = Clamp1(value); paramsDirty = true; }
+		set { _hpFilterCutoff = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
 	}
 
 	/** Sweeps the high-pass cutoff up or down (-1 to 1) */
 	public float hpFilterCutoffSweep {
 		get { return _hpFilterCutoffSweep; }
-		set { _hpFilterCutoffSweep = Clamp2(value); paramsDirty = true; }
+		set { _hpFilterCutoffSweep = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 
@@ -226,15 +228,15 @@ public class SfxrParams {
 	public void GeneratePickupCoin() {
 		resetParams();
 
-		_startFrequency = 0.4f + getRandom() * 0.5f;
+		_startFrequency = 0.4f + GetRandom() * 0.5f;
 
-		_sustainTime = getRandom() * 0.1f;
-		_decayTime = 0.1f + getRandom() * 0.4f;
-		_sustainPunch = 0.3f + getRandom() * 0.3f;
+		_sustainTime = GetRandom() * 0.1f;
+		_decayTime = 0.1f + GetRandom() * 0.4f;
+		_sustainPunch = 0.3f + GetRandom() * 0.3f;
 
-		if (getRandom() < 0.5f) {
-			_changeSpeed = 0.5f + getRandom() * 0.2f;
-			_changeAmount = 0.2f + getRandom() * 0.4f;
+		if (GetRandomBool()) {
+			_changeSpeed = 0.5f + GetRandom() * 0.2f;
+			_changeAmount = 0.2f + GetRandom() * 0.4f;
 		}
 	}
 
@@ -244,39 +246,39 @@ public class SfxrParams {
 	public void GenerateLaserShoot() {
 		resetParams();
 
-		_waveType = (uint)(getRandom() * 3);
-		if (_waveType == 2 && getRandom() < 0.5f) _waveType = (uint)(getRandom() * 2f);
+		_waveType = (uint)(GetRandom() * 3);
+		if (_waveType == 2 && GetRandomBool()) _waveType = (uint)(GetRandom() * 2f);
 
-		_startFrequency = 0.5f + getRandom() * 0.5f;
-		_minFrequency = _startFrequency - 0.2f - getRandom() * 0.6f;
+		_startFrequency = 0.5f + GetRandom() * 0.5f;
+		_minFrequency = _startFrequency - 0.2f - GetRandom() * 0.6f;
 		if (_minFrequency < 0.2f) _minFrequency = 0.2f;
 
-		_slide = -0.15f - getRandom() * 0.2f;
+		_slide = -0.15f - GetRandom() * 0.2f;
 
-		if (getRandom() < 0.33f) {
-			_startFrequency = 0.3f + getRandom() * 0.6f;
-			_minFrequency = getRandom() * 0.1f;
-			_slide = -0.35f - getRandom() * 0.3f;
+		if (GetRandom() < 0.33f) {
+			_startFrequency = 0.3f + GetRandom() * 0.6f;
+			_minFrequency = GetRandom() * 0.1f;
+			_slide = -0.35f - GetRandom() * 0.3f;
 		}
 
-		if (getRandom() < 0.5f) {
-			_squareDuty = getRandom() * 0.5f;
-			_dutySweep = getRandom() * 0.2f;
+		if (GetRandomBool()) {
+			_squareDuty = GetRandom() * 0.5f;
+			_dutySweep = GetRandom() * 0.2f;
 		} else {
-			_squareDuty = 0.4f + getRandom() * 0.5f;
-			_dutySweep =- getRandom() * 0.7f;
+			_squareDuty = 0.4f + GetRandom() * 0.5f;
+			_dutySweep =- GetRandom() * 0.7f;
 		}
 
-		_sustainTime = 0.1f + getRandom() * 0.2f;
-		_decayTime = getRandom() * 0.4f;
-		if (getRandom() < 0.5f) _sustainPunch = getRandom() * 0.3f;
+		_sustainTime = 0.1f + GetRandom() * 0.2f;
+		_decayTime = GetRandom() * 0.4f;
+		if (GetRandomBool()) _sustainPunch = GetRandom() * 0.3f;
 
-		if (getRandom() < 0.33f) {
-			_phaserOffset = getRandom() * 0.2f;
-			_phaserSweep = -getRandom() * 0.2f;
+		if (GetRandom() < 0.33f) {
+			_phaserOffset = GetRandom() * 0.2f;
+			_phaserSweep = -GetRandom() * 0.2f;
 		}
 
-		if (getRandom() < 0.5f) _hpFilterCutoff = getRandom() * 0.3f;
+		if (GetRandomBool()) _hpFilterCutoff = GetRandom() * 0.3f;
 	}
 
 	/**
@@ -286,31 +288,31 @@ public class SfxrParams {
 		resetParams();
 		_waveType = 3;
 
-		if (getRandom() < 0.5f) {
-			_startFrequency = 0.1f + getRandom() * 0.4f;
-			_slide = -0.1f + getRandom() * 0.4f;
+		if (GetRandomBool()) {
+			_startFrequency = 0.1f + GetRandom() * 0.4f;
+			_slide = -0.1f + GetRandom() * 0.4f;
 		} else {
-			_startFrequency = 0.2f + getRandom() * 0.7f;
-			_slide = -0.2f - getRandom() * 0.2f;
+			_startFrequency = 0.2f + GetRandom() * 0.7f;
+			_slide = -0.2f - GetRandom() * 0.2f;
 		}
 
 		_startFrequency *= _startFrequency;
 
-		if (getRandom() < 0.2f) _slide = 0.0f;
-		if (getRandom() < 0.33f) _repeatSpeed = 0.3f + getRandom() * 0.5f;
+		if (GetRandom() < 0.2f) _slide = 0.0f;
+		if (GetRandom() < 0.33f) _repeatSpeed = 0.3f + GetRandom() * 0.5f;
 
-		_sustainTime = 0.1f + getRandom() * 0.3f;
-		_decayTime = getRandom() * 0.5f;
-		_sustainPunch = 0.2f + getRandom() * 0.6f;
+		_sustainTime = 0.1f + GetRandom() * 0.3f;
+		_decayTime = GetRandom() * 0.5f;
+		_sustainPunch = 0.2f + GetRandom() * 0.6f;
 
-		if (getRandom() < 0.5f) {
-			_phaserOffset = -0.3f + getRandom() * 0.9f;
-			_phaserSweep = -getRandom() * 0.3f;
+		if (GetRandomBool()) {
+			_phaserOffset = -0.3f + GetRandom() * 0.9f;
+			_phaserSweep = -GetRandom() * 0.3f;
 		}
 
-		if (getRandom() < 0.33f) {
-			_changeSpeed = 0.6f + getRandom() * 0.3f;
-			_changeAmount = 0.8f - getRandom() * 1.6f;
+		if (GetRandom() < 0.33f) {
+			_changeSpeed = 0.6f + GetRandom() * 0.3f;
+			_changeAmount = 0.8f - GetRandom() * 1.6f;
 		}
 	}
 
@@ -320,28 +322,28 @@ public class SfxrParams {
 	public void GeneratePowerup() {
 		resetParams();
 
-		if (getRandom() < 0.5f) {
+		if (GetRandomBool()) {
 			_waveType = 1;
 		} else {
-			_squareDuty = getRandom() * 0.6f;
+			_squareDuty = GetRandom() * 0.6f;
 		}
 
-		if (getRandom() < 0.5f) {
-			_startFrequency = 0.2f + getRandom() * 0.3f;
-			_slide = 0.1f + getRandom() * 0.4f;
-			_repeatSpeed = 0.4f + getRandom() * 0.4f;
+		if (GetRandomBool()) {
+			_startFrequency = 0.2f + GetRandom() * 0.3f;
+			_slide = 0.1f + GetRandom() * 0.4f;
+			_repeatSpeed = 0.4f + GetRandom() * 0.4f;
 		} else {
-			_startFrequency = 0.2f + getRandom() * 0.3f;
-			_slide = 0.05f + getRandom() * 0.2f;
+			_startFrequency = 0.2f + GetRandom() * 0.3f;
+			_slide = 0.05f + GetRandom() * 0.2f;
 
-			if (getRandom() < 0.5f) {
-				_vibratoDepth = getRandom() * 0.7f;
-				_vibratoSpeed = getRandom() * 0.6f;
+			if (GetRandomBool()) {
+				_vibratoDepth = GetRandom() * 0.7f;
+				_vibratoSpeed = GetRandom() * 0.6f;
 			}
 		}
 
-		_sustainTime = getRandom() * 0.4f;
-		_decayTime = 0.1f + getRandom() * 0.4f;
+		_sustainTime = GetRandom() * 0.4f;
+		_decayTime = 0.1f + GetRandom() * 0.4f;
 	}
 
 	/**
@@ -350,20 +352,20 @@ public class SfxrParams {
 	public void GenerateHitHurt() {
 		resetParams();
 
-		_waveType = (uint)(getRandom() * 3f);
+		_waveType = (uint)(GetRandom() * 3f);
 		if (_waveType == 2) {
 			_waveType = 3;
 		} else if (_waveType == 0) {
-			_squareDuty = getRandom() * 0.6f;
+			_squareDuty = GetRandom() * 0.6f;
 		}
 
-		_startFrequency = 0.2f + getRandom() * 0.6f;
-		_slide = -0.3f - getRandom() * 0.4f;
+		_startFrequency = 0.2f + GetRandom() * 0.6f;
+		_slide = -0.3f - GetRandom() * 0.4f;
 
-		_sustainTime = getRandom() * 0.1f;
-		_decayTime = 0.1f + getRandom() * 0.2f;
+		_sustainTime = GetRandom() * 0.1f;
+		_decayTime = 0.1f + GetRandom() * 0.2f;
 
-		if (getRandom() < 0.5f) _hpFilterCutoff = getRandom() * 0.3f;
+		if (GetRandomBool()) _hpFilterCutoff = GetRandom() * 0.3f;
 	}
 
 	/**
@@ -373,15 +375,15 @@ public class SfxrParams {
 		resetParams();
 
 		_waveType = 0;
-		_squareDuty = getRandom() * 0.6f;
-		_startFrequency = 0.3f + getRandom() * 0.3f;
-		_slide = 0.1f + getRandom() * 0.2f;
+		_squareDuty = GetRandom() * 0.6f;
+		_startFrequency = 0.3f + GetRandom() * 0.3f;
+		_slide = 0.1f + GetRandom() * 0.2f;
 
-		_sustainTime = 0.1f + getRandom() * 0.3f;
-		_decayTime = 0.1f + getRandom() * 0.2f;
+		_sustainTime = 0.1f + GetRandom() * 0.3f;
+		_decayTime = 0.1f + GetRandom() * 0.2f;
 
-		if (getRandom() < 0.5f) _hpFilterCutoff = getRandom() * 0.3f;
-		if (getRandom() < 0.5f) _lpFilterCutoff = 1.0f - getRandom() * 0.6f;
+		if (GetRandomBool()) _hpFilterCutoff = GetRandom() * 0.3f;
+		if (GetRandomBool()) _lpFilterCutoff = 1.0f - GetRandom() * 0.6f;
 	}
 
 	/**
@@ -390,13 +392,13 @@ public class SfxrParams {
 	public void GenerateBlipSelect() {
 		resetParams();
 
-		_waveType = (uint)(getRandom() * 2f);
-		if (_waveType == 0) _squareDuty = getRandom() * 0.6f;
+		_waveType = (uint)(GetRandom() * 2f);
+		if (_waveType == 0) _squareDuty = GetRandom() * 0.6f;
 
-		_startFrequency = 0.2f + getRandom() * 0.4f;
+		_startFrequency = 0.2f + GetRandom() * 0.4f;
 
-		_sustainTime = 0.1f + getRandom() * 0.1f;
-		_decayTime = getRandom() * 0.2f;
+		_sustainTime = 0.1f + GetRandom() * 0.1f;
+		_decayTime = GetRandom() * 0.2f;
 		_hpFilterCutoff = 0.1f;
 	}
 
@@ -444,28 +446,28 @@ public class SfxrParams {
 	 * Randomly adjusts the parameters ever so slightly
 	 */
 	public void Mutate(float __mutation = 0.05f) {
-		if (getRandom() < 0.5f) startFrequency += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) minFrequency += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) slide += 				getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) deltaSlide += 			getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) squareDuty += 			getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) dutySweep += 			getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) vibratoDepth += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) vibratoSpeed += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) attackTime += 			getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) sustainTime += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) decayTime += 			getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) sustainPunch += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) lpFilterCutoff += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) lpFilterCutoffSweep += getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) lpFilterResonance += 	getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) hpFilterCutoff += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) hpFilterCutoffSweep += getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) phaserOffset += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) phaserSweep += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) repeatSpeed += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) changeSpeed += 		getRandom() * __mutation * 2f - __mutation;
-		if (getRandom() < 0.5f) changeAmount += 		getRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) startFrequency +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) minFrequency +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) slide +=				GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) deltaSlide +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) squareDuty +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) dutySweep +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) vibratoDepth +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) vibratoSpeed +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) attackTime +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) sustainTime +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) decayTime +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) sustainPunch +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) lpFilterCutoff +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) lpFilterCutoffSweep +=	GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) lpFilterResonance +=	GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) hpFilterCutoff +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) hpFilterCutoffSweep +=	GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) phaserOffset +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) phaserSweep +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) repeatSpeed +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) changeSpeed +=			GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) changeAmount +=		GetRandom() * __mutation * 2f - __mutation;
 	}
 
 	/**
@@ -474,43 +476,43 @@ public class SfxrParams {
 	public void Randomize() {
 		paramsDirty = true;
 
-		_waveType = (uint)(getRandom() * 4f);
+		_waveType = (uint)(GetRandom() * 4f);
 
-		_attackTime =  		Pow(getRandom()*2f-1f, 4);
-		_sustainTime =  	Pow(getRandom()*2f-1f, 2);
-		_sustainPunch =  	Pow(getRandom()*0.8f, 2);
-		_decayTime =  		getRandom();
+		_attackTime =  		Pow(GetRandom()*2f-1f, 4);
+		_sustainTime =  	Pow(GetRandom()*2f-1f, 2);
+		_sustainPunch =  	Pow(GetRandom()*0.8f, 2);
+		_decayTime =  		GetRandom();
 
-		_startFrequency =  	(getRandom() < 0.5f) ? Pow(getRandom()*2f-1f, 2) : (Pow(getRandom() * 0.5f, 3) + 0.5f);
+		_startFrequency =  	(GetRandomBool()) ? Pow(GetRandom()*2f-1f, 2) : (Pow(GetRandom() * 0.5f, 3) + 0.5f);
 		_minFrequency =  	0.0f;
 
-		_slide =  			Pow(getRandom()*2f-1f, 5);
-		_deltaSlide =  		Pow(getRandom()*2f-1f, 3);
+		_slide =  			Pow(GetRandom()*2f-1f, 5);
+		_deltaSlide =  		Pow(GetRandom()*2f-1f, 3);
 
-		_vibratoDepth =  	Pow(getRandom()*2f-1f, 3);
-		_vibratoSpeed =  	getRandom()*2f-1f;
+		_vibratoDepth =  	Pow(GetRandom()*2f-1f, 3);
+		_vibratoSpeed =  	GetRandom()*2f-1f;
 
-		_changeAmount =  	getRandom()*2f-1f;
-		_changeSpeed =  	getRandom()*2f-1f;
+		_changeAmount =  	GetRandom()*2f-1f;
+		_changeSpeed =  	GetRandom()*2f-1f;
 
-		_squareDuty =  		getRandom()*2f-1f;
-		_dutySweep =  		Pow(getRandom()*2f-1f, 3);
+		_squareDuty =  		GetRandom()*2f-1f;
+		_dutySweep =  		Pow(GetRandom()*2f-1f, 3);
 
-		_repeatSpeed =  	getRandom()*2f-1f;
+		_repeatSpeed =  	GetRandom()*2f-1f;
 
-		_phaserOffset =  	Pow(getRandom()*2f-1f, 3);
-		_phaserSweep =  	Pow(getRandom()*2f-1f, 3);
+		_phaserOffset =  	Pow(GetRandom()*2f-1f, 3);
+		_phaserSweep =  	Pow(GetRandom()*2f-1f, 3);
 
-		_lpFilterCutoff =  		1f - Pow(getRandom(), 3);
-		_lpFilterCutoffSweep = 	Pow(getRandom()*2f-1f, 3);
-		_lpFilterResonance =  	getRandom()*2f-1f;
+		_lpFilterCutoff =  		1f - Pow(GetRandom(), 3);
+		_lpFilterCutoffSweep = 	Pow(GetRandom()*2f-1f, 3);
+		_lpFilterResonance =  	GetRandom()*2f-1f;
 
-		_hpFilterCutoff =  		Pow(getRandom(), 5);
-		_hpFilterCutoffSweep = 	Pow(getRandom()*2f-1f, 5);
+		_hpFilterCutoff =  		Pow(GetRandom(), 5);
+		_hpFilterCutoffSweep = 	Pow(GetRandom()*2f-1f, 5);
 
 		if (_attackTime + _sustainTime + _decayTime < 0.2f) {
-			_sustainTime = 0.2f + getRandom() * 0.3f;
-			_decayTime = 0.2f + getRandom() * 0.3f;
+			_sustainTime = 0.2f + GetRandom() * 0.3f;
+			_decayTime = 0.2f + GetRandom() * 0.3f;
 		}
 
 		if ((_startFrequency > 0.7f && _slide > 0.2) || (_startFrequency < 0.2 && _slide < -0.05)) {
@@ -637,25 +639,7 @@ public class SfxrParams {
 	// Utility methods
 
 	/**
-	 * Clams a value to betwen 0 and 1
-	 * @param	value	Input value
-	 * @return			The value clamped between 0 and 1
-	 */
-	private float Clamp1(float value) {
-		return (value > 1f) ? 1f : ((value < 0f) ? 0f : value);
-	}
-
-	/**
-	 * Clams a value to betwen -1 and 1
-	 * @param	value	Input value
-	 * @return			The value clamped between -1 and 1
-	 */
-	private float Clamp2(float value) {
-		return (value > 1f) ? 1f : ((value < -1f) ? -1f : value);
-	}
-
-	/**
-	 * Quick power function
+	 * Faster power function; this function takes about 36% of the time Mathf.Pow() would take in our use cases
 	 * @param	base		Base to raise to power
 	 * @param	power		Power to raise base by
 	 * @return				The calculated power
@@ -686,7 +670,7 @@ public class SfxrParams {
 	}
 
 	/**
-	 * Added by zeh - 2013 03 11 - temp?
+	 * Parses a string into an uint value; also returns 0 if the string is empty, rather than an error
 	 */
 	private uint ParseUint(string __value) {
 		if (__value.Length == 0) return 0;
@@ -694,7 +678,7 @@ public class SfxrParams {
 	}
 
 	/**
-	 * Added by zeh - 2013 03 11 - temp?
+	 * Parses a string into a float value; also returns 0 if the string is empty, rather than an error
 	 */
 	private float ParseFloat(string __value) {
 		if (__value.Length == 0) return 0;
@@ -703,9 +687,16 @@ public class SfxrParams {
 
 	/**
 	 * Returns a random value: 0 <= n < 1
-	 * This needed to be created to follow the original code more strictly; Unity's Random.value returns 0 <= n <= 1
+	 * This function is needed so we can follow the original code more strictly; Unity's Random.value returns 0 <= n <= 1
 	 */
-	private float getRandom() {
+	private float GetRandom() {
 		return UnityEngine.Random.value % 1;
+	}
+
+	/**
+	 * Returns a boolean value
+	 */
+	private bool GetRandomBool() {
+		return UnityEngine.Random.value > 0.5f;
 	}
 }
