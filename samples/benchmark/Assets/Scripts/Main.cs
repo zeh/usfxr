@@ -3,25 +3,22 @@ using System.Collections;
 
 public class Main : MonoBehaviour {
 	
-	private bool isADown = false;
-	private GUIText guiText;
+	private GUIText cameraGuiText;
 	
 	private float timeShort = 0;
 	private float timeLong = 0;
 	private int timesRan = 0;
 
 	void Start () {
-		guiText = (GUIText) GameObject.Find("CameraText").GetComponent("GUIText");
+		cameraGuiText = (GUIText) GameObject.Find("CameraText").GetComponent("GUIText");
 		
-		guiText.text = "Press A to start benchmarking sound generation";
+		cameraGuiText.text = "Press A to start benchmarking sound generation";
     }
-	
-	void Update () {
-		bool newIsADown = Input.GetKey("a");
 
-		if (newIsADown && !isADown) {
+	void Update () {
+		if (Input.GetKeyDown("a")) {
 			// Start benchmarking
-			guiText.text = "Benchmarking...";
+			cameraGuiText.text = "Benchmarking...";
 			
 			string completeText = "";
 			completeText += "Output sample rate: " + AudioSettings.outputSampleRate + "\n";
@@ -66,7 +63,7 @@ public class Main : MonoBehaviour {
 				
 			completeText += "\n";
 			completeText += "Press A to benchmark again";
-			guiText.text = completeText;
+			cameraGuiText.text = completeText;
 		}
 		/*
 		if (newIsCDown && !isCDown) {
