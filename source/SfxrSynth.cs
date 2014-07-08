@@ -30,6 +30,15 @@ public class SfxrSynth {
 	 * @author Zeh Fernando
 	 */
 	
+	// Enums
+	
+	public enum WaveType : int {
+		Square = 0,
+		Sawtooth = 1,
+		Sine = 2,
+		Noise = 3
+	}
+
 	
 	// Sound properties
 	private SfxrParams		_params = new SfxrParams();		// Params instance
@@ -64,8 +73,8 @@ public class SfxrSynth {
 
 	private float		_masterVolume;						// masterVolume * masterVolume (for quick calculations)
 
-	private uint		_waveType;							// The type of wave to generate
-
+	private uint		_waveType;							// The type of wave to generate (see enum WaveType)
+	
 	private float		_envelopeVolume;					// Current volume of the envelope
 	private int			_envelopeStage;						// Current stage of the envelope (attack, sustain, decay, end)
 	private float		_envelopeTime;						// Current time through current enelope stage
@@ -416,7 +425,7 @@ public class SfxrSynth {
 		_slide = 1.0f - p.slide * p.slide * p.slide * 0.01f;
 		_deltaSlide = -p.deltaSlide * p.deltaSlide * p.deltaSlide * 0.000001f;
 
-		if (p.waveType == 0) {
+		if (p.waveType == WaveType.Square) {
 			_squareDuty = 0.5f - p.squareDuty * 0.5f;
 			_dutySweep = -p.dutySweep * 0.00005f;
 		}
@@ -567,7 +576,7 @@ public class SfxrSynth {
 			if (_periodTempInt < 8) _periodTemp = _periodTempInt = 8;
 
 			// Sweeps the square duty
-			if (_waveType == 0) {
+			if (_waveType == WaveType.Square) {
 				_squareDuty += _dutySweep;
 				if (_squareDuty < 0.0) {
 					_squareDuty = 0.0f;
@@ -623,26 +632,26 @@ public class SfxrSynth {
 					_phase = _phase % _periodTempInt;
 
 					// Generates new random noise for this period
-					if (_waveType == 3) {
+					if (_waveType == WaveType.Noise) {
 						for (n = 0; n < 32; n++) _noiseBuffer[n] = getRandom() * 2.0f - 1.0f;
 					}
 				}
 
 				// Gets the sample from the oscillator
 				switch(_waveType) {
-					case 0: // Square wave
+					case WaveType.Square: // Square wave
 						_sample = ((_phase / _periodTemp) < _squareDuty) ? 0.5f : -0.5f;
 						break;
-					case 1: // Saw wave
+					case WaveType.Sawtooth: // Saw wave
 						_sample = 1.0f - (_phase / _periodTemp) * 2.0f;
 						break;
-					case 2: // Sine wave (fast and accurate approx) {
+					case WaveType.Sine: // Sine wave (fast and accurate approx) {
 						_pos = _phase / _periodTemp;
 						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
 						_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
 						_sample = _sample < 0 ? 0.225f * (_sample *-_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample;
 						break;
-					case 3: // Noise
+					case WaveType.Noise: // Noise
 						_sample = _noiseBuffer[(uint)(_phase * 32 / _periodTempInt)];
 						break;
 				}
