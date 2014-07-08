@@ -87,12 +87,12 @@ In the above case, the `CacheSound()` method will immediately return, and audio 
 
 As a reference, it typically takes around 7ms-70ms for an audio effect to be cached on a desktop, depending on its length and complexity. Therefore, sometimes it's better to let the game cache audio as it's played, or to stack the caching of all audio in the beginning of the gameplay, such as before a level starts.
 
-An important notice when comparing to as3sfxr: the ActionScript 3 virtual machine doesn't normally support multi-threading, or parallel execution of code. Because of this, the asynchronous caching methods of as3sfxr are somewhat different from what is adopted with usfxr, since Unity does execute code in parallel (through [Coroutines](http://docs.unity3d.com/Documentation//ScriptReference/index.Coroutines_26_Yield.html) or in a separate thread entirely (through [`OnAudioFilterRead`](http://docs.unity3d.com/Documentation/ScriptReference/MonoBehaviour.OnAudioFilterRead.html)). As such, your caching strategy on Unity normally won't have to be as robust as an ActionScript 3 project; in the vast majority of the cases, it's better to ignore caching altogether and let the library handle it itself by using `Play()` with no custom caching calls.
+An important notice when comparing to as3sfxr: the ActionScript 3 virtual machine doesn't normally support multi-threading, or parallel execution of code. Because of this, the asynchronous caching methods of as3sfxr are somewhat different from what is adopted with usfxr, since Unity does execute code in parallel (using [Coroutines](http://docs.unity3d.com/Documentation//ScriptReference/index.Coroutines_26_Yield.html)) or in a separate thread entirely (using [`OnAudioFilterRead`](http://docs.unity3d.com/Documentation/ScriptReference/MonoBehaviour.OnAudioFilterRead.html)). As such, your caching strategy on Unity normally won't have to be as robust as an ActionScript 3 project; in the vast majority of the cases, it's better to ignore caching altogether and let the library handle it itself by using `Play()` with no custom caching calls.
 
 
 #### Advanced usage: setting the audio position
 
-By default, all audio is attached to the first main `Camera` available (that is, [`Camera.main`](http://docs.unity3d.com/Documentation/ScriptReference/Camera-main.html)). If you want to attach your audio playback to a different game object - and thus produce positional audio - you use `SetParentTransform`, as in:
+By default, all audio is attached to the first main `Camera` available (that is, [`Camera.main`](http://docs.unity3d.com/Documentation/ScriptReference/Camera-main.html)). If you want to attach your audio playback to a different game object - and thus produce positional audio - you use `SetParentTransform` on your `SfxrSynth` instance, as in:
 
 	synth.SetParentTransform(gameObject.transform);
 
@@ -125,6 +125,20 @@ Press the Z key to toggle mutated audio on and off. When off, the original audio
 
 Play this sample online [here](http://hosted.zehfernando.com/ludumdare/usfxr/).
 
+
+To-do/ideas
+-----------
+
+ * Re-add export to WAV and create button
+ * Create button to copy code
+ * Test in Javascript/create example
+ * Create button to export to sound clip/game object
+ * Show waveform in GUI
+ * Add stats such as memory and build time to GUI
+ * Show final duration in GUI
+ * Undo/Redo
+ * Add option to "lock" GUI items like BFXR's interface
+ * Implement BFXR's new parameters (new waveforms, new filters)
 
 
 Acknowledgments
