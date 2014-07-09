@@ -195,18 +195,17 @@ public class SfxrGenerator : EditorWindow {
 	public bool RenderParameters(SfxrParams parameters) {
 		bool mustPlaySound = false;
 
+		GUIStyle waveTypeStyle = EditorStyles.popup;
+		waveTypeStyle.fontSize = 12;
+		waveTypeStyle.fixedHeight = 22;
+
 		EditorGUI.BeginChangeCheck();
 		try {
-			//GUILayout.BeginHorizontal();
-			//GUILayout.FlexibleSpace();
 			SfxrParams.WaveType waveTypeAsEnum = (SfxrParams.WaveType)parameters.waveType;
-			waveTypeAsEnum = (SfxrParams.WaveType)EditorGUILayout.EnumPopup("Wave type", waveTypeAsEnum);
+			waveTypeAsEnum = (SfxrParams.WaveType)EditorGUILayout.EnumPopup(new GUIContent("Wave Type", "Shape of the wave"), waveTypeAsEnum, waveTypeStyle);
 			parameters.waveType = (uint)waveTypeAsEnum;
-			//parameters.waveType = (uint)GUILayout.Toolbar((int)parameters.waveType, new string[] { "Squarewave", "Sawtooth", "Sinewave", "Noise", "Triangle", "Pink Noise", "Tan", "Whistle", "Breaker" }, GUILayout.MinWidth(500), GUILayout.MaxWidth(500), GUILayout.Height(24), GUILayout.ExpandWidth(true));
-			//GUILayout.FlexibleSpace();
-			//GUILayout.EndHorizontal();
+			GUILayout.Space(12);
 
-			//RenderToolbar(new string[] { "Square Wave", "Sawtooth", "Sine wave", "Noise" }, (value => parameters.waveType = ((uint)value)), new GUIContent("Wave Type", "Shape of the wave"));
 			//RenderPopup(waveTypeOptions, ((int)(parameters.waveType)), (value => parameters.waveType = ((uint)(value))), new GUIContent("Wave Type", "Shape of the wave"));
 			bool isSquareWaveType = (parameters.waveType == 0);
 			RenderSlider(+0, +1, parameters.masterVolume, (value => parameters.masterVolume = value), new GUIContent("Volume", "Overall volume of the sound (0 to 1)"));
