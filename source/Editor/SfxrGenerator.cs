@@ -37,14 +37,6 @@ public class SfxrGenerator : EditorWindow {
 	/// Open the usfxr's sound-effects generator window.
 	/// </summary>
 
-	// Enums
-	enum WaveType : uint {
-		Square = 0,
-		Sawtooth = 1,
-		Sine = 2,
-		Noise = 3
-	}
-
 	// Properties
 	private Vector2 scrollPosition;		// Position of the scroll window
 	private Vector2 scrollPositionRoot;
@@ -205,11 +197,14 @@ public class SfxrGenerator : EditorWindow {
 
 		EditorGUI.BeginChangeCheck();
 		try {
-			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
-			parameters.waveType = (uint)GUILayout.Toolbar((int)parameters.waveType, new string[] { "Squarewave", "Sawtooth", "Sinewave", "Noise" }, GUILayout.MinWidth(300), GUILayout.MaxWidth(400), GUILayout.Height(24), GUILayout.ExpandWidth(true));
-			GUILayout.FlexibleSpace();
-			GUILayout.EndHorizontal();
+			//GUILayout.BeginHorizontal();
+			//GUILayout.FlexibleSpace();
+			SfxrParams.WaveType waveTypeAsEnum = (SfxrParams.WaveType)parameters.waveType;
+			waveTypeAsEnum = (SfxrParams.WaveType)EditorGUILayout.EnumPopup("Wave type", waveTypeAsEnum);
+			parameters.waveType = (uint)waveTypeAsEnum;
+			//parameters.waveType = (uint)GUILayout.Toolbar((int)parameters.waveType, new string[] { "Squarewave", "Sawtooth", "Sinewave", "Noise", "Triangle", "Pink Noise", "Tan", "Whistle", "Breaker" }, GUILayout.MinWidth(500), GUILayout.MaxWidth(500), GUILayout.Height(24), GUILayout.ExpandWidth(true));
+			//GUILayout.FlexibleSpace();
+			//GUILayout.EndHorizontal();
 
 			//RenderToolbar(new string[] { "Square Wave", "Sawtooth", "Sine wave", "Noise" }, (value => parameters.waveType = ((uint)value)), new GUIContent("Wave Type", "Shape of the wave"));
 			//RenderPopup(waveTypeOptions, ((int)(parameters.waveType)), (value => parameters.waveType = ((uint)(value))), new GUIContent("Wave Type", "Shape of the wave"));

@@ -30,16 +30,10 @@ public class SfxrSynth {
 	 * @author Zeh Fernando
 	 */
 	
-	// Enums
-	
-	public enum WaveType : int {
-		Square = 0,
-		Sawtooth = 1,
-		Sine = 2,
-		Noise = 3
-	}
 
-	
+	// Constants
+	private const int LO_RES_NOISE_PERIOD = 8;					// Should be < 32
+
 	// Sound properties
 	private SfxrParams		_params = new SfxrParams();		// Params instance
 	
@@ -73,7 +67,7 @@ public class SfxrSynth {
 
 	private float		_masterVolume;						// masterVolume * masterVolume (for quick calculations)
 
-	private uint		_waveType;							// The type of wave to generate (see enum WaveType)
+	private uint		_waveType;							// Shape of wave to generate (see enum WaveType)
 	
 	private float		_envelopeVolume;					// Current volume of the envelope
 	private int			_envelopeStage;						// Current stage of the envelope (attack, sustain, decay, end)
@@ -135,11 +129,16 @@ public class SfxrSynth {
 	private float		_hpFilterDeltaCutoff;				// Speed of the high-pass cutoff multiplier
 
 	private float[]		_noiseBuffer;						// Buffer of random values used to generate noise
-
+	private float[]		_pinkNoiseBuffer;					// Buffer of random values used to generate pink noise
+	private PinkNumber	_pinkNumber;						// Used to generate pink noise
+	private float[]		_loResNoiseBuffer;					// Buffer of random values used to generate Tan waveform
+	
 	private float		_superSample;						// Actual sample writen to the wave
 	private float		_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
+	private float		_sample2;							// Used in other calculations
+	private float 		amp;								// Used in other calculations
 
-	private System.Random randomGenerator = new System.Random();
+	private System.Random randomGenerator = new System.Random();	// Used to generate random numbers safely
 
 
 	// ================================================================================================================
@@ -425,7 +424,7 @@ public class SfxrSynth {
 		_slide = 1.0f - p.slide * p.slide * p.slide * 0.01f;
 		_deltaSlide = -p.deltaSlide * p.deltaSlide * p.deltaSlide * 0.000001f;
 
-		if (p.waveType == WaveType.Square) {
+		if (p.waveType == (uint)SfxrParams.WaveType.Square) {
 			_squareDuty = 0.5f - p.squareDuty * 0.5f;
 			_dutySweep = -p.dutySweep * 0.00005f;
 		}
@@ -508,10 +507,15 @@ public class SfxrSynth {
 
 			if (_phaserBuffer == null) _phaserBuffer = new float[1024];
 			if (_noiseBuffer == null) _noiseBuffer = new float[32];
+			if (_pinkNoiseBuffer == null) _pinkNoiseBuffer = new float[32];
+			if (_pinkNumber == null) _pinkNumber = new PinkNumber();
+			if (_loResNoiseBuffer == null) _loResNoiseBuffer = new float[32];
 
 			uint i;
 			for (i = 0; i < 1024; i++) _phaserBuffer[i] = 0.0f;
 			for (i = 0; i < 32; i++) _noiseBuffer[i] = getRandom() * 2.0f - 1.0f;
+			for (i = 0; i < 32; i++) _pinkNoiseBuffer[i] = _pinkNumber.getNextValue();
+			for (i = 0; i < 32; i++) _loResNoiseBuffer[i] = ((i % LO_RES_NOISE_PERIOD) == 0) ? getRandom() * 2.0f - 1.0f : _loResNoiseBuffer[i-1];
 
 			_repeatTime = 0;
 
@@ -576,7 +580,7 @@ public class SfxrSynth {
 			if (_periodTempInt < 8) _periodTemp = _periodTempInt = 8;
 
 			// Sweeps the square duty
-			if (_waveType == WaveType.Square) {
+			if (_waveType == (uint)SfxrParams.WaveType.Square) {
 				_squareDuty += _dutySweep;
 				if (_squareDuty < 0.0) {
 					_squareDuty = 0.0f;
@@ -632,27 +636,56 @@ public class SfxrSynth {
 					_phase = _phase % _periodTempInt;
 
 					// Generates new random noise for this period
-					if (_waveType == WaveType.Noise) {
+					if (_waveType == (uint)SfxrParams.WaveType.Noise) {
 						for (n = 0; n < 32; n++) _noiseBuffer[n] = getRandom() * 2.0f - 1.0f;
+					} else if (_waveType == (uint)SfxrParams.WaveType.PinkNoise) {
+						for (n = 0; n < 32; n++) _pinkNoiseBuffer[n] = _pinkNumber.getNextValue();
+					} else if (_waveType == (uint)SfxrParams.WaveType.Tan) {
+						for (n = 0; n < 32; n++) _loResNoiseBuffer[n] = ((n % LO_RES_NOISE_PERIOD) == 0) ? getRandom() * 2.0f - 1.0f : _loResNoiseBuffer[n-1];							
 					}
 				}
 
 				// Gets the sample from the oscillator
-				switch(_waveType) {
-					case WaveType.Square: // Square wave
+				switch((SfxrParams.WaveType)_waveType) {
+					case SfxrParams.WaveType.Square:
 						_sample = ((_phase / _periodTemp) < _squareDuty) ? 0.5f : -0.5f;
 						break;
-					case WaveType.Sawtooth: // Saw wave
+					case SfxrParams.WaveType.Sawtooth:
 						_sample = 1.0f - (_phase / _periodTemp) * 2.0f;
 						break;
-					case WaveType.Sine: // Sine wave (fast and accurate approx) {
+					case SfxrParams.WaveType.Sine: // Fast and accurate approx {
 						_pos = _phase / _periodTemp;
 						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
 						_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
 						_sample = _sample < 0 ? 0.225f * (_sample *-_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample;
 						break;
-					case WaveType.Noise: // Noise
-						_sample = _noiseBuffer[(uint)(_phase * 32 / _periodTempInt)];
+					case SfxrParams.WaveType.Noise:
+						_sample = _noiseBuffer[(uint)(_phase * 32f / _periodTempInt) % 32];
+						break;
+					case SfxrParams.WaveType.Triangle:
+						_sample = Math.Abs(1f - (_phase / _periodTemp) * 2f) - 1f;
+						break;
+					case SfxrParams.WaveType.PinkNoise:
+						_sample = _pinkNoiseBuffer[(uint)(_phase * 32f / _periodTempInt) % 32];
+						break;
+					case SfxrParams.WaveType.Tan: // Detuned
+						_sample = (float)Math.Tan(Math.PI * _phase / _periodTemp);
+						break;
+					case SfxrParams.WaveType.Whistle:
+						// Sine wave code
+						_pos = _phase / _periodTemp;
+						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
+						_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
+						_sample = 0.75f * (_sample < 0 ? 0.225f * (_sample *-_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample);
+						// Then whistle (essentially an overtone with frequencyx20 and amplitude0.25
+						_pos = ((_phase * 20f) % _periodTemp) / _periodTemp;
+						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
+						_sample2 = _pos < 0 ? 1.27323954f * _pos + .405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
+						_sample += 0.25f * (_sample2 < 0 ? .225f * (_sample2 *-_sample2 - _sample2) + _sample2 : .225f * (_sample2 * _sample2 - _sample2) + _sample2);
+						break;
+					case SfxrParams.WaveType.Breaker:
+						amp = _phase / _periodTemp;
+						_sample = Math.Abs(1f - amp * amp * 2f) - 1f;
 						break;
 				}
 
@@ -743,6 +776,62 @@ public class SfxrSynth {
 		// (We get the error "get_value can only be called from the main thread" when this is called to generate the soung data)
 		return (float)(randomGenerator.NextDouble() % 1);
 	}
-
 }
 
+
+// ================================================================================================================
+// AUX CLASSES ----------------------------------------------------------------------------------------------------
+
+/*
+Pink Number
+-----------
+From BFXR
+Class taken from http://www.firstpr.com.au/dsp/pink-noise/#Filtering
+*/
+
+public class PinkNumber {
+	// Properties
+	private int max_key;
+	private int key;
+	private uint[] white_values;
+	private uint range;
+	private System.Random randomGenerator;
+	
+	// Temp
+	private float rangeBy5;
+	private int last_key;
+	private uint sum;
+	private int diff;
+	private int i;
+
+	public PinkNumber() {
+		max_key = 0x1f; // Five bits set
+		range = 128;
+		rangeBy5 = (float)range / 5f;
+		key = 0;
+		white_values = new uint[5];
+		randomGenerator = new System.Random();
+		for (i = 0; i < 5; i++) white_values[i] = (uint)((randomGenerator.NextDouble() % 1) * rangeBy5);
+	}
+
+	public float getNextValue()  {
+		// Returns a number between -1 and 1		
+		last_key = key;
+		sum = 0;
+
+		key++;
+		if (key > max_key) key = 0;
+
+		// Exclusive-Or previous value with current value. This gives
+		// a list of bits that have changed.
+		diff = last_key ^ key;
+		sum = 0;
+		for (i  = 0; i < 5; i++) {
+			// If bit changed get new random number for corresponding
+			// white_value
+			if ((diff & (1 << i)) > 0) white_values[i] = (uint)((randomGenerator.NextDouble() % 1) * rangeBy5);;
+			sum += white_values[i];
+		}
+		return (float)sum / 64f - 1f;
+	}
+}; 

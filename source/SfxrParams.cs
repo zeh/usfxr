@@ -29,10 +29,23 @@ public class SfxrParams {
 	 * @author Zeh Fernando
 	 */
 
+	// Enums
+	public enum WaveType : uint {
+		Square = 0,
+		Sawtooth = 1,
+		Sine = 2,
+		Noise = 3,
+		Triangle = 4,
+		PinkNoise = 5,
+		Tan = 6,
+		Whistle = 7,
+		Breaker = 8
+	}
+
 	// Properties
 	public bool		paramsDirty;						// Whether If the parameters have been changed since last time (shouldn't used cached sound)
 
-	private uint	_waveType				= 	0;		// Shape of the wave (0:square, 1:saw, 2:sin or 3:noise)
+	private uint	_waveType				= 	0;		// Shape of wave to generate (see enum WaveType)
 
 	private float	_masterVolume			=	0.5f;	// Overall volume of the sound (0 to 1)
 
@@ -75,7 +88,7 @@ public class SfxrParams {
 	/** Shape of the wave (0:square, 1:sawtooth, 2:sin, 3:noise) */
 	public uint waveType {
 		get { return _waveType; }
-		set { _waveType = value > 3 ? 0 : value; paramsDirty = true; }
+		set { _waveType = value > (uint)SfxrParams.WaveType.Breaker ? 0 : value; paramsDirty = true; }
 	}
 
 	/** Overall volume of the sound (0 to 1) */
