@@ -260,7 +260,7 @@ public class SfxrParams {
 		resetParams();
 
 		_waveType = (uint)(GetRandom() * 3);
-		if (_waveType == 2 && GetRandomBool()) _waveType = (uint)(GetRandom() * 2f);
+		if (_waveType == (uint)WaveType.Sine && GetRandomBool()) _waveType = (uint)(GetRandom() * 2f);
 
 		_startFrequency = 0.5f + GetRandom() * 0.5f;
 		_minFrequency = _startFrequency - 0.2f - GetRandom() * 0.6f;
@@ -299,7 +299,7 @@ public class SfxrParams {
 	 */
 	public void GenerateExplosion() {
 		resetParams();
-		_waveType = 3;
+		_waveType = (uint)WaveType.Noise;
 
 		if (GetRandomBool()) {
 			_startFrequency = 0.1f + GetRandom() * 0.4f;
@@ -336,7 +336,7 @@ public class SfxrParams {
 		resetParams();
 
 		if (GetRandomBool()) {
-			_waveType = 1;
+			_waveType = (uint)WaveType.Sawtooth;
 		} else {
 			_squareDuty = GetRandom() * 0.6f;
 		}
@@ -365,10 +365,10 @@ public class SfxrParams {
 	public void GenerateHitHurt() {
 		resetParams();
 
-		_waveType = (uint)(GetRandom() * 3f);
-		if (_waveType == 2) {
-			_waveType = 3;
-		} else if (_waveType == 0) {
+		_waveType = (uint)(GetRandom() * (float)(((uint)WaveType.Breaker)+1f));
+		if (_waveType == (uint)WaveType.Sine) {
+			_waveType = (uint)WaveType.Noise;
+		} else if (_waveType == (uint)WaveType.Square) {
 			_squareDuty = GetRandom() * 0.6f;
 		}
 
@@ -387,7 +387,7 @@ public class SfxrParams {
 	public void GenerateJump() {
 		resetParams();
 
-		_waveType = 0;
+		_waveType = (uint)WaveType.Square;
 		_squareDuty = GetRandom() * 0.6f;
 		_startFrequency = 0.3f + GetRandom() * 0.3f;
 		_slide = 0.1f + GetRandom() * 0.2f;
@@ -406,7 +406,7 @@ public class SfxrParams {
 		resetParams();
 
 		_waveType = (uint)(GetRandom() * 2f);
-		if (_waveType == 0) _squareDuty = GetRandom() * 0.6f;
+		if (_waveType == (uint)WaveType.Square) _squareDuty = GetRandom() * 0.6f;
 
 		_startFrequency = 0.2f + GetRandom() * 0.4f;
 
@@ -421,7 +421,7 @@ public class SfxrParams {
 	protected void resetParams() {
 		paramsDirty = true;
 
-		_waveType = 0;
+		_waveType = (uint)WaveType.Square;
 		_startFrequency = 0.3f;
 		_minFrequency = 0.0f;
 		_slide = 0.0f;
@@ -489,7 +489,7 @@ public class SfxrParams {
 	public void Randomize() {
 		paramsDirty = true;
 
-		_waveType = (uint)(GetRandom() * 4f);
+		_waveType = (uint)(GetRandom() * (float)(WaveType.Breaker + 1));
 
 		_attackTime =  		Pow(GetRandom()*2f-1f, 4);
 		_sustainTime =  	Pow(GetRandom()*2f-1f, 2);
