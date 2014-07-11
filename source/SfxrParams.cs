@@ -82,6 +82,10 @@ public class SfxrParams {
 	private float	_hpFilterCutoffSweep	= 0.0f;	// Sweeps the high-pass cutoff up or down (-1 to 1)
 
 	// From BFXR
+	private float	_changeRepeat			= 0.0f;	// Pitch Jump Repeat Speed: larger Values means more pitch jumps, which can be useful for arpeggiation (0 to 1)
+	private float	_changeAmount2			= 0.0f;	// Shift in note, either up or down (-1 to 1)
+	private float	_changeSpeed2			= 0.0f;	// How fast the note shift happens (only happens once) (0 to 1)
+
 	private float	_compressionAmount		= 0.0f;	// Compression: pushes amplitudes together into a narrower range to make them stand out more. Very good for sound effects, where you want them to stick out against background music (0 to 1)
 
 	private float	_overtones				= 0.0f;	// Harmonics: overlays copies of the waveform with copies and multiples of its frequency. Good for bulking out or otherwise enriching the texture of the sounds (warning: this is the number 1 cause of bfxr slowdown!) (0 to 1)
@@ -240,7 +244,25 @@ public class SfxrParams {
 
 	// From BFXR
 
-	/**  Pushes amplitudes together into a narrower range to make them stand out more. Very good for sound effects, where you want them to stick out against background music (0 to 1) */
+	/** Pitch Jump Repeat Speed: larger Values means more pitch jumps, which can be useful for arpeggiation (0 to 1) */
+	public float changeRepeat {
+		get { return _changeRepeat; }
+		set { _changeRepeat = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
+	}
+
+	/** Shift in note, either up or down (-1 to 1) */
+	public float changeAmount2 {
+		get { return _changeAmount2; }
+		set { _changeAmount2 = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
+	}
+
+	/** How fast the note shift happens (only happens once) (0 to 1) */
+	public float changeSpeed2 {
+		get { return _changeSpeed2; }
+		set { _changeSpeed2 = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
+	}
+
+	/** Pushes amplitudes together into a narrower range to make them stand out more. Very good for sound effects, where you want them to stick out against background music (0 to 1) */
 	public float compressionAmount {
 		get { return _compressionAmount; }
 		set { _compressionAmount = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
@@ -496,6 +518,10 @@ public class SfxrParams {
 		_changeAmount			= 0.0f;
 
 		// From BFXR
+		_changeRepeat			= 0.0f;
+		_changeAmount2			= 0.0f;
+		_changeSpeed2			= 0.0f;
+
 		_compressionAmount		= 0.3f;
 
 		_overtones				= 0.0f;
@@ -536,6 +562,9 @@ public class SfxrParams {
 		if (GetRandomBool()) changeAmount			+= GetRandom() * __mutation * 2f - __mutation;
 
 		// From BFXR
+		if (GetRandomBool()) changeRepeat			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) changeAmount2			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) changeSpeed2			+= GetRandom() * __mutation * 2f - __mutation;
 		if (GetRandomBool()) compressionAmount		+= GetRandom() * __mutation * 2f - __mutation;
 		if (GetRandomBool()) overtones				+= GetRandom() * __mutation * 2f - __mutation;
 		if (GetRandomBool()) overtoneFalloff		+= GetRandom() * __mutation * 2f - __mutation;
@@ -597,6 +626,10 @@ public class SfxrParams {
 		}
 
 		// From BFXR
+		_changeRepeat			= GetRandom();
+		_changeAmount2			= GetRandom() * 2f - 1f;
+		_changeSpeed2			= GetRandom();
+
 		_compressionAmount		= GetRandom();
 
 		_overtones				= GetRandom();
@@ -716,6 +749,9 @@ public class SfxrParams {
 		_masterVolume			= __params.masterVolume;
 
 		// From BFXR
+		_changeRepeat			= __params.changeRepeat;
+		_changeAmount2			= __params.changeAmount2;
+		_changeSpeed2			= __params.changeSpeed2;
 		_compressionAmount		= __params.compressionAmount;
 		_overtones				= __params.overtones;
 		_overtoneFalloff		= __params.overtoneFalloff;
