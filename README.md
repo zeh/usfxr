@@ -1,13 +1,13 @@
 usfxr
 =====
 
-usfxr is a C# library used to generate game-like procedural audio effects inside Unity. With usfxr, one can easily synthesize sound in real time for actions such as item pickups, jumps, lasers, hits, explosions, and more.
+usfxr is a C# library used to generate and play game-like procedural audio effects inside Unity. With usfxr, one can easily synthesize original sound in real time for actions such as item pickups, jumps, lasers, hits, explosions, and more, without ever leaving the Unity editor.
 
 usfxr is a port of Thomas Vian's [as3sfxr](https://code.google.com/p/as3sfxr/), which itself is an ActionScript 3 port of Tomas Pettersson's [sfxr](http://www.drpetter.se/project_sfxr.html).
 
 [This video](https://vimeo.com/15769163) explains the ideas behind as3sfxr, and the ideas that I want to support with usfxr.
 
-Despite my name not being Thomas or a variant of it, I found myself wishing for a (free) library to procedurally generate audio inside Unity in real time, and usfxr is the result. Since it is a Unity project, usfxr also includes an in-editor window to easily generate and test sounds without leaving the Unity.
+[This video](https://vimeo.com/15769163) explains the ideas behind as3sfxr, and the ideas supported by usfxr.
 
 
 Introduction
@@ -31,7 +31,9 @@ I make no claims in regards to the source code or interface, since it was simply
 Installation
 ------------
 
-Download the latest "usfxr" zip file from the "/build" folder of the GitHub repository and extract the contents of this file into the "Scripts" (or equivalent) folder of your Unity project. After doing that, you should have the usfxr interface available inside Unity, as well as being able to instantiate and play SfxrSyth objects inside your project.
+Download the latest "usfxr" zip file from the "/build" folder of the GitHub repository and extract the contents of this file into the "Scripts" (or equivalent) folder of your Unity project. Alternatively, you can also download and install usfxr [from the asset store](https://www.assetstore.unity3d.com/en/#!/content/18619).
+
+After doing that, you should have the usfxr interface available inside Unity, as well as being able to instantiate and play SfxrSyth objects inside your project.
 
 
 Usage
@@ -152,7 +154,11 @@ Acknowledgments
 Changelog
 ---------
 
-#### 2014-06-10
+#### 2014-07-08
+
+* Added support for BFXR's new waveform types: triangle, breaker, tan, whistle, and pink noise
+
+#### 2014-06-10 ([1.1](https://github.com/zeh/usfxr/releases/tag/v2014-06-10))
 
 * Small internal optimizations: generates audio samples in about 9% less time
 
