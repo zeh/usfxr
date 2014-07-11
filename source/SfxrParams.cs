@@ -249,7 +249,9 @@ public class SfxrParams {
 
 		if (GetRandomBool()) {
 			_changeSpeed = 0.5f + GetRandom() * 0.2f;
-			_changeAmount = 0.2f + GetRandom() * 0.4f;
+			int cnum = (int)(GetRandom()*7f) + 1;
+			int cden = cnum + (int)(GetRandom()*7f) + 2;
+			_changeAmount = (float)cnum / (float)cden;
 		}
 	}
 
@@ -279,7 +281,7 @@ public class SfxrParams {
 			_dutySweep = GetRandom() * 0.2f;
 		} else {
 			_squareDuty = 0.4f + GetRandom() * 0.5f;
-			_dutySweep =- GetRandom() * 0.7f;
+			_dutySweep = -GetRandom() * 0.7f;
 		}
 
 		_sustainTime = 0.1f + GetRandom() * 0.2f;
@@ -299,6 +301,7 @@ public class SfxrParams {
 	 */
 	public void GenerateExplosion() {
 		resetParams();
+
 		_waveType = (uint)WaveType.Noise;
 
 		if (GetRandomBool()) {
@@ -365,7 +368,7 @@ public class SfxrParams {
 	public void GenerateHitHurt() {
 		resetParams();
 
-		_waveType = (uint)(GetRandom() * (float)(((uint)WaveType.Breaker)+1f));
+		_waveType = (uint)(GetRandom() * 3f);
 		if (_waveType == (uint)WaveType.Sine) {
 			_waveType = (uint)WaveType.Noise;
 		} else if (_waveType == (uint)WaveType.Square) {
