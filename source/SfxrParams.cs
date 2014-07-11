@@ -25,7 +25,7 @@ public class SfxrParams {
 	/**
 	 * SfxrParams
 	 * Holds parameters used by SfxrSynth
-	 * 
+	 *
 	 * @author Zeh Fernando
 	 */
 
@@ -93,7 +93,7 @@ public class SfxrParams {
 
 	private float	_bitCrush				= 0.0f;	// Bit crush: resamples the audio at a lower frequency (0 to 1)
 	private float	_bitCrushSweep			= 0.0f;	// Bit crush sweep: sweeps the Bit Crush filter up or down (-1 to 1)
-	
+
 
 	// ================================================================================================================
 	// ACCESSOR INTERFACE ---------------------------------------------------------------------------------------------
@@ -295,7 +295,7 @@ public class SfxrParams {
 
 	// ================================================================================================================
 	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
-	
+
 	// Generator methods
 
 	/**
@@ -531,7 +531,7 @@ public class SfxrParams {
 		_bitCrushSweep			= 0.0f;
 	}
 
-	
+
 	// Randomization methods
 
 	/**

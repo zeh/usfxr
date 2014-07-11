@@ -26,20 +26,20 @@ public class SfxrSynth {
 	/**
 	 * SfxrSynth
 	 * Generates and plays all necessary audio
-	 * 
+	 *
 	 * @author Zeh Fernando
 	 */
-	
+
 
 	// Constants
 	private const int LO_RES_NOISE_PERIOD = 8;					// Should be < 32
 
 	// Sound properties
 	private SfxrParams		_params = new SfxrParams();		// Params instance
-	
+
 	private GameObject		_gameObject;					// Game object that will contain the audio player script
 	private SfxrAudioPlayer	_audioPlayer;					// Audio player script that will be attached to a GameObject to play the sound
-	
+
 	private Transform		_parentTransform;				// Parent that will contain the audio (for positional audio)
 
 	private bool			_mutation;						// If the current sound playing or caching is a mutation
@@ -68,7 +68,7 @@ public class SfxrSynth {
 	private float		_masterVolume;						// masterVolume * masterVolume (for quick calculations)
 
 	private uint		_waveType;							// Shape of wave to generate (see enum WaveType)
-	
+
 	private float		_envelopeVolume;					// Current volume of the envelope
 	private int			_envelopeStage;						// Current stage of the envelope (attack, sustain, decay, end)
 	private float		_envelopeTime;						// Current time through current enelope stage
@@ -132,7 +132,7 @@ public class SfxrSynth {
 	private float[]		_pinkNoiseBuffer;					// Buffer of random values used to generate pink noise
 	private PinkNumber	_pinkNumber;						// Used to generate pink noise
 	private float[]		_loResNoiseBuffer;					// Buffer of random values used to generate Tan waveform
-	
+
 	private float		_superSample;						// Actual sample writen to the wave
 	private float		_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
 	private float		_sample2;							// Used in other calculations
@@ -150,7 +150,7 @@ public class SfxrSynth {
 		set { _params = value; _params.paramsDirty = true; }
 	}
 
-	
+
 	// ================================================================================================================
 	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
 
@@ -180,9 +180,9 @@ public class SfxrSynth {
 		}
 
 		createGameObject();
-		
+
 	}
-	
+
 	/**
 	 * Plays a mutation of the sound.  If the parameters are dirty, synthesises sound as it plays, caching it for later.
 	 * If they're not, plays from the cached sound.
@@ -223,7 +223,7 @@ public class SfxrSynth {
 			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * getRandom())];
 			_waveDataPos = 0;
 		}
-		
+
 		createGameObject();
 	}
 
@@ -318,8 +318,8 @@ public class SfxrSynth {
 
 		return !endOfSamples;
 	}
-	
-	
+
+
 	// Cache sound methods
 
 	/**
@@ -538,7 +538,7 @@ public class SfxrSynth {
 
 		int i, j, n;
 		int l = (int)__length;
-		
+
 		for (i = 0; i < l; i++) {
 			if (_finished) return true;
 
@@ -641,7 +641,7 @@ public class SfxrSynth {
 					} else if (_waveType == (uint)SfxrParams.WaveType.PinkNoise) {
 						for (n = 0; n < 32; n++) _pinkNoiseBuffer[n] = _pinkNumber.getNextValue();
 					} else if (_waveType == (uint)SfxrParams.WaveType.Tan) {
-						for (n = 0; n < 32; n++) _loResNoiseBuffer[n] = ((n % LO_RES_NOISE_PERIOD) == 0) ? getRandom() * 2.0f - 1.0f : _loResNoiseBuffer[n-1];							
+						for (n = 0; n < 32; n++) _loResNoiseBuffer[n] = ((n % LO_RES_NOISE_PERIOD) == 0) ? getRandom() * 2.0f - 1.0f : _loResNoiseBuffer[n-1];
 					}
 				}
 
@@ -740,7 +740,7 @@ public class SfxrSynth {
 
 		return false;
 	}
-	
+
 	private void createGameObject() {
 		// Create a game object to handle playback
 		_gameObject = new GameObject("SfxrGameObject-" + (Time.realtimeSinceStartup));
@@ -756,13 +756,13 @@ public class SfxrSynth {
 	private void fixGameObjectParent() {
 		// Sets the parent of the game object to be the wanted object
 		Transform transformToUse = _parentTransform;
-		
+
 		// If no parent assigned, use main camera by default
 		if (transformToUse == null) transformToUse = Camera.main.transform;
-		
+
 		// If has any parent (assigned, or main camera exist) assigns it
 		if (transformToUse != null) _gameObject.transform.parent = transformToUse;
-		
+
 		// Center in parent (or scene if no parent)
 		_gameObject.transform.localPosition = new Vector3(0, 0, 0);
 	}
@@ -796,7 +796,7 @@ public class PinkNumber {
 	private uint[] white_values;
 	private uint range;
 	private System.Random randomGenerator;
-	
+
 	// Temp
 	private float rangeBy5;
 	private int last_key;
@@ -815,7 +815,7 @@ public class PinkNumber {
 	}
 
 	public float getNextValue()  {
-		// Returns a number between -1 and 1		
+		// Returns a number between -1 and 1
 		last_key = key;
 		sum = 0;
 
@@ -834,4 +834,4 @@ public class PinkNumber {
 		}
 		return (float)sum / 64f - 1f;
 	}
-}; 
+};
