@@ -43,43 +43,52 @@ public class SfxrParams {
 	}
 
 	// Properties
-	public bool		paramsDirty;						// Whether If the parameters have been changed since last time (shouldn't used cached sound)
+	public bool		paramsDirty;					// Whether the parameters have been changed since last time (shouldn't used cached sound)
 
-	private uint	_waveType				= 	0;		// Shape of wave to generate (see enum WaveType)
+	private uint	_waveType				= 0;	// Shape of wave to generate (see enum WaveType)
 
-	private float	_masterVolume			=	0.5f;	// Overall volume of the sound (0 to 1)
+	private float	_masterVolume			= 0.5f;	// Overall volume of the sound (0 to 1)
 
-	private float	_attackTime				=	0.0f;	// Length of the volume envelope attack (0 to 1)
-	private float	_sustainTime			=	0.0f;	// Length of the volume envelope sustain (0 to 1)
-	private float	_sustainPunch			=	0.0f;	// Tilts the sustain envelope for more 'pop' (0 to 1)
-	private float	_decayTime				=	0.0f;	// Length of the volume envelope decay (yes, I know it's called release) (0 to 1)
+	private float	_attackTime				= 0.0f;	// Length of the volume envelope attack (0 to 1)
+	private float	_sustainTime			= 0.0f;	// Length of the volume envelope sustain (0 to 1)
+	private float	_sustainPunch			= 0.0f;	// Tilts the sustain envelope for more 'pop' (0 to 1)
+	private float	_decayTime				= 0.0f;	// Length of the volume envelope decay (yes, I know it's called release) (0 to 1)
 
-	private float	_startFrequency			=	0.0f;	// Base note of the sound (0 to 1)
-	private float	_minFrequency			=	0.0f;	// If sliding, the sound will stop at this frequency, to prevent really low notes (0 to 1)
+	private float	_startFrequency			= 0.0f;	// Base note of the sound (0 to 1)
+	private float	_minFrequency			= 0.0f;	// If sliding, the sound will stop at this frequency, to prevent really low notes (0 to 1)
 
-	private float	_slide					=	0.0f;	// Slides the note up or down (-1 to 1)
-	private float	_deltaSlide				=	0.0f;	// Accelerates the slide (-1 to 1)
+	private float	_slide					= 0.0f;	// Slides the note up or down (-1 to 1)
+	private float	_deltaSlide				= 0.0f;	// Accelerates the slide (-1 to 1)
 
-	private float	_vibratoDepth			=	0.0f;	// Strength of the vibrato effect (0 to 1)
-	private float	_vibratoSpeed			=	0.0f;	// Speed of the vibrato effect (i.e. frequency) (0 to 1)
+	private float	_vibratoDepth			= 0.0f;	// Strength of the vibrato effect (0 to 1)
+	private float	_vibratoSpeed			= 0.0f;	// Speed of the vibrato effect (i.e. frequency) (0 to 1)
 
-	private float	_changeAmount			=	0.0f;	// Shift in note, either up or down (-1 to 1)
-	private float	_changeSpeed			=	0.0f;	// How fast the note shift happens (only happens once) (0 to 1)
+	private float	_changeAmount			= 0.0f;	// Shift in note, either up or down (-1 to 1)
+	private float	_changeSpeed			= 0.0f;	// How fast the note shift happens (only happens once) (0 to 1)
 
-	private float	_squareDuty				=	0.0f;	// Controls the ratio between the up and down states of the square wave, changing the tibre (0 to 1)
-	private float	_dutySweep				=	0.0f;	// Sweeps the duty up or down (-1 to 1)
+	private float	_squareDuty				= 0.0f;	// Controls the ratio between the up and down states of the square wave, changing the tibre (0 to 1)
+	private float	_dutySweep				= 0.0f;	// Sweeps the duty up or down (-1 to 1)
 
-	private float	_repeatSpeed			=	0.0f;	// Speed of the note repeating - certain variables are reset each time (0 to 1)
+	private float	_repeatSpeed			= 0.0f;	// Speed of the note repeating - certain variables are reset each time (0 to 1)
 
-	private float	_phaserOffset			=	0.0f;	// Offsets a second copy of the wave by a small phase, changing the tibre (-1 to 1)
-	private float	_phaserSweep			=	0.0f;	// Sweeps the phase up or down (-1 to 1)
+	private float	_phaserOffset			= 0.0f;	// Offsets a second copy of the wave by a small phase, changing the tibre (-1 to 1)
+	private float	_phaserSweep			= 0.0f;	// Sweeps the phase up or down (-1 to 1)
 
-	private float	_lpFilterCutoff			=	0.0f;	// Frequency at which the low-pass filter starts attenuating higher frequencies (0 to 1)
-	private float	_lpFilterCutoffSweep	=	0.0f;	// Sweeps the low-pass cutoff up or down (-1 to 1)
-	private float	_lpFilterResonance		=	0.0f;	// Changes the attenuation rate for the low-pass filter, changing the timbre (0 to 1)
+	private float	_lpFilterCutoff			= 0.0f;	// Frequency at which the low-pass filter starts attenuating higher frequencies (0 to 1)
+	private float	_lpFilterCutoffSweep	= 0.0f;	// Sweeps the low-pass cutoff up or down (-1 to 1)
+	private float	_lpFilterResonance		= 0.0f;	// Changes the attenuation rate for the low-pass filter, changing the timbre (0 to 1)
 
-	private float	_hpFilterCutoff			=	0.0f;	// Frequency at which the high-pass filter starts attenuating lower frequencies (0 to 1)
-	private float	_hpFilterCutoffSweep	=	0.0f;	// Sweeps the high-pass cutoff up or down (-1 to 1)
+	private float	_hpFilterCutoff			= 0.0f;	// Frequency at which the high-pass filter starts attenuating lower frequencies (0 to 1)
+	private float	_hpFilterCutoffSweep	= 0.0f;	// Sweeps the high-pass cutoff up or down (-1 to 1)
+
+	// From BFXR
+	private float	_compressionAmount		= 0.0f;	// Compression: pushes amplitudes together into a narrower range to make them stand out more. Very good for sound effects, where you want them to stick out against background music (0 to 1)
+
+	private float	_overtones				= 0.0f;	// Harmonics: overlays copies of the waveform with copies and multiples of its frequency. Good for bulking out or otherwise enriching the texture of the sounds (warning: this is the number 1 cause of bfxr slowdown!) (0 to 1)
+	private float	_overtoneFalloff		= 0.0f;	// Harmonics falloff: The rate at which higher overtones should decay (0 to 1)
+
+	private float	_bitCrush				= 0.0f;	// Bit crush: resamples the audio at a lower frequency (0 to 1)
+	private float	_bitCrushSweep			= 0.0f;	// Bit crush sweep: sweeps the Bit Crush filter up or down (-1 to 1)
 	
 
 	// ================================================================================================================
@@ -227,6 +236,38 @@ public class SfxrParams {
 	public float hpFilterCutoffSweep {
 		get { return _hpFilterCutoffSweep; }
 		set { _hpFilterCutoffSweep = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
+	}
+
+	// From BFXR
+
+	/**  Pushes amplitudes together into a narrower range to make them stand out more. Very good for sound effects, where you want them to stick out against background music (0 to 1) */
+	public float compressionAmount {
+		get { return _compressionAmount; }
+		set { _compressionAmount = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
+	}
+
+	/** Harmonics: overlays copies of the waveform with copies and multiples of its frequency. Good for bulking out or otherwise enriching the texture of the sounds (warning: this is the number 1 cause of bfxr slowdown!) (0 to 1) */
+	public float overtones {
+		get { return _overtones; }
+		set { _overtones = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
+	}
+
+	/** Harmonics falloff: The rate at which higher overtones should decay (0 to 1) */
+	public float overtoneFalloff {
+		get { return _overtoneFalloff; }
+		set { _overtoneFalloff = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
+	}
+
+	/** Bit crush: resamples the audio at a lower frequency (0 to 1) */
+	public float bitCrush {
+		get { return _bitCrush; }
+		set { _bitCrush = Mathf.Clamp(value, 0, 1); paramsDirty = true; }
+	}
+
+	/** Bit crush sweep: sweeps the Bit Crush filter up or down (-1 to 1) */
+	public float bitCrushSweep {
+		get { return _bitCrushSweep; }
+		set { _bitCrushSweep = Mathf.Clamp(value, -1, 1); paramsDirty = true; }
 	}
 
 
@@ -425,34 +466,43 @@ public class SfxrParams {
 		paramsDirty = true;
 
 		_waveType = (uint)WaveType.Square;
-		_startFrequency = 0.3f;
-		_minFrequency = 0.0f;
-		_slide = 0.0f;
-		_deltaSlide = 0.0f;
-		_squareDuty = 0.0f;
-		_dutySweep = 0.0f;
+		_startFrequency			= 0.3f;
+		_minFrequency			= 0.0f;
+		_slide					= 0.0f;
+		_deltaSlide				= 0.0f;
+		_squareDuty				= 0.0f;
+		_dutySweep				= 0.0f;
 
-		_vibratoDepth = 0.0f;
-		_vibratoSpeed = 0.0f;
+		_vibratoDepth			= 0.0f;
+		_vibratoSpeed			= 0.0f;
 
-		_attackTime = 0.0f;
-		_sustainTime = 0.3f;
-		_decayTime = 0.4f;
-		_sustainPunch = 0.0f;
+		_attackTime				= 0.0f;
+		_sustainTime			= 0.3f;
+		_decayTime				= 0.4f;
+		_sustainPunch			= 0.0f;
 
-		_lpFilterResonance = 0.0f;
-		_lpFilterCutoff = 1.0f;
-		_lpFilterCutoffSweep = 0.0f;
-		_hpFilterCutoff = 0.0f;
-		_hpFilterCutoffSweep = 0.0f;
+		_lpFilterResonance		= 0.0f;
+		_lpFilterCutoff			= 1.0f;
+		_lpFilterCutoffSweep	= 0.0f;
+		_hpFilterCutoff			= 0.0f;
+		_hpFilterCutoffSweep	= 0.0f;
 
-		_phaserOffset = 0.0f;
-		_phaserSweep = 0.0f;
+		_phaserOffset			= 0.0f;
+		_phaserSweep			= 0.0f;
 
-		_repeatSpeed = 0.0f;
+		_repeatSpeed			= 0.0f;
 
-		_changeSpeed = 0.0f;
-		_changeAmount = 0.0f;
+		_changeSpeed			= 0.0f;
+		_changeAmount			= 0.0f;
+
+		// From BFXR
+		_compressionAmount		= 0.3f;
+
+		_overtones				= 0.0f;
+		_overtoneFalloff		= 0.0f;
+
+		_bitCrush				= 0.0f;
+		_bitCrushSweep			= 0.0f;
 	}
 
 	
@@ -462,82 +512,98 @@ public class SfxrParams {
 	 * Randomly adjusts the parameters ever so slightly
 	 */
 	public void Mutate(float __mutation = 0.05f) {
-		if (GetRandomBool()) startFrequency +=		GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) minFrequency +=		GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) slide +=				GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) deltaSlide +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) squareDuty +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) dutySweep +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) vibratoDepth +=		GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) vibratoSpeed +=		GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) attackTime +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) sustainTime +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) decayTime +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) sustainPunch +=		GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) lpFilterCutoff +=		GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) lpFilterCutoffSweep +=	GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) lpFilterResonance +=	GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) hpFilterCutoff +=		GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) hpFilterCutoffSweep +=	GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) phaserOffset +=		GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) phaserSweep +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) repeatSpeed +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) changeSpeed +=			GetRandom() * __mutation * 2f - __mutation;
-		if (GetRandomBool()) changeAmount +=		GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) startFrequency			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) minFrequency			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) slide					+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) deltaSlide				+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) squareDuty				+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) dutySweep				+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) vibratoDepth			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) vibratoSpeed			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) attackTime				+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) sustainTime			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) decayTime				+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) sustainPunch			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) lpFilterCutoff			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) lpFilterCutoffSweep	+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) lpFilterResonance		+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) hpFilterCutoff			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) hpFilterCutoffSweep	+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) phaserOffset			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) phaserSweep			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) repeatSpeed			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) changeSpeed			+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) changeAmount			+= GetRandom() * __mutation * 2f - __mutation;
+
+		// From BFXR
+		if (GetRandomBool()) compressionAmount		+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) overtones				+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) overtoneFalloff		+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) bitCrush				+= GetRandom() * __mutation * 2f - __mutation;
+		if (GetRandomBool()) bitCrushSweep			+= GetRandom() * __mutation * 2f - __mutation;
 	}
 
 	/**
 	 * Sets all parameters to random values
 	 */
 	public void Randomize() {
-		paramsDirty = true;
+		resetParams();
 
 		_waveType = (uint)(GetRandom() * (float)(WaveType.Breaker + 1));
 
-		_attackTime =  		Pow(GetRandom()*2f-1f, 4);
-		_sustainTime =  	Pow(GetRandom()*2f-1f, 2);
-		_sustainPunch =  	Pow(GetRandom()*0.8f, 2);
-		_decayTime =  		GetRandom();
+		_attackTime				= Pow(GetRandom() * 2f - 1f, 4);
+		_sustainTime			= Pow(GetRandom() * 2f - 1f, 2);
+		_sustainPunch			= Pow(GetRandom() * 0.8f, 2);
+		_decayTime				= GetRandom();
 
-		_startFrequency =  	(GetRandomBool()) ? Pow(GetRandom()*2f-1f, 2) : (Pow(GetRandom() * 0.5f, 3) + 0.5f);
-		_minFrequency =  	0.0f;
+		_startFrequency			= (GetRandomBool()) ? Pow(GetRandom() * 2f - 1f, 2) : (Pow(GetRandom() * 0.5f, 3) + 0.5f);
+		_minFrequency			= 0.0f;
 
-		_slide =  			Pow(GetRandom()*2f-1f, 5);
-		_deltaSlide =  		Pow(GetRandom()*2f-1f, 3);
+		_slide					= Pow(GetRandom() * 2f - 1f, 3);
+		_deltaSlide				= Pow(GetRandom() * 2f - 1f, 3);
 
-		_vibratoDepth =  	Pow(GetRandom()*2f-1f, 3);
-		_vibratoSpeed =  	GetRandom()*2f-1f;
+		_vibratoDepth			= Pow(GetRandom() * 2f - 1f, 3);
+		_vibratoSpeed			= GetRandom() * 2f - 1f;
 
-		_changeAmount =  	GetRandom()*2f-1f;
-		_changeSpeed =  	GetRandom()*2f-1f;
+		_changeAmount			= GetRandom() * 2f - 1f;
+		_changeSpeed			= GetRandom() * 2f - 1f;
 
-		_squareDuty =  		GetRandom()*2f-1f;
-		_dutySweep =  		Pow(GetRandom()*2f-1f, 3);
+		_squareDuty				= GetRandom() * 2f - 1f;
+		_dutySweep				= Pow(GetRandom() * 2f - 1f, 3);
 
-		_repeatSpeed =  	GetRandom()*2f-1f;
+		_repeatSpeed			= GetRandom() * 2f - 1f;
 
-		_phaserOffset =  	Pow(GetRandom()*2f-1f, 3);
-		_phaserSweep =  	Pow(GetRandom()*2f-1f, 3);
+		_phaserOffset			= Pow(GetRandom() * 2f - 1f, 3);
+		_phaserSweep			= Pow(GetRandom() * 2f - 1f, 3);
 
-		_lpFilterCutoff =  		1f - Pow(GetRandom(), 3);
-		_lpFilterCutoffSweep = 	Pow(GetRandom()*2f-1f, 3);
-		_lpFilterResonance =  	GetRandom()*2f-1f;
+		_lpFilterCutoff			= 1f - Pow(GetRandom(), 3);
+		_lpFilterCutoffSweep	= Pow(GetRandom() * 2f - 1f, 3);
+		_lpFilterResonance		= GetRandom() * 2f - 1f;
 
-		_hpFilterCutoff =  		Pow(GetRandom(), 5);
-		_hpFilterCutoffSweep = 	Pow(GetRandom()*2f-1f, 5);
+		_hpFilterCutoff			= Pow(GetRandom(), 5);
+		_hpFilterCutoffSweep	= Pow(GetRandom() * 2f - 1f, 5);
 
 		if (_attackTime + _sustainTime + _decayTime < 0.2f) {
-			_sustainTime = 0.2f + GetRandom() * 0.3f;
-			_decayTime = 0.2f + GetRandom() * 0.3f;
+			_sustainTime		= 0.2f + GetRandom() * 0.3f;
+			_decayTime			= 0.2f + GetRandom() * 0.3f;
 		}
 
 		if ((_startFrequency > 0.7f && _slide > 0.2) || (_startFrequency < 0.2 && _slide < -0.05)) {
-			_slide = -_slide;
+			_slide				= -_slide;
 		}
 
 		if (_lpFilterCutoff < 0.1f && _lpFilterCutoffSweep < -0.05f) {
 			_lpFilterCutoffSweep = -_lpFilterCutoffSweep;
 		}
+
+		// From BFXR
+		_compressionAmount		= GetRandom();
+
+		_overtones				= GetRandom();
+		_overtoneFalloff		= GetRandom();
+
+		_bitCrush				= GetRandom();
+		_bitCrushSweep			= GetRandom() * 2f - 1f;
 	}
 
 
@@ -549,17 +615,18 @@ public class SfxrParams {
 	 */
 	public string GetSettingsString() {
 		string str = waveType.ToString();
-		str += "," + To4DP(_attackTime) + 			"," + To4DP(_sustainTime)
-			+ "," + To4DP(_sustainPunch) + 			"," + To4DP(_decayTime)
-			+ "," + To4DP(_startFrequency) + 		"," + To4DP(_minFrequency)
-			+ "," + To4DP(_slide) + 				"," + To4DP(_deltaSlide)
-			+ "," + To4DP(_vibratoDepth) + 			"," + To4DP(_vibratoSpeed)
-			+ "," + To4DP(_changeAmount) + 			"," + To4DP(_changeSpeed)
-			+ "," + To4DP(_squareDuty) + 			"," + To4DP(_dutySweep)
-			+ "," + To4DP(_repeatSpeed) + 			"," + To4DP(_phaserOffset)
-			+ "," + To4DP(_phaserSweep) + 			"," + To4DP(_lpFilterCutoff)
-			+ "," + To4DP(_lpFilterCutoffSweep) + 	"," + To4DP(_lpFilterResonance)
-			+ "," + To4DP(_hpFilterCutoff)+ 		"," + To4DP(_hpFilterCutoffSweep)
+		str += ""
+			+ "," + To4DP(_attackTime)				+ "," + To4DP(_sustainTime)
+			+ "," + To4DP(_sustainPunch)			+ "," + To4DP(_decayTime)
+			+ "," + To4DP(_startFrequency)			+ "," + To4DP(_minFrequency)
+			+ "," + To4DP(_slide)					+ "," + To4DP(_deltaSlide)
+			+ "," + To4DP(_vibratoDepth)			+ "," + To4DP(_vibratoSpeed)
+			+ "," + To4DP(_changeAmount)			+ "," + To4DP(_changeSpeed)
+			+ "," + To4DP(_squareDuty)				+ "," + To4DP(_dutySweep)
+			+ "," + To4DP(_repeatSpeed)				+ "," + To4DP(_phaserOffset)
+			+ "," + To4DP(_phaserSweep)				+ "," + To4DP(_lpFilterCutoff)
+			+ "," + To4DP(_lpFilterCutoffSweep)		+ "," + To4DP(_lpFilterResonance)
+			+ "," + To4DP(_hpFilterCutoff)			+ "," + To4DP(_hpFilterCutoffSweep)
 			+ "," + To4DP(_masterVolume);
 
 		return str;
@@ -623,30 +690,37 @@ public class SfxrParams {
 	 * @param	params	Instance to copy parameters from
 	 */
 	public void CopyFrom(SfxrParams __params, bool __makeDirty = false) {
-		_waveType = 			__params.waveType;
-		_attackTime =           __params.attackTime;
-		_sustainTime =          __params.sustainTime;
-		_sustainPunch =         __params.sustainPunch;
-		_decayTime =			__params.decayTime;
-		_startFrequency = 		__params.startFrequency;
-		_minFrequency = 		__params.minFrequency;
-		_slide = 				__params.slide;
-		_deltaSlide = 			__params.deltaSlide;
-		_vibratoDepth = 		__params.vibratoDepth;
-		_vibratoSpeed = 		__params.vibratoSpeed;
-		_changeAmount = 		__params.changeAmount;
-		_changeSpeed = 			__params.changeSpeed;
-		_squareDuty = 			__params.squareDuty;
-		_dutySweep = 			__params.dutySweep;
-		_repeatSpeed = 			__params.repeatSpeed;
-		_phaserOffset = 		__params.phaserOffset;
-		_phaserSweep = 			__params.phaserSweep;
-		_lpFilterCutoff = 		__params.lpFilterCutoff;
-		_lpFilterCutoffSweep = 	__params.lpFilterCutoffSweep;
-		_lpFilterResonance = 	__params.lpFilterResonance;
-		_hpFilterCutoff = 		__params.hpFilterCutoff;
-		_hpFilterCutoffSweep = 	__params.hpFilterCutoffSweep;
-		_masterVolume = 		__params.masterVolume;
+		_waveType				= __params.waveType;
+		_attackTime				= __params.attackTime;
+		_sustainTime			= __params.sustainTime;
+		_sustainPunch			= __params.sustainPunch;
+		_decayTime				= __params.decayTime;
+		_startFrequency			= __params.startFrequency;
+		_minFrequency			= __params.minFrequency;
+		_slide					= __params.slide;
+		_deltaSlide				= __params.deltaSlide;
+		_vibratoDepth			= __params.vibratoDepth;
+		_vibratoSpeed			= __params.vibratoSpeed;
+		_changeAmount			= __params.changeAmount;
+		_changeSpeed			= __params.changeSpeed;
+		_squareDuty				= __params.squareDuty;
+		_dutySweep				= __params.dutySweep;
+		_repeatSpeed			= __params.repeatSpeed;
+		_phaserOffset			= __params.phaserOffset;
+		_phaserSweep			= __params.phaserSweep;
+		_lpFilterCutoff			= __params.lpFilterCutoff;
+		_lpFilterCutoffSweep	= __params.lpFilterCutoffSweep;
+		_lpFilterResonance		= __params.lpFilterResonance;
+		_hpFilterCutoff			= __params.hpFilterCutoff;
+		_hpFilterCutoffSweep	= __params.hpFilterCutoffSweep;
+		_masterVolume			= __params.masterVolume;
+
+		// From BFXR
+		_compressionAmount		= __params.compressionAmount;
+		_overtones				= __params.overtones;
+		_overtoneFalloff		= __params.overtoneFalloff;
+		_bitCrush				= __params.bitCrush;
+		_bitCrushSweep			= __params.bitCrushSweep;
 
 		if (__makeDirty) paramsDirty = true;
 	}
