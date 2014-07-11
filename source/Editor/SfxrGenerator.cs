@@ -138,6 +138,9 @@ public class SfxrGenerator : EditorWindow {
 
 		GUILayout.Space(30);
 
+		if (GUILayout.Button("COPY (OLD)")) {
+			EditorGUIUtility.systemCopyBuffer = parameters.GetSettingsStringLegacy();
+		}
 		if (GUILayout.Button("COPY")) {
 			EditorGUIUtility.systemCopyBuffer = parameters.GetSettingsString();
 		}
