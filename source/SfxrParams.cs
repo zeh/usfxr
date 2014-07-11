@@ -782,42 +782,9 @@ public class SfxrParams {
 	 * @param	params	Instance to copy parameters from
 	 */
 	public void CopyFrom(SfxrParams __params, bool __makeDirty = false) {
-		_waveType				= __params.waveType;
-		_attackTime				= __params.attackTime;
-		_sustainTime			= __params.sustainTime;
-		_sustainPunch			= __params.sustainPunch;
-		_decayTime				= __params.decayTime;
-		_startFrequency			= __params.startFrequency;
-		_minFrequency			= __params.minFrequency;
-		_slide					= __params.slide;
-		_deltaSlide				= __params.deltaSlide;
-		_vibratoDepth			= __params.vibratoDepth;
-		_vibratoSpeed			= __params.vibratoSpeed;
-		_changeAmount			= __params.changeAmount;
-		_changeSpeed			= __params.changeSpeed;
-		_squareDuty				= __params.squareDuty;
-		_dutySweep				= __params.dutySweep;
-		_repeatSpeed			= __params.repeatSpeed;
-		_phaserOffset			= __params.phaserOffset;
-		_phaserSweep			= __params.phaserSweep;
-		_lpFilterCutoff			= __params.lpFilterCutoff;
-		_lpFilterCutoffSweep	= __params.lpFilterCutoffSweep;
-		_lpFilterResonance		= __params.lpFilterResonance;
-		_hpFilterCutoff			= __params.hpFilterCutoff;
-		_hpFilterCutoffSweep	= __params.hpFilterCutoffSweep;
-		_masterVolume			= __params.masterVolume;
-
-		// From BFXR
-		_changeRepeat			= __params.changeRepeat;
-		_changeAmount2			= __params.changeAmount2;
-		_changeSpeed2			= __params.changeSpeed2;
-		_compressionAmount		= __params.compressionAmount;
-		_overtones				= __params.overtones;
-		_overtoneFalloff		= __params.overtoneFalloff;
-		_bitCrush				= __params.bitCrush;
-		_bitCrushSweep			= __params.bitCrushSweep;
-
-		if (__makeDirty) paramsDirty = true;
+		bool wasDirty = paramsDirty;
+		SetSettingsString(GetSettingsString());
+		paramsDirty = wasDirty || __makeDirty;
 	}
 
 
