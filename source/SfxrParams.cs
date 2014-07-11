@@ -641,26 +641,85 @@ public class SfxrParams {
 
 
 	// Setting string methods
-	
+
 	/**
-	 * Returns a string representation of the parameters for copy/paste sharing
+	 * Returns a string representation of the parameters for copy/paste sharing in the old format (24 parameters, SFXR/AS3SFXR compatible)
+	 * @return	A comma-delimited list of parameter values
+	 */
+	public string GetSettingsStringLegacy() {
+		string str = "";
+
+		// 24 params
+
+		str += waveType.ToString() + ",";
+		str += To4DP(_attackTime) + ",";
+		str += To4DP(_sustainTime) + ",";
+		str += To4DP(_sustainPunch) + ",";
+		str += To4DP(_decayTime) + ",";
+		str += To4DP(_startFrequency) + ",";
+		str += To4DP(_minFrequency) + ",";
+		str += To4DP(_slide) + ",";
+		str += To4DP(_deltaSlide) + ",";
+		str += To4DP(_vibratoDepth) + ",";
+		str += To4DP(_vibratoSpeed) + ",";
+		str += To4DP(_changeAmount) + ",";
+		str += To4DP(_changeSpeed) + ",";
+		str += To4DP(_squareDuty) + ",";
+		str += To4DP(_dutySweep) + ",";
+		str += To4DP(_repeatSpeed) + ",";
+		str += To4DP(_phaserOffset) + ",";
+		str += To4DP(_phaserSweep) + ",";
+		str += To4DP(_lpFilterCutoff) + ",";
+		str += To4DP(_lpFilterCutoffSweep) + ",";
+		str += To4DP(_lpFilterResonance) + ",";
+		str += To4DP(_hpFilterCutoff) + ",";
+		str += To4DP(_hpFilterCutoffSweep) + ",";
+		str += To4DP(_masterVolume);
+
+		return str;
+	}
+
+	/**
+	 * Returns a string representation of the parameters for copy/paste sharing in the new format (32 parameters, BFXR compatible)
 	 * @return	A comma-delimited list of parameter values
 	 */
 	public string GetSettingsString() {
-		string str = waveType.ToString();
-		str += ""
-			+ "," + To4DP(_attackTime)				+ "," + To4DP(_sustainTime)
-			+ "," + To4DP(_sustainPunch)			+ "," + To4DP(_decayTime)
-			+ "," + To4DP(_startFrequency)			+ "," + To4DP(_minFrequency)
-			+ "," + To4DP(_slide)					+ "," + To4DP(_deltaSlide)
-			+ "," + To4DP(_vibratoDepth)			+ "," + To4DP(_vibratoSpeed)
-			+ "," + To4DP(_changeAmount)			+ "," + To4DP(_changeSpeed)
-			+ "," + To4DP(_squareDuty)				+ "," + To4DP(_dutySweep)
-			+ "," + To4DP(_repeatSpeed)				+ "," + To4DP(_phaserOffset)
-			+ "," + To4DP(_phaserSweep)				+ "," + To4DP(_lpFilterCutoff)
-			+ "," + To4DP(_lpFilterCutoffSweep)		+ "," + To4DP(_lpFilterResonance)
-			+ "," + To4DP(_hpFilterCutoff)			+ "," + To4DP(_hpFilterCutoffSweep)
-			+ "," + To4DP(_masterVolume);
+		string str = "";
+
+		// 32 params
+
+		str += waveType.ToString() + ",";
+		str += To4DP(_masterVolume) + ",";
+		str += To4DP(_attackTime) + ",";
+		str += To4DP(_sustainTime) + ",";
+		str += To4DP(_sustainPunch) + ",";
+		str += To4DP(_decayTime) + ",";
+		str += To4DP(_compressionAmount) + ",";
+		str += To4DP(_startFrequency) + ",";
+		str += To4DP(_minFrequency) + ",";
+		str += To4DP(_slide) + ",";
+		str += To4DP(_deltaSlide) + ",";
+		str += To4DP(_vibratoDepth) + ",";
+		str += To4DP(_vibratoSpeed) + ",";
+		str += To4DP(_overtones) + ",";
+		str += To4DP(_overtoneFalloff) + ",";
+		str += To4DP(_changeRepeat) + ","; // _changeRepeat?
+		str += To4DP(_changeAmount) + ",";
+		str += To4DP(_changeSpeed) + ",";
+		str += To4DP(_changeAmount2) + ","; // changeamount2
+		str += To4DP(_changeSpeed2) + ","; // changespeed2
+		str += To4DP(_squareDuty) + ",";
+		str += To4DP(_dutySweep) + ",";
+		str += To4DP(_repeatSpeed) + ",";
+		str += To4DP(_phaserOffset) + ",";
+		str += To4DP(_phaserSweep) + ",";
+		str += To4DP(_lpFilterCutoff) + ",";
+		str += To4DP(_lpFilterCutoffSweep) + ",";
+		str += To4DP(_lpFilterResonance) + ",";
+		str += To4DP(_hpFilterCutoff) + ",";
+		str += To4DP(_hpFilterCutoffSweep) + ",";
+		str += To4DP(_bitCrush) + ",";
+		str += To4DP(_bitCrushSweep);
 
 		return str;
 	}
