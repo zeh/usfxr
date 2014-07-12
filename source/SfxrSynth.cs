@@ -140,8 +140,8 @@ public class SfxrSynth {
 	private int			_changeLimit2;						// Once the time reaches this limit, the note changes
 	private bool		_changeReached2;
 
-	//private float		_overtones;							// From SfxrParams
-	//private float		_overtoneFalloff;					// From SfxrParams
+	private int			_overtones;							// Minimum frequency before stopping
+	private float		_overtoneFalloff;					// Minimum frequency before stopping
 
 	private float		_bitcrushFreq;						// Inversely proportional to the number of samples to skip 
 	private float		_bitcrushFreqSweep;					// Change of the above
@@ -510,6 +510,9 @@ public class SfxrSynth {
 
 			_phase = 0;
 
+			_overtones = (int)(p.overtones * 10f);
+			_overtoneFalloff = p.overtoneFalloff;
+
 			_minFrequency = p.minFrequency;
 
 			_bitcrushFreq = 1f - Mathf.Pow(p.bitCrush, 1f / 3f);				
@@ -589,8 +592,9 @@ public class SfxrSynth {
 	private bool SynthWave(float[] __buffer, int __bufferPos, uint __length) {
 		_finished = false;
 
-		int i, j, n;
+		int i, j, n, k;
 		int l = (int)__length;
+		float overtoneStrength, tempPhase, sampleTotal;
 
 		for (i = 0; i < l; i++) {
 			if (_finished) return true;
@@ -724,58 +728,71 @@ public class SfxrSynth {
 					}
 				}
 
-				// Gets the sample from the oscillator
-				switch(_waveType) {
-					case 0:
-						// Square
-						_sample = ((_phase / _periodTemp) < _squareDuty) ? 0.5f : -0.5f;
-						break;
-					case 1:
-						// Sawtooth
-						_sample = 1.0f - (_phase / _periodTemp) * 2.0f;
-						break;
-					case 2:
-						// Sine: fast and accurate approx
-						_pos = _phase / _periodTemp;
-						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
-						_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
-						_sample = _sample < 0 ? 0.225f * (_sample *-_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample;
-						break;
-					case 3:
-						// Noise
-						_sample = _noiseBuffer[(uint)(_phase * 32f / _periodTempInt) % 32];
-						break;
-					case 4:
-						// Triangle
-						_sample = Math.Abs(1f - (_phase / _periodTemp) * 2f) - 1f;
-						break;
-					case 5:
-						// Pink noise
-						_sample = _pinkNoiseBuffer[(uint)(_phase * 32f / _periodTempInt) % 32];
-						break;
-					case 6:
-						// Tan: detuned
-						_sample = (float)Math.Tan(Math.PI * _phase / _periodTemp);
-						break;
-					case 7:
-						// Whistle
-						// Sine wave code
-						_pos = _phase / _periodTemp;
-						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
-						_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
-						_sample = 0.75f * (_sample < 0 ? 0.225f * (_sample *-_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample);
-						// Then whistle (essentially an overtone with frequencyx20 and amplitude0.25
-						_pos = ((_phase * 20f) % _periodTemp) / _periodTemp;
-						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
-						_sample2 = _pos < 0 ? 1.27323954f * _pos + .405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
-						_sample += 0.25f * (_sample2 < 0 ? .225f * (_sample2 *-_sample2 - _sample2) + _sample2 : .225f * (_sample2 * _sample2 - _sample2) + _sample2);
-						break;
-					case 8:
-						// Breaker
-						amp = _phase / _periodTemp;
-						_sample = Math.Abs(1f - amp * amp * 2f) - 1f;
-						break;
+				_sample = 0;
+				sampleTotal = 0;
+				overtoneStrength = 1f;
+
+				for (k = 0; k <= _overtones; k++) {
+					tempPhase = (float)((_phase * (k + 1))) % _periodTemp;
+
+					// Gets the sample from the oscillator
+					switch (_waveType) {
+						case 0:
+							// Square
+							_sample = ((tempPhase / _periodTemp) < _squareDuty) ? 0.5f : -0.5f;
+							break;
+						case 1:
+							// Sawtooth
+							_sample = 1.0f - (tempPhase / _periodTemp) * 2.0f;
+							break;
+						case 2:
+							// Sine: fast and accurate approx
+							_pos = tempPhase / _periodTemp;
+							_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
+							_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
+							_sample = _sample < 0 ? 0.225f * (_sample * -_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample;
+							break;
+						case 3:
+							// Noise
+							_sample = _noiseBuffer[(uint)(tempPhase * 32f / _periodTempInt) % 32];
+							break;
+						case 4:
+							// Triangle
+							_sample = Math.Abs(1f - (tempPhase / _periodTemp) * 2f) - 1f;
+							break;
+						case 5:
+							// Pink noise
+							_sample = _pinkNoiseBuffer[(uint)(tempPhase * 32f / _periodTempInt) % 32];
+							break;
+						case 6:
+							// Tan
+							_sample = (float)Math.Tan(Math.PI * tempPhase / _periodTemp);
+							break;
+						case 7:
+							// Whistle
+							// Sine wave code
+							_pos = tempPhase / _periodTemp;
+							_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
+							_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
+							_sample = 0.75f * (_sample < 0 ? 0.225f * (_sample * -_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample);
+							// Then whistle (essentially an overtone with frequencyx20 and amplitude0.25
+							_pos = ((tempPhase * 20f) % _periodTemp) / _periodTemp;
+							_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
+							_sample2 = _pos < 0 ? 1.27323954f * _pos + .405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
+							_sample += 0.25f * (_sample2 < 0 ? .225f * (_sample2 * -_sample2 - _sample2) + _sample2 : .225f * (_sample2 * _sample2 - _sample2) + _sample2);
+							break;
+						case 8:
+							// Breaker
+							amp = tempPhase / _periodTemp;
+							_sample = Math.Abs(1f - amp * amp * 2f) - 1f;
+							break;
+					}
+
+					sampleTotal += overtoneStrength * _sample;
+					overtoneStrength *= (1f - _overtoneFalloff);
 				}
+
+				_sample = sampleTotal;
 
 				// Applies the low and high pass filters
 				if (_filters) {
