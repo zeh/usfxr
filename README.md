@@ -3,9 +3,9 @@ usfxr
 
 usfxr is a C# library used to generate and play game-like procedural audio effects inside Unity. With usfxr, one can easily synthesize original sound in real time for actions such as item pickups, jumps, lasers, hits, explosions, and more, without ever leaving the Unity editor.
 
-usfxr is a port of Thomas Vian's [as3sfxr](https://code.google.com/p/as3sfxr/), which itself is an ActionScript 3 port of Tomas Pettersson's [sfxr](http://www.drpetter.se/project_sfxr.html).
+usfxr comes with code that allows for real-time audio synthesizing in games, and an in-editor interface for creating and testing effects before you use them in your code.
 
-[This video](https://vimeo.com/15769163) explains the ideas behind as3sfxr, and the ideas that I want to support with usfxr.
+usfxr is a port of Thomas Vian's [as3sfxr](https://code.google.com/p/as3sfxr/), which itself is an ActionScript 3 port of Tomas Pettersson's [sfxr](http://www.drpetter.se/project_sfxr.html). And as if the acronym collection is not enough, it also supports additional features first introduced by [BFXR](http://www.bfxr.net/) such as new waveform types and filters.
 
 [This video](https://vimeo.com/15769163) explains the ideas behind as3sfxr, and the ideas supported by usfxr.
 
@@ -20,7 +20,7 @@ However, by using a runtime library like usfxr, you can generate the same audio 
 * Audio is generated in real time; there's no storage of audio files as assets necessary, making compiled project sizes smaller
 * Easily play variations of every sound you play; adds more flavor to the gameplay experience
 
-I make no claims in regards to the source code or interface, since it was simply adapted from Thomas Vian's own code and (elegant) interface. As such, usfxr contains the same features offered by as3sfxr, such as caching of generated audio and ability to play sounds with variations. But because it is adapted to work on a different platform, however, it has advantages of its own:
+I make no claims in regards to the source code or interface, since it was simply adapted from Thomas Vian's own code and (elegant) as3sfxr interface, as well as Stephen Lavelle's BFXR additional features. As such, usfxr contains the same features offered by these two ports, such as caching of generated audio and ability to play sounds with variations. But because the code is adapted to work on a different platform (Unity), it has advantages of its own:
 
 * Fast audio synthesis
 * Ability to cache sounds the first time they're played
@@ -140,7 +140,6 @@ To-do/ideas
  * Show final duration in GUI
  * Undo/Redo
  * Add option to "lock" GUI items like BFXR's interface
- * Implement BFXR's new parameters (new waveforms, new filters)
 
 
 Acknowledgments
@@ -149,10 +148,16 @@ Acknowledgments
  * Tomas Pettersson created the original [sfxr](http://www.drpetter.se/project_sfxr.html), where all the concepts for usfxr come from.
  * Thomas Vian created [as3sfxr](https://code.google.com/p/as3sfxr/), the original code that was ported to C# for usfxr.
  * [Tiaan Geldenhuys](http://tiaan.com/) contributed to usfxr by cleaning the code and creating the original version of the in-editor window that I bastardized later.
-
+ * [Stephen Lavelle](http://www.increpare.com/) created [BFXR](http://www.bfxr.net/), an AS3 port of SFXR with several new features of its own, many of which have been adopted by usfxr.
  
 Changelog
 ---------
+
+#### 2014-07-12
+
+* Added support for BFXR's new filters: compression, harmonics, and bitcrusher
+* Added support for BFXR's expanded pitch jump effects
+* Added support for BFXR's parameter strings (standard SFXR parameter strings still work)
 
 #### 2014-07-08
 
