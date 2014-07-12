@@ -34,7 +34,7 @@ public class SfxrSynth {
 	// Constants
 	private const int LO_RES_NOISE_PERIOD = 8;					// Should be < 32
 
-	// Sound properties
+	// Unity specific objects
 	private SfxrParams		_params = new SfxrParams();		// Params instance
 
 	private GameObject		_gameObject;					// Game object that will contain the audio player script
@@ -42,6 +42,7 @@ public class SfxrSynth {
 
 	private Transform		_parentTransform;				// Parent that will contain the audio (for positional audio)
 
+	// Sound properties
 	private bool			_mutation;						// If the current sound playing or caching is a mutation
 
 	private float[]			_cachedWave;					// Cached wave data from a cacheSound() call
@@ -129,6 +130,19 @@ public class SfxrSynth {
 	private float		_hpFilterDeltaCutoff;				// Speed of the high-pass cutoff multiplier
 
 	// From BFXR
+	private float		_changePeriod;
+	private int			_changePeriodTime;
+
+	private bool		_changeReached;
+
+	private float		_changeAmount2;						// Amount to change the note by
+	private int			_changeTime2;						// Counter for the note change
+	private int			_changeLimit2;						// Once the time reaches this limit, the note changes
+	private bool		_changeReached2;
+
+	//private float		_overtones;							// From SfxrParams
+	//private float		_overtoneFalloff;					// From SfxrParams
+
 	private float		_bitcrushFreq;						// Inversely proportional to the number of samples to skip 
 	private float		_bitcrushFreqSweep;					// Change of the above
 	private float		_bitcrushPhase;						// Samples when this > 1
@@ -136,7 +150,7 @@ public class SfxrSynth {
 
 	private float		_compressionFactor;
 
-	// Caches
+	// Pre-calculated data
 	private float[]		_noiseBuffer;						// Buffer of random values used to generate noise
 	private float[]		_pinkNoiseBuffer;					// Buffer of random values used to generate pink noise
 	private PinkNumber	_pinkNumber;						// Used to generate pink noise
@@ -439,6 +453,9 @@ public class SfxrSynth {
 			_dutySweep = -p.dutySweep * 0.00005f;
 		}
 
+		_changePeriod = Mathf.Max(((1f - p.changeRepeat) + 0.1f) / 1.1f) * 20000f + 32f;
+		_changePeriodTime = 0;
+
 		if (p.changeAmount > 0.0) {
 			_changeAmount = 1.0f - p.changeAmount * p.changeAmount * 0.9f;
 		} else {
@@ -446,12 +463,31 @@ public class SfxrSynth {
 		}
 
 		_changeTime = 0;
+		_changeReached = false;
 
 		if (p.changeSpeed == 1.0f) {
 			_changeLimit = 0;
 		} else {
 			_changeLimit = (int)((1f - p.changeSpeed) * (1f - p.changeSpeed) * 20000f + 32f);
 		}
+
+		if (p.changeAmount2 > 0f) {
+			_changeAmount2 = 1f - p.changeAmount2 * p.changeAmount2 * 0.9f;
+		} else {
+			_changeAmount2 = 1f + p.changeAmount2 * p.changeAmount2 * 10f;
+		}
+
+		_changeTime2 = 0;
+		_changeReached2 = false;
+
+		if (p.changeSpeed2 == 1.0f) {
+			_changeLimit2 = 0;
+		} else {
+			_changeLimit2 = (int)((1f - p.changeSpeed2) * (1f - p.changeSpeed2) * 20000f + 32f);
+		}
+
+		_changeLimit = (int)(_changeLimit * ((1f - p.changeRepeat + 0.1f) / 1.1f));
+		_changeLimit2 = (int)(_changeLimit2 * ((1f - p.changeRepeat + 0.1f) / 1.1f));
 
 		if (__totalReset) {
 			p.paramsDirty = false;
@@ -567,11 +603,34 @@ public class SfxrSynth {
 				}
 			}
 
+			_changePeriodTime++;
+			if (_changePeriodTime >= _changePeriod) {				
+				_changeTime = 0;
+				_changeTime2 = 0;
+				_changePeriodTime = 0;
+				if (_changeReached) {
+					_period /= _changeAmount;
+					_changeReached = false;
+				}
+				if (_changeReached2) {
+					_period /= _changeAmount2;
+					_changeReached2 = false;
+				}
+			}
+
 			// If _changeLimit is reached, shifts the pitch
-			if (_changeLimit != 0) {
+			if (!_changeReached) {
 				if (++_changeTime >= _changeLimit) {
-					_changeLimit = 0;
+					_changeReached = true;
 					_period *= _changeAmount;
+				}
+			}
+
+			// If _changeLimit is reached, shifts the pitch
+			if (!_changeReached2) {
+				if (++_changeTime2 >= _changeLimit2) {
+					_changeReached2 = true;
+					_period *= _changeAmount2;
 				}
 			}
 
