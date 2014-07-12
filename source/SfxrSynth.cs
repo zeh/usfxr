@@ -424,7 +424,7 @@ public class SfxrSynth {
 		_slide = 1.0f - p.slide * p.slide * p.slide * 0.01f;
 		_deltaSlide = -p.deltaSlide * p.deltaSlide * p.deltaSlide * 0.000001f;
 
-		if (p.waveType == (uint)SfxrParams.WaveType.Square) {
+		if (p.waveType == 0) {
 			_squareDuty = 0.5f - p.squareDuty * 0.5f;
 			_dutySweep = -p.dutySweep * 0.00005f;
 		}
@@ -580,7 +580,7 @@ public class SfxrSynth {
 			if (_periodTempInt < 8) _periodTemp = _periodTempInt = 8;
 
 			// Sweeps the square duty
-			if (_waveType == (uint)SfxrParams.WaveType.Square) {
+			if (_waveType == 0) {
 				_squareDuty += _dutySweep;
 				if (_squareDuty < 0.0) {
 					_squareDuty = 0.0f;
@@ -636,42 +636,53 @@ public class SfxrSynth {
 					_phase = _phase % _periodTempInt;
 
 					// Generates new random noise for this period
-					if (_waveType == (uint)SfxrParams.WaveType.Noise) {
+					if (_waveType == 3) {
+						// Noise
 						for (n = 0; n < 32; n++) _noiseBuffer[n] = getRandom() * 2.0f - 1.0f;
-					} else if (_waveType == (uint)SfxrParams.WaveType.PinkNoise) {
+					} else if (_waveType == 5) {
+						// Pink noise
 						for (n = 0; n < 32; n++) _pinkNoiseBuffer[n] = _pinkNumber.getNextValue();
-					} else if (_waveType == (uint)SfxrParams.WaveType.Tan) {
+					} else if (_waveType == 6) {
+						// Tan
 						for (n = 0; n < 32; n++) _loResNoiseBuffer[n] = ((n % LO_RES_NOISE_PERIOD) == 0) ? getRandom() * 2.0f - 1.0f : _loResNoiseBuffer[n-1];
 					}
 				}
 
 				// Gets the sample from the oscillator
-				switch((SfxrParams.WaveType)_waveType) {
-					case SfxrParams.WaveType.Square:
+				switch(_waveType) {
+					case 0:
+						// Square
 						_sample = ((_phase / _periodTemp) < _squareDuty) ? 0.5f : -0.5f;
 						break;
-					case SfxrParams.WaveType.Sawtooth:
+					case 1:
+						// Sawtooth
 						_sample = 1.0f - (_phase / _periodTemp) * 2.0f;
 						break;
-					case SfxrParams.WaveType.Sine: // Fast and accurate approx {
+					case 2:
+						// Sine: fast and accurate approx
 						_pos = _phase / _periodTemp;
 						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
 						_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
 						_sample = _sample < 0 ? 0.225f * (_sample *-_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample;
 						break;
-					case SfxrParams.WaveType.Noise:
+					case 3:
+						// Noise
 						_sample = _noiseBuffer[(uint)(_phase * 32f / _periodTempInt) % 32];
 						break;
-					case SfxrParams.WaveType.Triangle:
+					case 4:
+						// Triangle
 						_sample = Math.Abs(1f - (_phase / _periodTemp) * 2f) - 1f;
 						break;
-					case SfxrParams.WaveType.PinkNoise:
+					case 5:
+						// Pink noise
 						_sample = _pinkNoiseBuffer[(uint)(_phase * 32f / _periodTempInt) % 32];
 						break;
-					case SfxrParams.WaveType.Tan: // Detuned
+					case 6:
+						// Tan: detuned
 						_sample = (float)Math.Tan(Math.PI * _phase / _periodTemp);
 						break;
-					case SfxrParams.WaveType.Whistle:
+					case 7:
+						// Whistle
 						// Sine wave code
 						_pos = _phase / _periodTemp;
 						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
@@ -683,7 +694,8 @@ public class SfxrSynth {
 						_sample2 = _pos < 0 ? 1.27323954f * _pos + .405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
 						_sample += 0.25f * (_sample2 < 0 ? .225f * (_sample2 *-_sample2 - _sample2) + _sample2 : .225f * (_sample2 * _sample2 - _sample2) + _sample2);
 						break;
-					case SfxrParams.WaveType.Breaker:
+					case 8:
+						// Breaker
 						amp = _phase / _periodTemp;
 						_sample = Math.Abs(1f - amp * amp * 2f) - 1f;
 						break;

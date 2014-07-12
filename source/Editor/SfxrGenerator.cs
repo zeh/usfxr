@@ -37,6 +37,19 @@ public class SfxrGenerator : EditorWindow {
 	/// Open the usfxr's sound-effects generator window.
 	/// </summary>
 
+	// Enums
+	public enum WaveType : uint {
+		Square = 0,
+		Sawtooth = 1,
+		Sine = 2,
+		Noise = 3,
+		Triangle = 4,
+		PinkNoise = 5,
+		Tan = 6,
+		Whistle = 7,
+		Breaker = 8
+	}
+
 	// Properties
 	private Vector2 scrollPosition;		// Position of the scroll window
 	private Vector2 scrollPositionRoot;
@@ -204,8 +217,8 @@ public class SfxrGenerator : EditorWindow {
 
 		EditorGUI.BeginChangeCheck();
 		try {
-			SfxrParams.WaveType waveTypeAsEnum = (SfxrParams.WaveType)parameters.waveType;
-			waveTypeAsEnum = (SfxrParams.WaveType)EditorGUILayout.EnumPopup(new GUIContent("Wave Type", "Shape of the wave"), waveTypeAsEnum, waveTypeStyle);
+			WaveType waveTypeAsEnum = (WaveType)parameters.waveType;
+			waveTypeAsEnum = (WaveType)EditorGUILayout.EnumPopup(new GUIContent("Wave Type", "Shape of the wave"), waveTypeAsEnum, waveTypeStyle);
 			parameters.waveType = (uint)waveTypeAsEnum;
 			GUILayout.Space(12);
 
@@ -268,11 +281,8 @@ public class SfxrGenerator : EditorWindow {
 			// BFXR
 			RenderSlider(+0, +1, parameters.bitCrush, (value => parameters.bitCrush = value), new GUIContent("Bit Crush", "Resamples the audio at a lower frequency (0 to 1)"));
 			RenderSlider(-1, +1, parameters.bitCrushSweep, (value => parameters.bitCrushSweep = value), new GUIContent("Bit Crush Sweep", "Sweeps the Bit Crush filter up or down (-1 to 1)"));
-		}
-		finally
-		{
-			if (EditorGUI.EndChangeCheck())
-			{
+		} finally {
+			if (EditorGUI.EndChangeCheck()) {
 				parameters.paramsDirty = true;
 				mustPlaySound = true;
 			}
@@ -281,8 +291,7 @@ public class SfxrGenerator : EditorWindow {
 		return mustPlaySound;
 	}
 
-	protected static void RenderHeading(string heading)
-	{
+	protected static void RenderHeading(string heading) {
 		EditorGUILayout.LabelField(heading, EditorStyles.boldLabel);
 	}
 
@@ -291,7 +300,7 @@ public class SfxrGenerator : EditorWindow {
 		Action valueChangeAction = null,
 		bool? isEnabled = null,
 		params GUILayoutOption[] options)
-	{
+{
 		if (content == null)
 		{
 			content = GUIContent.none;

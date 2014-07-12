@@ -29,19 +29,6 @@ public class SfxrParams {
 	 * @author Zeh Fernando
 	 */
 
-	// Enums
-	public enum WaveType : uint {
-		Square = 0,
-		Sawtooth = 1,
-		Sine = 2,
-		Noise = 3,
-		Triangle = 4,
-		PinkNoise = 5,
-		Tan = 6,
-		Whistle = 7,
-		Breaker = 8
-	}
-
 	// Properties
 	public bool		paramsDirty;					// Whether the parameters have been changed since last time (shouldn't used cached sound)
 
@@ -101,7 +88,7 @@ public class SfxrParams {
 	/** Shape of the wave (0:square, 1:sawtooth, 2:sin, 3:noise) */
 	public uint waveType {
 		get { return _waveType; }
-		set { _waveType = value > (uint)SfxrParams.WaveType.Breaker ? 0 : value; paramsDirty = true; }
+		set { _waveType = value > 8 ? 0 : value; paramsDirty = true; }
 	}
 
 	/** Overall volume of the sound (0 to 1) */
@@ -325,7 +312,7 @@ public class SfxrParams {
 		resetParams();
 
 		_waveType = (uint)(GetRandom() * 3);
-		if (_waveType == (uint)WaveType.Sine && GetRandomBool()) _waveType = (uint)(GetRandom() * 2f);
+		if (_waveType == 2 && GetRandomBool()) _waveType = (uint)(GetRandom() * 2f);
 
 		_startFrequency = 0.5f + GetRandom() * 0.5f;
 		_minFrequency = _startFrequency - 0.2f - GetRandom() * 0.6f;
@@ -365,7 +352,7 @@ public class SfxrParams {
 	public void GenerateExplosion() {
 		resetParams();
 
-		_waveType = (uint)WaveType.Noise;
+		_waveType = 3;
 
 		if (GetRandomBool()) {
 			_startFrequency = 0.1f + GetRandom() * 0.4f;
@@ -402,7 +389,7 @@ public class SfxrParams {
 		resetParams();
 
 		if (GetRandomBool()) {
-			_waveType = (uint)WaveType.Sawtooth;
+			_waveType = 1;
 		} else {
 			_squareDuty = GetRandom() * 0.6f;
 		}
@@ -432,9 +419,9 @@ public class SfxrParams {
 		resetParams();
 
 		_waveType = (uint)(GetRandom() * 3f);
-		if (_waveType == (uint)WaveType.Sine) {
-			_waveType = (uint)WaveType.Noise;
-		} else if (_waveType == (uint)WaveType.Square) {
+		if (_waveType == 2) {
+			_waveType = 3;
+		} else if (_waveType == 0) {
 			_squareDuty = GetRandom() * 0.6f;
 		}
 
@@ -453,7 +440,7 @@ public class SfxrParams {
 	public void GenerateJump() {
 		resetParams();
 
-		_waveType = (uint)WaveType.Square;
+		_waveType = 0;
 		_squareDuty = GetRandom() * 0.6f;
 		_startFrequency = 0.3f + GetRandom() * 0.3f;
 		_slide = 0.1f + GetRandom() * 0.2f;
@@ -472,7 +459,7 @@ public class SfxrParams {
 		resetParams();
 
 		_waveType = (uint)(GetRandom() * 2f);
-		if (_waveType == (uint)WaveType.Square) _squareDuty = GetRandom() * 0.6f;
+		if (_waveType == 0) _squareDuty = GetRandom() * 0.6f;
 
 		_startFrequency = 0.2f + GetRandom() * 0.4f;
 
@@ -487,7 +474,7 @@ public class SfxrParams {
 	protected void resetParams() {
 		paramsDirty = true;
 
-		_waveType = (uint)WaveType.Square;
+		_waveType = 0;
 		_startFrequency			= 0.3f;
 		_minFrequency			= 0.0f;
 		_slide					= 0.0f;
@@ -578,7 +565,7 @@ public class SfxrParams {
 	public void Randomize() {
 		resetParams();
 
-		_waveType = (uint)(GetRandom() * (float)(WaveType.Breaker + 1));
+		_waveType = (uint)(GetRandom() * 9f);
 
 		_attackTime				= Pow(GetRandom() * 2f - 1f, 4);
 		_sustainTime			= Pow(GetRandom() * 2f - 1f, 2);
