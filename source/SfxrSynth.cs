@@ -657,7 +657,7 @@ public class SfxrSynth {
 			}
 
 			_periodTempInt = (int)_periodTemp;
-			if (_periodTempInt < 8) _periodTemp = _periodTempInt = 8;
+			if (_periodTemp < 8) _periodTemp = _periodTempInt = 8;
 
 			// Sweeps the square duty
 			if (_waveType == 0) {
