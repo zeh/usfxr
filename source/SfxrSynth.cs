@@ -134,6 +134,8 @@ public class SfxrSynth {
 	private float		_bitcrushPhase;						// Samples when this > 1
 	private float		_bitcrushLast;						// Last sample value
 
+	private float		_compressionFactor;
+
 	// Caches
 	private float[]		_noiseBuffer;						// Buffer of random values used to generate noise
 	private float[]		_pinkNoiseBuffer;					// Buffer of random values used to generate pink noise
@@ -479,6 +481,8 @@ public class SfxrSynth {
 			_bitcrushPhase = 0;
 			_bitcrushLast = 0;
 
+			_compressionFactor = 1f / (1f + 4f * p.compressionAmount);
+
 			_filters = p.lpFilterCutoff != 1.0 || p.hpFilterCutoff != 0.0;
 
 			_lpFilterPos = 0.0f;
@@ -758,9 +762,21 @@ public class SfxrSynth {
 				_bitcrushPhase = 0;
 				_bitcrushLast = _superSample;	 
 			}
-			_bitcrushFreq = Math.Max(Math.Min(_bitcrushFreq + _bitcrushFreqSweep, 1f), 0f);
+			_bitcrushFreq = Mathf.Max(Mathf.Min(_bitcrushFreq + _bitcrushFreqSweep, 1f), 0f);
 
 			_superSample = _bitcrushLast;
+
+			// Compressor
+			if (_superSample > 0f) {
+				_superSample = Mathf.Pow(_superSample, _compressionFactor);
+			} else {
+				_superSample = -Mathf.Pow(-_superSample, _compressionFactor);
+			}
+
+			// BFXR leftover:
+			//if (_muted) {
+			//	_superSample = 0;
+			//}
 
 			// Clipping if too loud
 			if (_superSample < -1f) {
@@ -782,7 +798,7 @@ public class SfxrSynth {
 		fixGameObjectParent();
 
 		// Create actual audio player
-    	_audioPlayer = _gameObject.AddComponent<SfxrAudioPlayer>();
+		_audioPlayer = _gameObject.AddComponent<SfxrAudioPlayer>();
 		_audioPlayer.SetSfxrSynth(this);
 		_audioPlayer.SetRunningInEditMode(Application.isEditor && !Application.isPlaying);
 	}
@@ -849,7 +865,7 @@ public class PinkNumber {
 		for (i = 0; i < 5; i++) white_values[i] = (uint)((randomGenerator.NextDouble() % 1) * rangeBy5);
 	}
 
-	public float getNextValue()  {
+	public float getNextValue() {
 		// Returns a number between -1 and 1
 		last_key = key;
 		sum = 0;
