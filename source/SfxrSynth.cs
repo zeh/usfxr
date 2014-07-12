@@ -128,11 +128,19 @@ public class SfxrSynth {
 	private float		_hpFilterCutoff;					// Cutoff multiplier which adjusts the amount the wave position can move
 	private float		_hpFilterDeltaCutoff;				// Speed of the high-pass cutoff multiplier
 
+	// From BFXR
+	private float		_bitcrushFreq;						// Inversely proportional to the number of samples to skip 
+	private float		_bitcrushFreqSweep;					// Change of the above
+	private float		_bitcrushPhase;						// Samples when this > 1
+	private float		_bitcrushLast;						// Last sample value
+
+	// Caches
 	private float[]		_noiseBuffer;						// Buffer of random values used to generate noise
 	private float[]		_pinkNoiseBuffer;					// Buffer of random values used to generate pink noise
 	private PinkNumber	_pinkNumber;						// Used to generate pink noise
 	private float[]		_loResNoiseBuffer;					// Buffer of random values used to generate Tan waveform
 
+	// Temp
 	private float		_superSample;						// Actual sample writen to the wave
 	private float		_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
 	private float		_sample2;							// Used in other calculations
@@ -466,6 +474,11 @@ public class SfxrSynth {
 
 			_minFrequency = p.minFrequency;
 
+			_bitcrushFreq = 1f - Mathf.Pow(p.bitCrush, 1f / 3f);				
+			_bitcrushFreqSweep = -p.bitCrushSweep * 0.000015f;
+			_bitcrushPhase = 0;
+			_bitcrushLast = 0;
+
 			_filters = p.lpFilterCutoff != 1.0 || p.hpFilterCutoff != 0.0;
 
 			_lpFilterPos = 0.0f;
@@ -738,6 +751,16 @@ public class SfxrSynth {
 
 			// Averages out the super samples and applies volumes
 			_superSample = _masterVolume * _envelopeVolume * _superSample * 0.125f;
+
+			// Bit crush
+			_bitcrushPhase += _bitcrushFreq;
+			if (_bitcrushPhase > 1f) {
+				_bitcrushPhase = 0;
+				_bitcrushLast = _superSample;	 
+			}
+			_bitcrushFreq = Math.Max(Math.Min(_bitcrushFreq + _bitcrushFreqSweep, 1f), 0f);
+
+			_superSample = _bitcrushLast;
 
 			// Clipping if too loud
 			if (_superSample < -1f) {
