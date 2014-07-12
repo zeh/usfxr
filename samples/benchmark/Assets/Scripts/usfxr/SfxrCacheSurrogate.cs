@@ -26,7 +26,7 @@ public class SfxrCacheSurrogate : MonoBehaviour {
 	/**
 	 * SfxrCacheSurrogate
 	 * This is the (internal) behavior script responsible for calling Coroutines for asynchronous audio generation
-	 * 
+	 *
 	 * @author Zeh Fernando
 	 */
 

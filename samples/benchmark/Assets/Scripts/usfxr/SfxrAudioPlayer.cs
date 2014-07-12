@@ -26,7 +26,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 	/**
 	 * SfxrAudioPlayer
 	 * This is the (internal) behavior script responsible for streaming audio to the engine
-	 * 
+	 *
 	 * @author Zeh Fernando
 	 */
 
@@ -38,11 +38,11 @@ public class SfxrAudioPlayer : MonoBehaviour {
 
 	// Instances
 	private SfxrSynth	sfxrSynth;					// SfxrSynth instance that will generate the audio samples used by this
-	
+
 
 	// ================================================================================================================
 	// INTERNAL INTERFACE ---------------------------------------------------------------------------------------------
-	
+
 	void Start() {
 		// Creates an empty audio source so this GameObject can receive audio events
 		AudioSource soundSource = gameObject.AddComponent<AudioSource>();
@@ -65,7 +65,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 
 		if (!isDestroyed && !needsToDestroy && sfxrSynth != null) {
 			bool hasMoreSamples = sfxrSynth.GenerateAudioFilterData(__data, __channels);
-			
+
 			// If no more samples are needed, there's no more need for this GameObject so schedule a destruction (cannot do this in this thread)
 			if (!hasMoreSamples) {
 				needsToDestroy = true;
@@ -78,7 +78,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 			}
 		}
   	}
-	
+
 
 	// ================================================================================================================
 	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
