@@ -88,8 +88,8 @@ public class SfxrParams {
 
 	private float	_compressionAmount		= 0.0f;	// Compression: pushes amplitudes together into a narrower range to make them stand out more. Very good for sound effects, where you want them to stick out against background music (0 to 1)
 
-	private float	_overtones				= 0.0f;	// Harmonics: overlays copies of the waveform with copies and multiples of its frequency. Good for bulking out or otherwise enriching the texture of the sounds (warning: this is the number 1 cause of bfxr slowdown!) (0 to 1)
-	private float	_overtoneFalloff		= 0.0f;	// Harmonics falloff: The rate at which higher overtones should decay (0 to 1)
+	private float	_overtones				= 0.0f;	// Harmonics: overlays copies of the waveform with copies and multiples of its frequency. Good for bulking out or otherwise enriching the texture of the sounds (warning: this is the number 1 cause of usfxr slowdown!) (0 to 1)
+	private float	_overtoneFalloff		= 0.0f;	// Harmonics falloff: the rate at which higher overtones should decay (0 to 1)
 
 	private float	_bitCrush				= 0.0f;	// Bit crush: resamples the audio at a lower frequency (0 to 1)
 	private float	_bitCrushSweep			= 0.0f;	// Bit crush sweep: sweeps the Bit Crush filter up or down (-1 to 1)
