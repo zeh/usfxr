@@ -762,8 +762,8 @@ public class SfxrParams {
 			masterVolume = 			ParseFloat(values[23]);
 		} else if (values.Length >= 32) {
 			// New format (BFXR): 32 parameters (or more, but locked parameters are ignored)
-
 			resetParams();
+
 			waveType				= ParseUint(values[0]);
 			masterVolume			= ParseFloat(values[1]);
 			attackTime				= ParseFloat(values[2]);
@@ -798,6 +798,7 @@ public class SfxrParams {
 			bitCrushSweep			= ParseFloat(values[31]);
 		} else {
 			Debug.LogError("Could not paste settings string: parameters contain " + values.Length + " values (was expecting 24 or >32)");
+			return false;
 		}
 
 		return true;
