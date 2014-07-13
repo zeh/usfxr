@@ -38,11 +38,16 @@ public class SfxrGenerator : EditorWindow {
 	/// </summary>
 
 	// Enums
-	enum WaveType : uint {
+	public enum WaveType : uint {
 		Square = 0,
 		Sawtooth = 1,
 		Sine = 2,
-		Noise = 3
+		Noise = 3,
+		Triangle = 4,
+		PinkNoise = 5,
+		Tan = 6,
+		Whistle = 7,
+		Breaker = 8
 	}
 
 	// Properties
@@ -146,6 +151,9 @@ public class SfxrGenerator : EditorWindow {
 
 		GUILayout.Space(30);
 
+		if (GUILayout.Button("COPY (OLD)")) {
+			EditorGUIUtility.systemCopyBuffer = parameters.GetSettingsStringLegacy();
+		}
 		if (GUILayout.Button("COPY")) {
 			EditorGUIUtility.systemCopyBuffer = parameters.GetSettingsString();
 		}
@@ -203,15 +211,17 @@ public class SfxrGenerator : EditorWindow {
 	public bool RenderParameters(SfxrParams parameters) {
 		bool mustPlaySound = false;
 
+		GUIStyle waveTypeStyle = EditorStyles.popup;
+		waveTypeStyle.fontSize = 12;
+		waveTypeStyle.fixedHeight = 22;
+
 		EditorGUI.BeginChangeCheck();
 		try {
-			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
-			parameters.waveType = (uint)GUILayout.Toolbar((int)parameters.waveType, new string[] { "Squarewave", "Sawtooth", "Sinewave", "Noise" }, GUILayout.MinWidth(300), GUILayout.MaxWidth(400), GUILayout.Height(24), GUILayout.ExpandWidth(true));
-			GUILayout.FlexibleSpace();
-			GUILayout.EndHorizontal();
+			WaveType waveTypeAsEnum = (WaveType)parameters.waveType;
+			waveTypeAsEnum = (WaveType)EditorGUILayout.EnumPopup(new GUIContent("Wave Type", "Shape of the wave"), waveTypeAsEnum, waveTypeStyle);
+			parameters.waveType = (uint)waveTypeAsEnum;
+			GUILayout.Space(12);
 
-			//RenderToolbar(new string[] { "Square Wave", "Sawtooth", "Sine wave", "Noise" }, (value => parameters.waveType = ((uint)value)), new GUIContent("Wave Type", "Shape of the wave"));
 			//RenderPopup(waveTypeOptions, ((int)(parameters.waveType)), (value => parameters.waveType = ((uint)(value))), new GUIContent("Wave Type", "Shape of the wave"));
 			bool isSquareWaveType = (parameters.waveType == 0);
 			RenderSlider(+0, +1, parameters.masterVolume, (value => parameters.masterVolume = value), new GUIContent("Volume", "Overall volume of the sound (0 to 1)"));
@@ -222,6 +232,9 @@ public class SfxrGenerator : EditorWindow {
 			RenderSlider(+0, +1, parameters.sustainPunch, (value => parameters.sustainPunch = value), new GUIContent("Sustain Punch", "Tilts the sustain envelope for more 'pop' (0 to 1)"));
 			RenderSlider(+0, +1, parameters.decayTime, (value => parameters.decayTime = value), new GUIContent("Decay Time", "Length of the volume envelope decay (yes, I know it's called release) (0 to 1)"));
 
+			// BFXR
+			RenderSlider(+0, +1, parameters.compressionAmount, (value => parameters.compressionAmount = value), new GUIContent("Compression", "Pushes amplitudes together into a narrower range to make them stand out more. Very good for sound effects, where you want them to stick out against background music (0 to 1)"));
+
 			RenderHeading("Frequency");
 			RenderSlider(+0, +1, parameters.startFrequency, (value => parameters.startFrequency = value), new GUIContent("Start Frequency", "Base note of the sound (0 to 1)"));
 			RenderSlider(+0, +1, parameters.minFrequency, (value => parameters.minFrequency = value), new GUIContent("Minimum Frequency", "If sliding, the sound will stop at this frequency, to prevent really low notes (0 to 1)"));
@@ -230,9 +243,20 @@ public class SfxrGenerator : EditorWindow {
 			RenderSlider(+0, +1, parameters.vibratoDepth, (value => parameters.vibratoDepth = value), new GUIContent("Vibrato Depth", "Strength of the vibrato effect (0 to 1)"));
 			RenderSlider(+0, +1, parameters.vibratoSpeed, (value => parameters.vibratoSpeed = value), new GUIContent("Vibrato Speed", "Speed of the vibrato effect (i.e. frequency) (0 to 1)"));
 
-			RenderHeading("Tone Change");
-			RenderSlider(-1, +1, parameters.changeAmount, (value => parameters.changeAmount = value), new GUIContent("Change Amount", "Shift in note, either up or down (-1 to 1)"));
-			RenderSlider(+0, +1, parameters.changeSpeed, (value => parameters.changeSpeed = value), new GUIContent("Change Speed", "How fast the note shift happens (only happens once) (0 to 1)"));
+			// BFXR
+			RenderSlider(+0, +1, parameters.overtones, (value => parameters.overtones = value), new GUIContent("Harmonics", "Overlays copies of the waveform with copies and multiples of its frequency. Good for bulking out or otherwise enriching the texture of the sounds (warning: this is the number 1 cause of usfxr slowdown!) (0 to 1)"));
+			RenderSlider(+0, +1, parameters.overtoneFalloff, (value => parameters.overtoneFalloff = value), new GUIContent("Harmonics falloff", "The rate at which higher overtones should decay (0 to 1)"));
+
+			RenderHeading("Tone Change/Pitch Jump");
+			// BFXR
+			RenderSlider(+0, +1, parameters.changeRepeat, (value => parameters.changeRepeat = value), new GUIContent("Change Repeat Speed", "Larger Values means more pitch jumps, which can be useful for arpeggiation (0 to 1)"));
+
+			RenderSlider(-1, +1, parameters.changeAmount, (value => parameters.changeAmount = value), new GUIContent("Change Amount 1", "Shift in note, either up or down (-1 to 1)"));
+			RenderSlider(+0, +1, parameters.changeSpeed, (value => parameters.changeSpeed = value), new GUIContent("Change Speed 1", "How fast the note shift happens (only happens once) (0 to 1)"));
+
+			// BFXR
+			RenderSlider(-1, +1, parameters.changeAmount2, (value => parameters.changeAmount2 = value), new GUIContent("Change Amount 2", "Shift in note, either up or down (-1 to 1)"));
+			RenderSlider(+0, +1, parameters.changeSpeed2, (value => parameters.changeSpeed2 = value), new GUIContent("Change Speed 2", "How fast the note shift happens (only happens once) (0 to 1)"));
 
 			RenderHeading("Square Waves");
 			RenderSlider(+0, +1, parameters.squareDuty, (value => parameters.squareDuty = value), new GUIContent("Square Duty", "Controls the ratio between the up and down states of the square wave, changing the tibre (0 to 1)"), isSquareWaveType);
@@ -251,11 +275,14 @@ public class SfxrGenerator : EditorWindow {
 			RenderSlider(+0, +1, parameters.lpFilterResonance, (value => parameters.lpFilterResonance = value), new GUIContent("Low-Pass Resonance", "Changes the attenuation rate for the low-pass filter, changing the timbre (0 to 1)"));
 			RenderSlider(+0, +1, parameters.hpFilterCutoff, (value => parameters.hpFilterCutoff = value), new GUIContent("High-Pass Cutoff", "Frequency at which the high-pass filter starts attenuating lower frequencies (0 to 1)"));
 			RenderSlider(-1, +1, parameters.hpFilterCutoffSweep, (value => parameters.hpFilterCutoffSweep = value), new GUIContent("High-Pass Cutoff Sweep", "Sweeps the high-pass cutoff up or down (-1 to 1)"));
-		}
-		finally
-		{
-			if (EditorGUI.EndChangeCheck())
-			{
+
+			RenderHeading("Bit Crushing");
+
+			// BFXR
+			RenderSlider(+0, +1, parameters.bitCrush, (value => parameters.bitCrush = value), new GUIContent("Bit Crush", "Resamples the audio at a lower frequency (0 to 1)"));
+			RenderSlider(-1, +1, parameters.bitCrushSweep, (value => parameters.bitCrushSweep = value), new GUIContent("Bit Crush Sweep", "Sweeps the Bit Crush filter up or down (-1 to 1)"));
+		} finally {
+			if (EditorGUI.EndChangeCheck()) {
 				parameters.paramsDirty = true;
 				mustPlaySound = true;
 			}
@@ -264,8 +291,7 @@ public class SfxrGenerator : EditorWindow {
 		return mustPlaySound;
 	}
 
-	protected static void RenderHeading(string heading)
-	{
+	protected static void RenderHeading(string heading) {
 		EditorGUILayout.LabelField(heading, EditorStyles.boldLabel);
 	}
 
@@ -274,7 +300,7 @@ public class SfxrGenerator : EditorWindow {
 		Action valueChangeAction = null,
 		bool? isEnabled = null,
 		params GUILayoutOption[] options)
-	{
+{
 		if (content == null)
 		{
 			content = GUIContent.none;

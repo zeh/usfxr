@@ -26,19 +26,23 @@ public class SfxrSynth {
 	/**
 	 * SfxrSynth
 	 * Generates and plays all necessary audio
-	 * 
+	 *
 	 * @author Zeh Fernando
 	 */
-	
-	
-	// Sound properties
+
+
+	// Constants
+	private const int LO_RES_NOISE_PERIOD = 8;					// Should be < 32
+
+	// Unity specific objects
 	private SfxrParams		_params = new SfxrParams();		// Params instance
-	
+
 	private GameObject		_gameObject;					// Game object that will contain the audio player script
 	private SfxrAudioPlayer	_audioPlayer;					// Audio player script that will be attached to a GameObject to play the sound
-	
+
 	private Transform		_parentTransform;				// Parent that will contain the audio (for positional audio)
 
+	// Sound properties
 	private bool			_mutation;						// If the current sound playing or caching is a mutation
 
 	private float[]			_cachedWave;					// Cached wave data from a cacheSound() call
@@ -64,7 +68,7 @@ public class SfxrSynth {
 
 	private float		_masterVolume;						// masterVolume * masterVolume (for quick calculations)
 
-	private uint		_waveType;							// The type of wave to generate
+	private uint		_waveType;							// Shape of wave to generate (see enum WaveType)
 
 	private float		_envelopeVolume;					// Current volume of the envelope
 	private int			_envelopeStage;						// Current stage of the envelope (attack, sustain, decay, end)
@@ -125,12 +129,40 @@ public class SfxrSynth {
 	private float		_hpFilterCutoff;					// Cutoff multiplier which adjusts the amount the wave position can move
 	private float		_hpFilterDeltaCutoff;				// Speed of the high-pass cutoff multiplier
 
-	private float[]		_noiseBuffer;						// Buffer of random values used to generate noise
+	// From BFXR
+	private float		_changePeriod;
+	private int			_changePeriodTime;
 
+	private bool		_changeReached;
+
+	private float		_changeAmount2;						// Amount to change the note by
+	private int			_changeTime2;						// Counter for the note change
+	private int			_changeLimit2;						// Once the time reaches this limit, the note changes
+	private bool		_changeReached2;
+
+	private int			_overtones;							// Minimum frequency before stopping
+	private float		_overtoneFalloff;					// Minimum frequency before stopping
+
+	private float		_bitcrushFreq;						// Inversely proportional to the number of samples to skip 
+	private float		_bitcrushFreqSweep;					// Change of the above
+	private float		_bitcrushPhase;						// Samples when this > 1
+	private float		_bitcrushLast;						// Last sample value
+
+	private float		_compressionFactor;
+
+	// Pre-calculated data
+	private float[]		_noiseBuffer;						// Buffer of random values used to generate noise
+	private float[]		_pinkNoiseBuffer;					// Buffer of random values used to generate pink noise
+	private PinkNumber	_pinkNumber;						// Used to generate pink noise
+	private float[]		_loResNoiseBuffer;					// Buffer of random values used to generate Tan waveform
+
+	// Temp
 	private float		_superSample;						// Actual sample writen to the wave
 	private float		_sample;							// Sub-sample calculated 8 times per actual sample, averaged out to get the super sample
+	private float		_sample2;							// Used in other calculations
+	private float 		amp;								// Used in other calculations
 
-	private System.Random randomGenerator = new System.Random();
+	private System.Random randomGenerator = new System.Random();	// Used to generate random numbers safely
 
 
 	// ================================================================================================================
@@ -142,7 +174,7 @@ public class SfxrSynth {
 		set { _params = value; _params.paramsDirty = true; }
 	}
 
-	
+
 	// ================================================================================================================
 	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
 
@@ -172,9 +204,9 @@ public class SfxrSynth {
 		}
 
 		createGameObject();
-		
+
 	}
-	
+
 	/**
 	 * Plays a mutation of the sound.  If the parameters are dirty, synthesises sound as it plays, caching it for later.
 	 * If they're not, plays from the cached sound.
@@ -215,7 +247,7 @@ public class SfxrSynth {
 			_waveData = _cachedMutations[(uint)(_cachedMutations.Length * getRandom())];
 			_waveDataPos = 0;
 		}
-		
+
 		createGameObject();
 	}
 
@@ -310,8 +342,8 @@ public class SfxrSynth {
 
 		return !endOfSamples;
 	}
-	
-	
+
+
 	// Cache sound methods
 
 	/**
@@ -421,6 +453,9 @@ public class SfxrSynth {
 			_dutySweep = -p.dutySweep * 0.00005f;
 		}
 
+		_changePeriod = Mathf.Max(((1f - p.changeRepeat) + 0.1f) / 1.1f) * 20000f + 32f;
+		_changePeriodTime = 0;
+
 		if (p.changeAmount > 0.0) {
 			_changeAmount = 1.0f - p.changeAmount * p.changeAmount * 0.9f;
 		} else {
@@ -428,12 +463,31 @@ public class SfxrSynth {
 		}
 
 		_changeTime = 0;
+		_changeReached = false;
 
 		if (p.changeSpeed == 1.0f) {
 			_changeLimit = 0;
 		} else {
 			_changeLimit = (int)((1f - p.changeSpeed) * (1f - p.changeSpeed) * 20000f + 32f);
 		}
+
+		if (p.changeAmount2 > 0f) {
+			_changeAmount2 = 1f - p.changeAmount2 * p.changeAmount2 * 0.9f;
+		} else {
+			_changeAmount2 = 1f + p.changeAmount2 * p.changeAmount2 * 10f;
+		}
+
+		_changeTime2 = 0;
+		_changeReached2 = false;
+
+		if (p.changeSpeed2 == 1.0f) {
+			_changeLimit2 = 0;
+		} else {
+			_changeLimit2 = (int)((1f - p.changeSpeed2) * (1f - p.changeSpeed2) * 20000f + 32f);
+		}
+
+		_changeLimit = (int)(_changeLimit * ((1f - p.changeRepeat + 0.1f) / 1.1f));
+		_changeLimit2 = (int)(_changeLimit2 * ((1f - p.changeRepeat + 0.1f) / 1.1f));
 
 		if (__totalReset) {
 			p.paramsDirty = false;
@@ -456,7 +510,17 @@ public class SfxrSynth {
 
 			_phase = 0;
 
+			_overtones = (int)(p.overtones * 10f);
+			_overtoneFalloff = p.overtoneFalloff;
+
 			_minFrequency = p.minFrequency;
+
+			_bitcrushFreq = 1f - Mathf.Pow(p.bitCrush, 1f / 3f);				
+			_bitcrushFreqSweep = -p.bitCrushSweep * 0.000015f;
+			_bitcrushPhase = 0;
+			_bitcrushLast = 0;
+
+			_compressionFactor = 1f / (1f + 4f * p.compressionAmount);
 
 			_filters = p.lpFilterCutoff != 1.0 || p.hpFilterCutoff != 0.0;
 
@@ -499,10 +563,15 @@ public class SfxrSynth {
 
 			if (_phaserBuffer == null) _phaserBuffer = new float[1024];
 			if (_noiseBuffer == null) _noiseBuffer = new float[32];
+			if (_pinkNoiseBuffer == null) _pinkNoiseBuffer = new float[32];
+			if (_pinkNumber == null) _pinkNumber = new PinkNumber();
+			if (_loResNoiseBuffer == null) _loResNoiseBuffer = new float[32];
 
 			uint i;
 			for (i = 0; i < 1024; i++) _phaserBuffer[i] = 0.0f;
 			for (i = 0; i < 32; i++) _noiseBuffer[i] = getRandom() * 2.0f - 1.0f;
+			for (i = 0; i < 32; i++) _pinkNoiseBuffer[i] = _pinkNumber.getNextValue();
+			for (i = 0; i < 32; i++) _loResNoiseBuffer[i] = ((i % LO_RES_NOISE_PERIOD) == 0) ? getRandom() * 2.0f - 1.0f : _loResNoiseBuffer[i-1];
 
 			_repeatTime = 0;
 
@@ -523,9 +592,10 @@ public class SfxrSynth {
 	private bool SynthWave(float[] __buffer, int __bufferPos, uint __length) {
 		_finished = false;
 
-		int i, j, n;
+		int i, j, n, k;
 		int l = (int)__length;
-		
+		float overtoneStrength, tempPhase, sampleTotal;
+
 		for (i = 0; i < l; i++) {
 			if (_finished) return true;
 
@@ -537,11 +607,34 @@ public class SfxrSynth {
 				}
 			}
 
+			_changePeriodTime++;
+			if (_changePeriodTime >= _changePeriod) {				
+				_changeTime = 0;
+				_changeTime2 = 0;
+				_changePeriodTime = 0;
+				if (_changeReached) {
+					_period /= _changeAmount;
+					_changeReached = false;
+				}
+				if (_changeReached2) {
+					_period /= _changeAmount2;
+					_changeReached2 = false;
+				}
+			}
+
 			// If _changeLimit is reached, shifts the pitch
-			if (_changeLimit != 0) {
+			if (!_changeReached) {
 				if (++_changeTime >= _changeLimit) {
-					_changeLimit = 0;
+					_changeReached = true;
 					_period *= _changeAmount;
+				}
+			}
+
+			// If _changeLimit is reached, shifts the pitch
+			if (!_changeReached2) {
+				if (++_changeTime2 >= _changeLimit2) {
+					_changeReached2 = true;
+					_period *= _changeAmount2;
 				}
 			}
 
@@ -564,7 +657,7 @@ public class SfxrSynth {
 			}
 
 			_periodTempInt = (int)_periodTemp;
-			if (_periodTempInt < 8) _periodTemp = _periodTempInt = 8;
+			if (_periodTemp < 8) _periodTemp = _periodTempInt = 8;
 
 			// Sweeps the square duty
 			if (_waveType == 0) {
@@ -624,28 +717,82 @@ public class SfxrSynth {
 
 					// Generates new random noise for this period
 					if (_waveType == 3) {
+						// Noise
 						for (n = 0; n < 32; n++) _noiseBuffer[n] = getRandom() * 2.0f - 1.0f;
+					} else if (_waveType == 5) {
+						// Pink noise
+						for (n = 0; n < 32; n++) _pinkNoiseBuffer[n] = _pinkNumber.getNextValue();
+					} else if (_waveType == 6) {
+						// Tan
+						for (n = 0; n < 32; n++) _loResNoiseBuffer[n] = ((n % LO_RES_NOISE_PERIOD) == 0) ? getRandom() * 2.0f - 1.0f : _loResNoiseBuffer[n-1];
 					}
 				}
 
-				// Gets the sample from the oscillator
-				switch(_waveType) {
-					case 0: // Square wave
-						_sample = ((_phase / _periodTemp) < _squareDuty) ? 0.5f : -0.5f;
-						break;
-					case 1: // Saw wave
-						_sample = 1.0f - (_phase / _periodTemp) * 2.0f;
-						break;
-					case 2: // Sine wave (fast and accurate approx) {
-						_pos = _phase / _periodTemp;
-						_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
-						_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
-						_sample = _sample < 0 ? 0.225f * (_sample *-_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample;
-						break;
-					case 3: // Noise
-						_sample = _noiseBuffer[(uint)(_phase * 32 / _periodTempInt)];
-						break;
+				_sample = 0;
+				sampleTotal = 0;
+				overtoneStrength = 1f;
+
+				for (k = 0; k <= _overtones; k++) {
+					tempPhase = (float)((_phase * (k + 1))) % _periodTemp;
+
+					// Gets the sample from the oscillator
+					switch (_waveType) {
+						case 0:
+							// Square
+							_sample = ((tempPhase / _periodTemp) < _squareDuty) ? 0.5f : -0.5f;
+							break;
+						case 1:
+							// Sawtooth
+							_sample = 1.0f - (tempPhase / _periodTemp) * 2.0f;
+							break;
+						case 2:
+							// Sine: fast and accurate approx
+							_pos = tempPhase / _periodTemp;
+							_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
+							_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
+							_sample = _sample < 0 ? 0.225f * (_sample * -_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample;
+							break;
+						case 3:
+							// Noise
+							_sample = _noiseBuffer[(uint)(tempPhase * 32f / _periodTempInt) % 32];
+							break;
+						case 4:
+							// Triangle
+							_sample = Math.Abs(1f - (tempPhase / _periodTemp) * 2f) - 1f;
+							break;
+						case 5:
+							// Pink noise
+							_sample = _pinkNoiseBuffer[(uint)(tempPhase * 32f / _periodTempInt) % 32];
+							break;
+						case 6:
+							// Tan
+							_sample = (float)Math.Tan(Math.PI * tempPhase / _periodTemp);
+							break;
+						case 7:
+							// Whistle
+							// Sine wave code
+							_pos = tempPhase / _periodTemp;
+							_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
+							_sample = _pos < 0 ? 1.27323954f * _pos + 0.405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
+							_sample = 0.75f * (_sample < 0 ? 0.225f * (_sample * -_sample - _sample) + _sample : 0.225f * (_sample * _sample - _sample) + _sample);
+							// Then whistle (essentially an overtone with frequencyx20 and amplitude0.25
+							_pos = ((tempPhase * 20f) % _periodTemp) / _periodTemp;
+							_pos = _pos > 0.5f ? (_pos - 1.0f) * 6.28318531f : _pos * 6.28318531f;
+							_sample2 = _pos < 0 ? 1.27323954f * _pos + .405284735f * _pos * _pos : 1.27323954f * _pos - 0.405284735f * _pos * _pos;
+							_sample += 0.25f * (_sample2 < 0 ? .225f * (_sample2 * -_sample2 - _sample2) + _sample2 : .225f * (_sample2 * _sample2 - _sample2) + _sample2);
+							break;
+						case 8:
+							// Breaker
+							amp = tempPhase / _periodTemp;
+							_sample = Math.Abs(1f - amp * amp * 2f) - 1f;
+							break;
+					}
+
+					sampleTotal += overtoneStrength * _sample;
+					overtoneStrength *= (1f - _overtoneFalloff);
 				}
+
+				_sample = sampleTotal;
 
 				// Applies the low and high pass filters
 				if (_filters) {
@@ -685,6 +832,28 @@ public class SfxrSynth {
 			// Averages out the super samples and applies volumes
 			_superSample = _masterVolume * _envelopeVolume * _superSample * 0.125f;
 
+			// Bit crush
+			_bitcrushPhase += _bitcrushFreq;
+			if (_bitcrushPhase > 1f) {
+				_bitcrushPhase = 0;
+				_bitcrushLast = _superSample;	 
+			}
+			_bitcrushFreq = Mathf.Max(Mathf.Min(_bitcrushFreq + _bitcrushFreqSweep, 1f), 0f);
+
+			_superSample = _bitcrushLast;
+
+			// Compressor
+			if (_superSample > 0f) {
+				_superSample = Mathf.Pow(_superSample, _compressionFactor);
+			} else {
+				_superSample = -Mathf.Pow(-_superSample, _compressionFactor);
+			}
+
+			// BFXR leftover:
+			//if (_muted) {
+			//	_superSample = 0;
+			//}
+
 			// Clipping if too loud
 			if (_superSample < -1f) {
 				_superSample = -1f;
@@ -698,14 +867,14 @@ public class SfxrSynth {
 
 		return false;
 	}
-	
+
 	private void createGameObject() {
 		// Create a game object to handle playback
 		_gameObject = new GameObject("SfxrGameObject-" + (Time.realtimeSinceStartup));
 		fixGameObjectParent();
 
 		// Create actual audio player
-    	_audioPlayer = _gameObject.AddComponent<SfxrAudioPlayer>();
+		_audioPlayer = _gameObject.AddComponent<SfxrAudioPlayer>();
 		_audioPlayer.SetSfxrSynth(this);
 		_audioPlayer.SetRunningInEditMode(Application.isEditor && !Application.isPlaying);
 	}
@@ -714,13 +883,13 @@ public class SfxrSynth {
 	private void fixGameObjectParent() {
 		// Sets the parent of the game object to be the wanted object
 		Transform transformToUse = _parentTransform;
-		
+
 		// If no parent assigned, use main camera by default
 		if (transformToUse == null) transformToUse = Camera.main.transform;
-		
+
 		// If has any parent (assigned, or main camera exist) assigns it
 		if (transformToUse != null) _gameObject.transform.parent = transformToUse;
-		
+
 		// Center in parent (or scene if no parent)
 		_gameObject.transform.localPosition = new Vector3(0, 0, 0);
 	}
@@ -734,6 +903,62 @@ public class SfxrSynth {
 		// (We get the error "get_value can only be called from the main thread" when this is called to generate the soung data)
 		return (float)(randomGenerator.NextDouble() % 1);
 	}
-
 }
 
+
+// ================================================================================================================
+// AUX CLASSES ----------------------------------------------------------------------------------------------------
+
+/*
+Pink Number
+-----------
+From BFXR
+Class taken from http://www.firstpr.com.au/dsp/pink-noise/#Filtering
+*/
+
+public class PinkNumber {
+	// Properties
+	private int max_key;
+	private int key;
+	private uint[] white_values;
+	private uint range;
+	private System.Random randomGenerator;
+
+	// Temp
+	private float rangeBy5;
+	private int last_key;
+	private uint sum;
+	private int diff;
+	private int i;
+
+	public PinkNumber() {
+		max_key = 0x1f; // Five bits set
+		range = 128;
+		rangeBy5 = (float)range / 5f;
+		key = 0;
+		white_values = new uint[5];
+		randomGenerator = new System.Random();
+		for (i = 0; i < 5; i++) white_values[i] = (uint)((randomGenerator.NextDouble() % 1) * rangeBy5);
+	}
+
+	public float getNextValue() {
+		// Returns a number between -1 and 1
+		last_key = key;
+		sum = 0;
+
+		key++;
+		if (key > max_key) key = 0;
+
+		// Exclusive-Or previous value with current value. This gives
+		// a list of bits that have changed.
+		diff = last_key ^ key;
+		sum = 0;
+		for (i  = 0; i < 5; i++) {
+			// If bit changed get new random number for corresponding
+			// white_value
+			if ((diff & (1 << i)) > 0) white_values[i] = (uint)((randomGenerator.NextDouble() % 1) * rangeBy5);;
+			sum += white_values[i];
+		}
+		return (float)sum / 64f - 1f;
+	}
+};
