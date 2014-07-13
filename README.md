@@ -153,7 +153,7 @@ Acknowledgments
 Changelog
 ---------
 
-#### 2014-07-12
+#### 2014-07-12 ([1.2](https://github.com/zeh/usfxr/releases/tag/1.2))
 
 * Added support for BFXR's new filters: compression, harmonics, and bitcrusher
 * Added support for BFXR's expanded pitch jump effects
