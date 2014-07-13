@@ -1,5 +1,6 @@
 _temp
 _assets
+_todo.txt
 _*.bat
 samples/main/Assets/AssetStoreTools
 samples/main/Assets/AssetStoreTools.*
