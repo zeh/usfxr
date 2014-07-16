@@ -132,14 +132,16 @@ To-do/ideas
 -----------
 
  * Re-add export to WAV and create button
+ * Add a button to export and create a Unity sound gameobject
  * Create button to copy code
  * Test in Javascript/create example
  * Create button to export to sound clip/game object
  * Show waveform in GUI
  * Add stats such as memory and build time to GUI
- * Show final duration in GUI
+ * Show effect duration in GUI
  * Undo/Redo
  * Add option to "lock" GUI items like BFXR's interface
+ * Automatic static caching?
 
 
 Acknowledgments
