@@ -55,16 +55,13 @@ public class Main : MonoBehaviour {
 			}
 
 			synthC.PlayMutated();
-			//synthC.play();
 		}
 		if (Input.GetKeyDown("d")) {
 			Debug.Log("Key: D (Long death with asynchronous caching and callback)");
 
 			if (synthD == null) {
-				// Coin
 				synthD = new SfxrSynth();
 				synthD.parameters.SetSettingsString("2,,0.0782,0.6203,0.9024,0.5044,,-0.1298,0.0094,-0.0008,-0.5123,0.2868,-0.3859,-0.8811,0.9692,0.3616,0.001,0.0001,0.9528,0.0437,-0.4492,0.1089,,0.5");
-				// http://stackoverflow.com/questions/667742/callbacks-in-c-sharp
 				synthD.CacheSound(() => synthD.Play());
 			} else {
 				synthD.Play();
@@ -77,16 +74,15 @@ public class Main : MonoBehaviour {
 				// Coin
 				synthE = new SfxrSynth();
 				synthE.parameters.SetSettingsString("2,,0.0782,0.6203,0.9024,0.5044,,-0.1298,0.0094,-0.0008,-0.5123,0.2868,-0.3859,-0.8811,0.9692,0.3616,0.001,0.0001,0.9528,0.0437,-0.4492,0.1089,,0.5");
-				// http://stackoverflow.com/questions/667742/callbacks-in-c-sharp
 				synthE.CacheMutations(15, 0.05f, () => synthE.PlayMutated());
 			} else {
 				synthE.PlayMutated();
 			}
 		}
 		if (Input.GetKeyDown("f")) {
-			Debug.Log("Key: F (Sound that triggers error, no caching)");
+			Debug.Log("Key: F (Random coin/pickup sound, automatically generated)");
 			SfxrSynth synthF = new SfxrSynth();
-			synthF.parameters.SetSettingsString("3,,.1536,.604,.8086,.5019,,.1375,.1967,-.1802,-.8501,.8789,.7139,-.3231,-.0025,.059,.0009,.0181,.8003,-.4656,-.1474,.0041,.0022,.5");
+			synthF.parameters.GeneratePickupCoin();
 			synthF.Play();
 		}
 	}
