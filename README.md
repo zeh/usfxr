@@ -131,7 +131,6 @@ Play this sample online [here](http://hosted.zehfernando.com/ludumdare/usfxr/).
 To-do/ideas
 -----------
 
- * Re-add export to WAV and create button
  * Add a button to export and create a Unity sound gameobject
  * Create button to copy code
  * Test in Javascript/create example
@@ -154,6 +153,10 @@ Acknowledgments
  
 Changelog
 ---------
+
+#### 2014-07-17
+
+* Added option to export WAV file to SfxrSynth (and the GUI)
 
 #### 2014-07-12 ([1.2](https://github.com/zeh/usfxr/releases/tag/1.2))
 
