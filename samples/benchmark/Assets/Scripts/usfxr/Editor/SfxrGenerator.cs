@@ -20,6 +20,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 using System;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -54,6 +55,8 @@ public class SfxrGenerator : EditorWindow {
 	private Vector2 scrollPosition;		// Position of the scroll window
 	private Vector2 scrollPositionRoot;
 	private SfxrParams soundParameters;
+
+	private string suggestedName;
 
 	// ================================================================================================================
 	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
@@ -110,30 +113,37 @@ public class SfxrGenerator : EditorWindow {
 		GUILayout.Space(8);
 
 		if (GUILayout.Button("PICKUP/COIN")) {
+			suggestedName = "PickupCoin";
 			parameters.GeneratePickupCoin();
 			mustPlaySound = true;
 		}
 		if (GUILayout.Button("LASER/SHOOT")) {
+			suggestedName = "LaserShoot";
 			parameters.GenerateLaserShoot();
 			mustPlaySound = true;
 		}
 		if (GUILayout.Button("EXPLOSION")) {
+			suggestedName = "Explosion";
 			parameters.GenerateExplosion();
 			mustPlaySound = true;
 		}
 		if (GUILayout.Button("POWERUP")) {
+			suggestedName = "Powerup";
 			parameters.GeneratePowerup();
 			mustPlaySound = true;
 		}
 		if (GUILayout.Button("HIT/HURT")) {
+			suggestedName = "HitHurt";
 			parameters.GenerateHitHurt();
 			mustPlaySound = true;
 		}
 		if (GUILayout.Button("JUMP")) {
+			suggestedName = "Jump";
 			parameters.GenerateJump();
 			mustPlaySound = true;
 		}
 		if (GUILayout.Button("BLIP/SELECT")) {
+			suggestedName = "BlipSelect";
 			parameters.GenerateBlipSelect();
 			mustPlaySound = true;
 		}
@@ -145,6 +155,7 @@ public class SfxrGenerator : EditorWindow {
 			mustPlaySound = true;
 		}
 		if (GUILayout.Button("RANDOMIZE")) {
+			suggestedName = "Random";
 			parameters.Randomize();
 			mustPlaySound = true;
 		}
@@ -158,6 +169,7 @@ public class SfxrGenerator : EditorWindow {
 			EditorGUIUtility.systemCopyBuffer = parameters.GetSettingsString();
 		}
 		if (GUILayout.Button("PASTE")) {
+			suggestedName = null;
 			parameters.SetSettingsString(EditorGUIUtility.systemCopyBuffer);
 			mustPlaySound = true;
 		}
@@ -166,6 +178,17 @@ public class SfxrGenerator : EditorWindow {
 
 		if (GUILayout.Button("PLAY SOUND")) {
 			mustPlaySound = true;
+		}
+
+		GUILayout.Space(30);
+
+		if (GUILayout.Button("EXPORT WAV")) {
+			var path = EditorUtility.SaveFilePanel("Export as WAV", "", getSuggestedName() + ".wav", "wav");
+			if (path.Length != 0) {
+				SfxrSynth synth = new SfxrSynth();
+				synth.parameters.SetSettingsString(parameters.GetSettingsString());
+				File.WriteAllBytes(path, synth.GetWavFile());
+			}
 		}
 
 		// End generator column
@@ -431,5 +454,9 @@ public class SfxrGenerator : EditorWindow {
 
 		return RenderGenericEditor(
 			ref value, valueEditFunction, valueChangeActionWrapped, isEnabled);
+	}
+
+	private string getSuggestedName() {
+		return suggestedName != null && suggestedName.Length > 0 ? suggestedName : "Audio";
 	}
 }

@@ -33,6 +33,10 @@ public class SfxrSynth {
 
 	// Constants
 	private const int LO_RES_NOISE_PERIOD = 8;					// Should be < 32
+	private enum Endian {
+		BIG_ENDIAN,
+		LITTLE_ENDIAN
+	}
 
 	// Unity specific objects
 	private SfxrParams		_params = new SfxrParams();		// Params instance
@@ -143,7 +147,7 @@ public class SfxrSynth {
 	private int			_overtones;							// Minimum frequency before stopping
 	private float		_overtoneFalloff;					// Minimum frequency before stopping
 
-	private float		_bitcrushFreq;						// Inversely proportional to the number of samples to skip 
+	private float		_bitcrushFreq;						// Inversely proportional to the number of samples to skip
 	private float		_bitcrushFreqSweep;					// Change of the above
 	private float		_bitcrushPhase;						// Samples when this > 1
 	private float		_bitcrushLast;						// Last sample value
@@ -429,6 +433,100 @@ public class SfxrSynth {
 		_parentTransform = __transform;
 	}
 
+	/**
+	 * Returns a ByteArray of the wave in the form of a .wav file, ready to be saved out
+	 * @param	__sampleRate	Sample rate to generate the .wav data at (44100 or 22050, default 44100)
+	 * @param	__bitDepth		Bit depth to generate the .wav at (8 or 16, default 16)
+	 * @return					Wave data (in .wav format) as a byte array
+	 */
+	public byte[] GetWavFile(uint __sampleRate = 44100, uint __bitDepth = 16) {
+		Stop();
+
+		Reset(true);
+
+		if (__sampleRate != 44100) __sampleRate = 22050;
+		if (__bitDepth != 16) __bitDepth = 8;
+
+		uint soundLength = _envelopeFullLength;
+		if (__bitDepth == 16) soundLength *= 2;
+		if (__sampleRate == 22050) soundLength /= 2;
+
+		uint fileSize = 36 + soundLength;
+		uint blockAlign = __bitDepth / 8;
+		uint bytesPerSec = __sampleRate * blockAlign;
+
+		// The file size is actually 8 bytes more than the fileSize
+		byte[] wav = new byte[fileSize + 8];
+
+		int bytePos = 0;
+
+		// Header
+
+		// Chunk ID "RIFF"
+		writeUintToBytes(wav, ref bytePos, 0x52494646, Endian.BIG_ENDIAN);
+
+		// Chunck Data Size
+		writeUintToBytes(wav, ref bytePos, fileSize, Endian.LITTLE_ENDIAN);
+
+		// RIFF Type "WAVE"
+		writeUintToBytes(wav, ref bytePos, 0x57415645, Endian.BIG_ENDIAN);
+
+		// Format Chunk
+
+		// Chunk ID "fmt "
+		writeUintToBytes(wav, ref bytePos, 0x666D7420, Endian.BIG_ENDIAN);
+
+		// Chunk Data Size
+		writeUintToBytes(wav, ref bytePos, 16, Endian.LITTLE_ENDIAN);
+
+		// Compression Code PCM
+		writeShortToBytes(wav, ref bytePos, 1, Endian.LITTLE_ENDIAN);
+		// Number of channels
+		writeShortToBytes(wav, ref bytePos, 1, Endian.LITTLE_ENDIAN);
+		// Sample rate
+		writeUintToBytes(wav, ref bytePos, __sampleRate, Endian.LITTLE_ENDIAN);
+		// Average bytes per second
+		writeUintToBytes(wav, ref bytePos, bytesPerSec, Endian.LITTLE_ENDIAN);
+		// Block align
+		writeShortToBytes(wav, ref bytePos, (short)blockAlign, Endian.LITTLE_ENDIAN);
+		// Significant bits per sample
+		writeShortToBytes(wav, ref bytePos, (short)__bitDepth, Endian.LITTLE_ENDIAN);
+
+		// Data Chunk
+
+		// Chunk ID "data"
+		writeUintToBytes(wav, ref bytePos, 0x64617461, Endian.BIG_ENDIAN);
+		// Chunk Data Size
+		writeUintToBytes(wav, ref bytePos, soundLength, Endian.LITTLE_ENDIAN);
+
+		// Generate normal synth data
+		float[] audioData = new float[_envelopeFullLength];
+		SynthWave(audioData, 0, _envelopeFullLength);
+		
+		// Write data as bytes
+		int sampleCount = 0;
+		float bufferSample = 0f;
+		for (int i = 0; i < audioData.Length; i++) {
+			bufferSample += audioData[i];
+			sampleCount++;
+			
+			if (__sampleRate == 44100 || sampleCount == 2) {
+				bufferSample /= sampleCount;
+				sampleCount = 0;
+
+				if (__bitDepth == 16) {
+					writeShortToBytes(wav, ref bytePos, (short)Math.Round(32000f * bufferSample), Endian.LITTLE_ENDIAN);
+				} else {
+					writeBytes(wav, ref bytePos, new byte[]{ (byte)(Math.Round(bufferSample * 127f) + 128) }, Endian.LITTLE_ENDIAN);
+				}
+                                                
+                bufferSample = 0f;
+			}
+		}
+
+		return wav;
+	}
+
 
 	// ================================================================================================================
 	// INTERNAL INTERFACE ---------------------------------------------------------------------------------------------
@@ -515,7 +613,7 @@ public class SfxrSynth {
 
 			_minFrequency = p.minFrequency;
 
-			_bitcrushFreq = 1f - Mathf.Pow(p.bitCrush, 1f / 3f);				
+			_bitcrushFreq = 1f - Mathf.Pow(p.bitCrush, 1f / 3f);
 			_bitcrushFreqSweep = -p.bitCrushSweep * 0.000015f;
 			_bitcrushPhase = 0;
 			_bitcrushLast = 0;
@@ -608,7 +706,7 @@ public class SfxrSynth {
 			}
 
 			_changePeriodTime++;
-			if (_changePeriodTime >= _changePeriod) {				
+			if (_changePeriodTime >= _changePeriod) {
 				_changeTime = 0;
 				_changeTime2 = 0;
 				_changePeriodTime = 0;
@@ -836,7 +934,7 @@ public class SfxrSynth {
 			_bitcrushPhase += _bitcrushFreq;
 			if (_bitcrushPhase > 1f) {
 				_bitcrushPhase = 0;
-				_bitcrushLast = _superSample;	 
+				_bitcrushLast = _superSample;
 			}
 			_bitcrushFreq = Mathf.Max(Mathf.Min(_bitcrushFreq + _bitcrushFreqSweep, 1f), 0f);
 
@@ -902,6 +1000,34 @@ public class SfxrSynth {
 		// We can't use Unity's Random.value because it cannot be called from a separate thread
 		// (We get the error "get_value can only be called from the main thread" when this is called to generate the soung data)
 		return (float)(randomGenerator.NextDouble() % 1);
+	}
+
+	/**
+	 * Writes a short (Int16) to a byte array.
+	 * This is an aux function used when creating the WAV data.
+	 */
+	private void writeShortToBytes(byte[] __bytes, ref int __position, short __newShort, Endian __endian) {
+		writeBytes(__bytes, ref __position, new byte[2] { (byte)((__newShort >> 8) & 0xff), (byte)(__newShort & 0xff) }, __endian);
+	}
+
+	/**
+	 * Writes a uint (UInt32) to a byte array.
+	 * This is an aux function used when creating the WAV data.
+	 */
+	private void writeUintToBytes(byte[] __bytes, ref int __position, uint __newUint, Endian __endian) {
+		writeBytes(__bytes, ref __position, new byte[4] { (byte)((__newUint >> 24) & 0xff), (byte)((__newUint >> 16) & 0xff), (byte)((__newUint >> 8) & 0xff), (byte)(__newUint & 0xff) }, __endian);
+	}
+
+	/**
+	 * Writes any number of bytes into a byte array, at a given position.
+	 * This is an aux function used when creating the WAV data.
+	 */
+	private void writeBytes(byte[] __bytes, ref int __position, byte[] __newBytes, Endian __endian) {
+		// Writes __newBytes to __bytes at position __position, increasing the position depending on the length of __newBytes
+		for (int i = 0; i < __newBytes.Length; i++) {
+			__bytes[__position] = __newBytes[__endian == Endian.BIG_ENDIAN ? i : __newBytes.Length - i - 1];
+			__position++;
+		}
 	}
 }
 
