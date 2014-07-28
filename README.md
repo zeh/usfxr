@@ -1,7 +1,7 @@
 usfxr
 =====
 
-usfxr is a C# library used to generate and play game-like procedural audio effects inside Unity. With usfxr, one can easily synthesize original sound in real time for actions such as item pickups, jumps, lasers, hits, explosions, and more, without ever leaving the Unity editor.
+usfxr is a C# library used to generate and play game-like procedural audio effects inside Unity. With usfxr, one can easily design and synthesize original sound in real time for actions such as item pickups, jumps, lasers, hits, explosions, and more, without ever leaving the Unity editor.
 
 usfxr comes with code that allows for real-time audio synthesizing in games, and an in-editor interface for creating and testing effects before you use them in your code.
 
@@ -19,6 +19,8 @@ However, by using a runtime library like usfxr, you can generate the same audio 
 
 * Audio is generated in real time; there's no storage of audio files as assets necessary, making compiled project sizes smaller
 * Easily play variations of every sound you play; adds more flavor to the gameplay experience
+
+And while the library was meant to be used in real time, without static assets, the editor can also generate static WAV files that can be used in your games. That way, nothing is synthesized in real time, but one still has the advantage of using an interface to generate original audio effects.
 
 I make no claims in regards to the source code or interface, since it was simply adapted from Thomas Vian's own code and (elegant) as3sfxr interface, as well as Stephen Lavelle's BFXR additional features. As such, usfxr contains the same features offered by these two ports, such as caching of generated audio and ability to play sounds with variations. But because the code is adapted to work on a different platform (Unity), it has advantages of its own:
 
@@ -131,16 +133,16 @@ Play this sample online [here](http://hosted.zehfernando.com/ludumdare/usfxr/).
 To-do/ideas
 -----------
 
- * Add a button to export and create a Unity sound gameobject
  * Create button to copy code
  * Test in Javascript/create example
- * Create button to export to sound clip/game object
+ * Create button to export to Unity sound clip/game object
  * Show waveform in GUI
  * Add stats such as memory and build time to GUI
  * Show effect duration in GUI
  * Undo/Redo
- * Add option to "lock" GUI items like BFXR's interface
+ * Add option to "lock" GUI items like BFXR
  * Automatic static caching?
+ * Allow clip/game objects to be edited/re-synthesized?
 
 
 Acknowledgments
@@ -150,9 +152,14 @@ Acknowledgments
  * Thomas Vian created [as3sfxr](https://code.google.com/p/as3sfxr/), the original code that was ported to C# for usfxr.
  * [Tiaan Geldenhuys](http://tiaan.com/) contributed to usfxr by cleaning the code and creating the original version of the in-editor window that I bastardized later.
  * [Stephen Lavelle](http://www.increpare.com/) created [BFXR](http://www.bfxr.net/), an AS3 port of SFXR with several new features of its own, many of which have been adopted by usfxr.
+ * Michael Bailey contributed with bug fixes
  
 Changelog
 ---------
+
+#### 2014-07-28
+
+* Fixed showstopping error that prevented publishing in non-PC platforms
 
 #### 2014-07-17
 
