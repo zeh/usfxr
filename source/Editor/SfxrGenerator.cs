@@ -57,6 +57,8 @@ public class SfxrGenerator : EditorWindow {
 	private SfxrParams soundParameters;
 
 	private string suggestedName;
+	
+	private SfxrSynth synth;
 
 	// ================================================================================================================
 	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
@@ -74,38 +76,42 @@ public class SfxrGenerator : EditorWindow {
 			soundParameters = new SfxrParams();
 			soundParameters.Randomize();
 		}
+		
+		if (synth == null) {
+			synth = new SfxrSynth();
+		}
 
-		bool mustPlaySound = false;
+		bool soundChanged = false;
 
 		// Begin UI
 		scrollPositionRoot = GUILayout.BeginScrollView(scrollPositionRoot);
 		GUILayout.BeginHorizontal();
 
 		// Left column (generator buttons, copy & paste)
-		mustPlaySound = RenderLeftColumn(soundParameters) || mustPlaySound;
+		soundChanged = RenderLeftColumn(soundParameters) || soundChanged;
 
 		// Main settings column
-		mustPlaySound = RenderSettingsColumn(soundParameters) || mustPlaySound;
+		soundChanged = RenderSettingsColumn(soundParameters) || soundChanged;
 
 		// Ends the UI
 		GUILayout.EndHorizontal();
 		GUILayout.EndScrollView();
-
+		
 		// Play sound if necessary
-		if (mustPlaySound) {
-			PlaySound(soundParameters);
+		if (soundChanged) {
+			synth.parameters.SetSettingsString(soundParameters.GetSettingsString());
+			PlaySound();
 		}
 
 	}
 
-	public void PlaySound(SfxrParams parameters) {
-		SfxrSynth synth = new SfxrSynth();
-		synth.parameters.SetSettingsString(parameters.GetSettingsString());
+	public void PlaySound() {
+		// Just play the current sound
 		synth.Play();
 	}
 
 	public bool RenderLeftColumn(SfxrParams parameters) {
-		bool mustPlaySound = false;
+		bool soundChanged = false;
 
 		// Begin generator column
 		GUILayout.BeginVertical("box", GUILayout.Width(110));
@@ -115,49 +121,49 @@ public class SfxrGenerator : EditorWindow {
 		if (GUILayout.Button("PICKUP/COIN")) {
 			suggestedName = "PickupCoin";
 			parameters.GeneratePickupCoin();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 		if (GUILayout.Button("LASER/SHOOT")) {
 			suggestedName = "LaserShoot";
 			parameters.GenerateLaserShoot();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 		if (GUILayout.Button("EXPLOSION")) {
 			suggestedName = "Explosion";
 			parameters.GenerateExplosion();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 		if (GUILayout.Button("POWERUP")) {
 			suggestedName = "Powerup";
 			parameters.GeneratePowerup();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 		if (GUILayout.Button("HIT/HURT")) {
 			suggestedName = "HitHurt";
 			parameters.GenerateHitHurt();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 		if (GUILayout.Button("JUMP")) {
 			suggestedName = "Jump";
 			parameters.GenerateJump();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 		if (GUILayout.Button("BLIP/SELECT")) {
 			suggestedName = "BlipSelect";
 			parameters.GenerateBlipSelect();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 
 		GUILayout.Space(30);
 
 		if (GUILayout.Button("MUTATE")) {
 			parameters.Mutate();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 		if (GUILayout.Button("RANDOMIZE")) {
 			suggestedName = "Random";
 			parameters.Randomize();
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 
 		GUILayout.Space(30);
@@ -171,13 +177,13 @@ public class SfxrGenerator : EditorWindow {
 		if (GUILayout.Button("PASTE")) {
 			suggestedName = null;
 			parameters.SetSettingsString(EditorGUIUtility.systemCopyBuffer);
-			mustPlaySound = true;
+			soundChanged = true;
 		}
 
 		GUILayout.Space(30);
 
 		if (GUILayout.Button("PLAY SOUND")) {
-			mustPlaySound = true;
+			PlaySound();
 		}
 
 		GUILayout.Space(30);
@@ -195,11 +201,11 @@ public class SfxrGenerator : EditorWindow {
 		GUILayout.FlexibleSpace();
 		GUILayout.EndVertical();
 
-		return mustPlaySound;
+		return soundChanged;
 	}
-
+	
 	public bool RenderSettingsColumn(SfxrParams parameters) {
-		bool mustPlaySound = false;
+		bool soundChanged = false;
 
 		// Begin manual settings column
 		GUILayout.BeginVertical("box");
@@ -207,14 +213,14 @@ public class SfxrGenerator : EditorWindow {
 		GUILayout.Space(8);
 
 		scrollPosition = GUILayout.BeginScrollView(scrollPosition);
-		mustPlaySound = RenderParameters(soundParameters) || mustPlaySound;
+		soundChanged = RenderParameters(soundParameters) || soundChanged;
 		GUILayout.EndScrollView();
 
 		// End manual settings column
 		GUILayout.FlexibleSpace();
 		GUILayout.EndVertical();
 
-		return mustPlaySound;
+		return soundChanged;
 	}
 
 	/// <summary>
@@ -232,7 +238,7 @@ public class SfxrGenerator : EditorWindow {
 	/// native serialization for Unity).
 	/// </remarks>
 	public bool RenderParameters(SfxrParams parameters) {
-		bool mustPlaySound = false;
+		bool soundChanged = false;
 
 		GUIStyle waveTypeStyle = EditorStyles.popup;
 		waveTypeStyle.fontSize = 12;
@@ -307,11 +313,11 @@ public class SfxrGenerator : EditorWindow {
 		} finally {
 			if (EditorGUI.EndChangeCheck()) {
 				parameters.paramsDirty = true;
-				mustPlaySound = true;
+				soundChanged = true;
 			}
 		}
 
-		return mustPlaySound;
+		return soundChanged;
 	}
 
 	protected static void RenderHeading(string heading) {
