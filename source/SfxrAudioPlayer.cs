@@ -76,10 +76,10 @@ public class SfxrAudioPlayer : MonoBehaviour {
 				if (runningInEditMode) {
 					// When running in edit mode, Update() is not called on every frame
 					// We can't call Destroy() directly either, since Destroy() must be ran from the main thread
-					// So we just attach out Update() to the editor's update event
-#if UNITY_EDITOR
+					// So we just attach our Update() to the editor's update event
+					#if UNITY_EDITOR
 					EditorApplication.update += Update;
-#endif
+					#endif
 				}
 			}
 		}
@@ -107,9 +107,9 @@ public class SfxrAudioPlayer : MonoBehaviour {
 			if (runningInEditMode) {
 				// Since we're running in the editor, we need to remove the update event, AND destroy immediately
 				UnityEngine.Object.DestroyImmediate(gameObject);
-#if UNITY_EDITOR
+				#if UNITY_EDITOR
 				EditorApplication.update -= Update;
-#endif
+				#endif
 			} else {
 				UnityEngine.Object.Destroy(gameObject);
 			}
