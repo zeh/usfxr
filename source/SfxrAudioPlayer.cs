@@ -58,6 +58,13 @@ public class SfxrAudioPlayer : MonoBehaviour {
 
 	void Update() {
 		// Destroys self in case it has been queued for deletion
+		if (sfxrSynth == null) {
+			// Rogue object (leftover)
+			// When switching between play and edit mode while the sound is playing, the object is restarted
+			// So, queues for destruction
+			needsToDestroy = true;
+		}
+
 		if (needsToDestroy) {
 			needsToDestroy = false;
 			Destroy();
@@ -104,12 +111,12 @@ public class SfxrAudioPlayer : MonoBehaviour {
 		if (!isDestroyed) {
 			isDestroyed = true;
 			sfxrSynth = null;
-			if (runningInEditMode) {
+			if (runningInEditMode || !Application.isPlaying) {
 				// Since we're running in the editor, we need to remove the update event, AND destroy immediately
-				UnityEngine.Object.DestroyImmediate(gameObject);
 				#if UNITY_EDITOR
 				EditorApplication.update -= Update;
 				#endif
+				UnityEngine.Object.DestroyImmediate(gameObject);
 			} else {
 				UnityEngine.Object.Destroy(gameObject);
 			}
