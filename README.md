@@ -157,6 +157,14 @@ Acknowledgments
 Changelog
 ---------
 
+#### 2014-08-02
+
+* Editor: SfxrGameObject instances are properly removed when switching between play and edit mode (no more leftover objects)
+
+#### 2014-08-01
+
+* Editor: The same SfxrSynth instance is reused when generating test sounds, rather than creating new instances on every change (better memory use)
+
 #### 2014-07-28
 
 * Fixed showstopping error that prevented publishing in non-PC platforms
