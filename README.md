@@ -143,6 +143,7 @@ To-do/ideas
  * Add option to "lock" GUI items like BFXR
  * Automatic static caching?
  * Allow clip/game objects to be edited/re-synthesized?
+ * Add more presets like SFMaker: http://www.leshylabs.com/apps/sfMaker/
 
 
 Acknowledgments
@@ -153,6 +154,13 @@ Acknowledgments
  * [Tiaan Geldenhuys](http://tiaan.com/) contributed to usfxr by cleaning the code and creating the original version of the in-editor window that I bastardized later.
  * [Stephen Lavelle](http://www.increpare.com/) created [BFXR](http://www.bfxr.net/), an AS3 port of SFXR with several new features of its own, many of which have been adopted by usfxr.
  * Michael Bailey contributed with bug fixes
+ * Owen Roberts contributed with bug reports
+ 
+Other notes
+-----------
+
+ * If you want a C#/.Net port of sfxr that is not heavily coupled with Unity, [nsfxr](https://github.com/nathanchere/nsfxr) by Nathan Chere is what you're looking for.
+
  
 Changelog
 ---------
