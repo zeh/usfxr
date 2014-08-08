@@ -165,7 +165,7 @@ Other notes
 Changelog
 ---------
 
-#### 2014-08-02
+#### 2014-08-02 ([1.3](https://github.com/zeh/usfxr/releases/tag/1.3))
 
 * Editor: SfxrGameObject instances are properly removed when switching between play and edit mode (no more leftover objects)
 
