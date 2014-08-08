@@ -998,7 +998,7 @@ public class SfxrSynth {
 	 */
 	private float getRandom() {
 		// We can't use Unity's Random.value because it cannot be called from a separate thread
-		// (We get the error "get_value can only be called from the main thread" when this is called to generate the soung data)
+		// (We get the error "get_value can only be called from the main thread" when this is called to generate the sound data)
 		return (float)(randomGenerator.NextDouble() % 1);
 	}
 
