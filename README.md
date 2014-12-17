@@ -165,6 +165,10 @@ Other notes
 Changelog
 ---------
 
+#### 2014-12-17
+
+* Editor: Audio plays correctly when using the editor window in non-play mode in Unity 5 beta
+
 #### 2014-08-02 ([1.3](https://github.com/zeh/usfxr/releases/tag/1.3))
 
 * Editor: SfxrGameObject instances are properly removed when switching between play and edit mode (no more leftover objects)
