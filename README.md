@@ -165,7 +165,7 @@ Other notes
 Changelog
 ---------
 
-#### 2014-12-17
+#### 2014-12-17 ([1.4](https://github.com/zeh/usfxr/releases/tag/1.4))
 
 * Editor: Audio plays correctly when using the editor window in non-play mode in Unity 5 beta
 
