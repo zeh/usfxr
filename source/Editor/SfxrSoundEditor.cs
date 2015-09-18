@@ -20,12 +20,7 @@ public class SfxrSoundEditor : PropertyDrawer {
 	}
 
 	private void DrawFolded(Rect position, SerializedProperty property, GUIContent label) {
-		var soundProperty = property.FindPropertyRelative("sound");
-		string sound = soundProperty.stringValue;
-		if (string.IsNullOrEmpty(sound))
-			property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, property.displayName + " (" + sound + ")");
-		else
-			property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, property.displayName);
+		property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, property.name);
 	}
 
 	private void DrawUnfolded(Rect position, SerializedProperty property, GUIContent label) {
@@ -43,10 +38,7 @@ public class SfxrSoundEditor : PropertyDrawer {
 		var soundContainer = SfxrSoundContainer.Create();
 
 		string soundTitle = soundProperty.stringValue;
-		if (string.IsNullOrEmpty(soundTitle))
-			property.isExpanded = EditorGUI.Foldout(labelRect, property.isExpanded, property.displayName);
-		else
-			property.isExpanded = EditorGUI.Foldout(labelRect, property.isExpanded, property.displayName + " (" + soundTitle + ")");
+		property.isExpanded = EditorGUI.Foldout(labelRect, property.isExpanded, property.name);
 
 		if (soundContainer.IsEmpty) {
 			EditorGUI.Popup(dropdownRect, "Sound", 0, new string[] { "-" });
@@ -70,9 +62,9 @@ public class SfxrSoundEditor : PropertyDrawer {
 			cachedProperty.boolValue = newCached;
 
 		EditorGUI.BeginChangeCheck();
-		uint newMutations = (uint)EditorGUI.IntField(mutationsRect, "Mutations", mutationsProperty.intValue);
+		int newMutations = EditorGUI.IntField(mutationsRect, "Mutations", mutationsProperty.intValue);
 		if (EditorGUI.EndChangeCheck())
-			mutationsProperty.intValue = (int)newMutations;
+			mutationsProperty.intValue = Mathf.Clamp(newMutations, 0, 100);
 
 		EditorGUI.BeginChangeCheck();
 		float newFactor = EditorGUI.FloatField(factorRect, "Mutation factor", factorProperty.floatValue);

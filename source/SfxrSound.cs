@@ -11,7 +11,8 @@ public class SfxrSound {
 	private bool cached = true;
 
 	[SerializeField]
-	private uint mutations = 0;
+	[Range(0, 100)]
+	private int mutations = 0;
 	private bool HasMutations { get { return mutations > 0; } }
 
 	[SerializeField]
@@ -25,7 +26,7 @@ public class SfxrSound {
 			Initialize();
 
 		if (HasMutations)
-			synthesizer.PlayMutated(mutationFactor, mutations);
+			synthesizer.PlayMutated(mutationFactor, (uint)mutations);
 		else
 			synthesizer.Play();
 	}
@@ -41,7 +42,7 @@ public class SfxrSound {
 
 	private void Cache() {
 		if (HasMutations)
-			synthesizer.CacheMutations(mutations, mutationFactor, () => synthesizer.PlayMutated(mutationFactor, mutations));
+			synthesizer.CacheMutations((uint)mutations, mutationFactor, () => synthesizer.PlayMutated(mutationFactor, (uint)mutations));
 		else
 			synthesizer.CacheSound(() => synthesizer.Play());
 	}
