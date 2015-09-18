@@ -54,6 +54,7 @@ public class SfxrSoundContainer {
 		return configs[actualTitle];
 	}
 
+#if UNITY_EDITOR
 	public void AddSound(string title, string parameters) {
 		string actualTitle = title.ToLowerInvariant();
 		configs.Add(actualTitle, parameters);
@@ -72,14 +73,12 @@ public class SfxrSoundContainer {
 		SaveToFile();
 	}
 
-#if UNITY_EDITOR
 	private void SaveToFile() {
 		string contents = ToString();
 		string filePath = Application.dataPath + "/Resources/usfxr_sounds.txt";
 		System.IO.File.WriteAllText(filePath, contents);
 		UnityEditor.AssetDatabase.Refresh();
 	}
-#endif
 
 	public override string ToString() {
 		System.Text.StringBuilder strBuilder = new System.Text.StringBuilder();
@@ -90,4 +89,5 @@ public class SfxrSoundContainer {
 
 		return strBuilder.ToString();
 	}
+#endif
 }
