@@ -60,6 +60,17 @@ public class SfxrGenerator : EditorWindow {
 	
 	private SfxrSynth synth;
 
+	private string soundTitle = String.Empty;
+	private SfxrSoundContainer soundContainer = null;
+	private SfxrSoundContainer SoundContainer {
+		get {
+			if (soundContainer == null)
+				soundContainer = SfxrSoundContainer.Create();
+
+			return soundContainer;
+		}
+	}
+
 	// ================================================================================================================
 	// PUBLIC INTERFACE -----------------------------------------------------------------------------------------------
 
@@ -213,6 +224,62 @@ public class SfxrGenerator : EditorWindow {
 				synth.parameters.SetSettingsString(parameters.GetSettingsString());
 				File.WriteAllBytes(path, synth.GetWavFile());
 			}
+		}
+
+		GUILayout.Space(30);
+
+		soundTitle = GUILayout.TextField(soundTitle);
+		bool canSave = !string.IsNullOrEmpty(soundTitle)
+					&& !soundTitle.Contains(";")
+					&& !soundTitle.Contains(":");
+		bool mustReplace = canSave && SoundContainer.Contains(soundTitle);
+		string buttonName = "SAVE";
+		if (!canSave)
+			buttonName = "INVALID NAME";
+		else if (mustReplace)
+			buttonName = "REPLACE";
+		else
+			buttonName = "SAVE";
+
+		if (!canSave) {
+			bool prevVal = GUI.enabled;
+			GUI.enabled = false;
+			GUILayout.Button(buttonName);
+			GUI.enabled = prevVal;
+		} else {
+			if (GUILayout.Button(buttonName)) {
+				string soundParams = parameters.GetSettingsString();
+
+				if (mustReplace) {
+					SoundContainer.ReplaceSound(soundTitle, soundParams);
+				} else {
+					SoundContainer.AddSound(soundTitle, soundParams);
+				}
+			}
+		}
+
+		if (canSave && mustReplace) {
+			if (GUILayout.Button("LOAD")) {
+				string soundParams = SoundContainer.GetSound(soundTitle);
+				parameters.SetSettingsString(soundParams);
+				soundChanged = true;
+			}
+		} else {
+			bool prevVal = GUI.enabled;
+			GUI.enabled = false;
+			GUILayout.Button("LOAD");
+			GUI.enabled = prevVal;
+		}
+
+		if (canSave && mustReplace) {
+			if (GUILayout.Button("DELETE")) {
+				SoundContainer.DeleteSound(soundTitle);
+			}
+		} else {
+			bool prevVal = GUI.enabled;
+			GUI.enabled = false;
+			GUILayout.Button("DELETE");
+			GUI.enabled = prevVal;
 		}
 
 		// End generator column
