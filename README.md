@@ -153,8 +153,9 @@ Acknowledgments
  * Thomas Vian created [as3sfxr](https://code.google.com/p/as3sfxr/), the original code that was ported to C# for usfxr.
  * [Tiaan Geldenhuys](http://tiaan.com/) contributed to usfxr by cleaning the code and creating the original version of the in-editor window that I bastardized later.
  * [Stephen Lavelle](http://www.increpare.com/) created [BFXR](http://www.bfxr.net/), an AS3 port of SFXR with several new features of its own, many of which have been adopted by usfxr.
- * Michael Bailey contributed with bug fixes
- * Owen Roberts contributed with bug reports
+ * Michael Bailey contributed with bug fixes.
+ * Owen Roberts contributed with bug reports.
+ * [Enrique J. Gil](https://github.com/Elideb) created the sound list saving/loading feature (SfxrSound) and its UI.
  
 Other notes
 -----------
@@ -162,8 +163,8 @@ Other notes
  * If you want a C#/.Net port of sfxr that is not heavily coupled with Unity, [nsfxr](https://github.com/nathanchere/nsfxr) by Nathan Chere is what you're looking for.
 
  
-Changelog
----------
+Changelog (stable versions)
+---------------------------
 
 #### 2014-12-17 ([1.4](https://github.com/zeh/usfxr/releases/tag/1.4))
 
