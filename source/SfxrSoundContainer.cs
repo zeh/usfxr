@@ -76,6 +76,10 @@ public class SfxrSoundContainer {
 	private void SaveToFile() {
 		string contents = ToString();
 		string filePath = Application.dataPath + "/Resources/usfxr_sounds.txt";
+		System.IO.FileInfo file = new System.IO.FileInfo(filePath);
+		if (!file.Directory.Exists)
+			this.CreateDirectory(file.Directory);
+
 		System.IO.File.WriteAllText(filePath, contents);
 		UnityEditor.AssetDatabase.Refresh();
 	}
@@ -88,6 +92,13 @@ public class SfxrSoundContainer {
 			strBuilder.Append(title + ":" + configs[title] + System.Environment.NewLine);
 
 		return strBuilder.ToString();
+	}
+
+	private void CreateDirectory(System.IO.DirectoryInfo dir) {
+		if (!dir.Parent.Exists)
+			this.CreateDirectory(dir.Parent);
+
+		dir.Create();
 	}
 #endif
 }

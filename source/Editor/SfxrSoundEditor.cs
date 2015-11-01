@@ -37,7 +37,6 @@ public class SfxrSoundEditor : PropertyDrawer {
 
 		var soundContainer = SfxrSoundContainer.Create();
 
-		string soundTitle = soundProperty.stringValue;
 		property.isExpanded = EditorGUI.Foldout(labelRect, property.isExpanded, property.name);
 
 		if (soundContainer.IsEmpty) {
