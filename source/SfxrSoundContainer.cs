@@ -2,7 +2,14 @@
 using UnityEngine;
 
 public class SfxrSoundContainer {
+	private static SfxrSoundContainer container = null;
+
 	public static SfxrSoundContainer Create() {
+#if !UNITY_EDITOR
+		if (SfxrSoundContainer.container != null)
+			return SfxrSoundContainer.container;
+#endif
+
 		string paramsList = ReadSoundsFile();
 		Dictionary<string, string> configurations = new Dictionary<string, string>();
 
@@ -15,7 +22,8 @@ public class SfxrSoundContainer {
 			configurations.Add(title, parameters);
 		}
 
-		return new SfxrSoundContainer(configurations);
+		SfxrSoundContainer.container = new SfxrSoundContainer(configurations);
+		return SfxrSoundContainer.container;
 	}
 
 	private static string ReadSoundsFile() {
