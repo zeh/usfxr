@@ -51,7 +51,11 @@ public class SfxrSoundContainer {
 
 	public string GetSound(string title) {
 		string actualTitle = title.ToLowerInvariant();
-		return configs[actualTitle];
+		if (configs.ContainsKey(actualTitle))
+			return configs[actualTitle];
+
+		Debug.LogError("No sound with title '" + title + "' found. Create it or verify it has not been removed.");
+		return ",,,,,,,,,,,,,,,,,,,,,,,";
 	}
 
 #if UNITY_EDITOR
