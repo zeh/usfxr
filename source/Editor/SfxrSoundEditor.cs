@@ -40,7 +40,7 @@ public class SfxrSoundEditor : PropertyDrawer {
 		property.isExpanded = EditorGUI.Foldout(labelRect, property.isExpanded, property.name);
 
 		if (soundContainer.IsEmpty) {
-			EditorGUI.Popup(dropdownRect, "Sound", 0, new string[] { "-" });
+			EditorGUI.Popup(dropdownRect, "Sound", 0, new string[] { "[No sounds saved]" });
 		} else {
 			string sound = soundProperty.stringValue;
 			List<string> titles = new List<string>(soundContainer.GetTitles());

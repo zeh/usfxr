@@ -19,6 +19,7 @@ public class SfxrSound {
 	[Range(0f, 1f)]
 	private float mutationFactor = .05f;
 
+	[System.NonSerialized]
 	private bool initialized = false;
 
 	public void Play() {
