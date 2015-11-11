@@ -1001,6 +1001,13 @@ public class SfxrSynth {
 		// (We get the error "get_value can only be called from the main thread" when this is called to generate the sound data)
 		return (float)(randomGenerator.NextDouble() % 1);
 	}
+	
+	/**
+	 * Returns the number of samples actually used by the wave
+	 */
+	public uint getNumSamples() {
+		return _envelopeFullLength;
+	}
 
 	/**
 	 * Writes a short (Int16) to a byte array.

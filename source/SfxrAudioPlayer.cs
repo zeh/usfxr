@@ -36,9 +36,12 @@ public class SfxrAudioPlayer : MonoBehaviour {
 
 
 	// Properties
+	private bool		runAsAudioClip = false;		// If true, will use a pre-generated AudioClip for the audio instead
 	private bool		isDestroyed = false;		// If true, this instance has been destroyed and shouldn't do anything yes
 	private bool		needsToDestroy = false;		// If true, it has been scheduled for destruction (from outside the main thread)
-	private bool		runningInEditMode = false;	// If true, it is running from the editor and NOT playing
+	private bool		runningInEditMode = false;  // If true, it is running from the editor and NOT playing
+
+	private static bool		hasWarnedAboutWebGL = false;
 
 	// Instances
 	private SfxrSynth	sfxrSynth;					// SfxrSynth instance that will generate the audio samples used by this
@@ -48,9 +51,20 @@ public class SfxrAudioPlayer : MonoBehaviour {
 	// INTERNAL INTERFACE ---------------------------------------------------------------------------------------------
 
 	void Start() {
+		#if UNITY_WEBGL
+			// WebGL doesn't allow OnAudioFilterRead, or any other parallel generation really. So we generate it completely once the sound starts (will still be cached).
+			runAsAudioClip = true;
+		#endif
+
 		// Creates an empty audio source so this GameObject can receive audio events
 		AudioSource soundSource = gameObject.AddComponent<AudioSource>();
-		soundSource.clip = new AudioClip();
+		if (runAsAudioClip) {
+			// Pre-generate everything
+			soundSource.clip = AudioClip.Create("AudioClip Effect", (int)sfxrSynth.getNumSamples(), 2, 44100, false, OnAudioRead);
+		} else {
+			// Will generate audio later, during playback, so use an empty AudioClip
+			soundSource.clip = new AudioClip();
+		}
 		soundSource.volume = 1f;
 		soundSource.pitch = 1f;
 		soundSource.priority = 128;
@@ -71,11 +85,20 @@ public class SfxrAudioPlayer : MonoBehaviour {
 			Destroy();
 		}
 	}
+	
+	void OnAudioRead(float[] __data) {
+		// Requests the generation of the needed audio data from SfxrSynth, AudioClip version
+		if (!SfxrAudioPlayer.hasWarnedAboutWebGL) {
+			Debug.LogWarning("Warning: the audio data is being generated in a UI blocking thread. This is probably because it is running in WebGL. It will still be cached. An alternate solution, using separate threads, will hopefully be available in the future.");
+			SfxrAudioPlayer.hasWarnedAboutWebGL = true;
+		}
+		sfxrSynth.GenerateAudioFilterData(__data, 2);
+	}
 
 	void OnAudioFilterRead(float[] __data, int __channels) {
-		// Requests the generation of the needed audio data from SfxrSynth
+		// Requests the generation of the needed audio data from SfxrSynth, parallel version
 
-		if (!isDestroyed && !needsToDestroy && sfxrSynth != null) {
+		if (!runAsAudioClip && !isDestroyed && !needsToDestroy && sfxrSynth != null) {
 			bool hasMoreSamples = sfxrSynth.GenerateAudioFilterData(__data, __channels);
 
 			// If no more samples are needed, there's no more need for this GameObject so schedule a destruction (cannot do this in this thread)

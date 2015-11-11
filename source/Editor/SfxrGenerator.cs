@@ -78,11 +78,11 @@ public class SfxrGenerator : EditorWindow {
 	public static void Initialize() {
 		var window = ScriptableObject.CreateInstance<SfxrGenerator>();
 		window.name = "Sound Effects";
-#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
-		window.title = window.name;
-#else
-		window.titleContent = new GUIContent(window.name);
-#endif
+		#if UNITY_4_0 || UNITY_4_1 || UNITY_4_2 || UNITY_4_3 || UNITY_4_4 || UNITY_4_5 || UNITY_4_6
+			window.title = window.name;
+		#else
+			window.titleContent = new GUIContent(window.name);
+		#endif
 		window.Show();
 	}
 
