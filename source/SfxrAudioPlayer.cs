@@ -63,7 +63,7 @@ public class SfxrAudioPlayer : MonoBehaviour {
 			soundSource.clip = AudioClip.Create("AudioClip Effect", (int)sfxrSynth.getNumSamples(), 2, 44100, false, OnAudioRead);
 		} else {
 			// Will generate audio later, during playback, so use an empty AudioClip
-			soundSource.clip = new AudioClip();
+			soundSource.clip = null;
 		}
 		soundSource.volume = 1f;
 		soundSource.pitch = 1f;
